@@ -7,7 +7,7 @@ name: Build and deploy Python app to Azure Web App - musicspace
 on:
   push:
     branches:
-      - main
+      - sprint0
   workflow_dispatch:
 
 jobs:
@@ -75,3 +75,4 @@ jobs:
           slot-name: 'Production'
 
           
+
