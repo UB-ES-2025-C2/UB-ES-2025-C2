@@ -1,0 +1,120 @@
+# Common formatting.
+[formatting]
+align_comments = true
+# Custom: Inline comments should be aligned.
+align_entries = false
+# Default: Entries shouldn't be aligned.
+align_single_comments = false
+# Inline single comments need not be aligned.
+allowed_blank_lines = 3
+# Custom: Up to three consecutive blank lines should be allowed.
+array_auto_collapse = true
+# Default: Collapse if fits in one line.
+array_auto_expand = true
+# Default: Expand if not fits in one line.
+array_trailing_comma = true
+# Default: Multiline arrays should have trailing comma.
+column_width = 80
+# Default: 80 line width is sensible enough.
+compact_arrays = true
+# Default: Omit whitespace on single line arrays.
+compact_entries = false
+# Default: No omission of whitespace between =.
+compact_inline_tables = false
+# Default: No omission of whitespace between {}.
+crlf = false
+# Default: Always use LF.
+indent_entries = false
+# Default: No need to indent entries.
+indent_string = "    "
+# Custom: 4 spaces indentation, always.
+indent_tables = false
+# Default: No need to indent subtables either.
+inline_table_expand = true
+# Default: Value expansion inside inline tables is sensible.
+reorder_arrays = false
+# Default: Array values order is meaningful.
+reorder_inline_tables = false
+# Default: Order of keys can be meaningful too.
+reorder_keys = false
+# Default: Order of keys can be meaningful too.
+trailing_newline = true
+# Default: Always add a trailing newline.
+
+
+
+# Taplo file configuration.
+[[rule]]
+include = ["**/taplo.toml"]
+
+[rule.formatting]
+reorder_arrays = true
+reorder_keys = true
+# We want to reorder the keys and array elements
+# so they stay in alphabetical order.
+
+[rule.schema]
+path = "taplo://taplo.toml"
+
+
+
+# PyProject file configuration.
+[[rule]]
+include = ["**/pyproject.toml"]
+
+[rule.formatting]
+reorder_arrays = true
+# We want to reorder the array elements
+# of packages and dependencies.
+
+[rule.schema]
+path = "https://www.schemastore.org/pyproject.json"
+
+
+# Reorder keys.
+[[rule]]
+include = ["**/pyproject.toml"]
+keys = [
+    "dependency-groups",
+    "tool.ruff",
+    "tool.uv",
+    "tool.uv.sources",
+    "tool.uv.workspace",
+]
+
+[rule.formatting]
+reorder_keys = true
+# We want to reorder the keys
+# of some sortable tables.
+
+
+
+# Ruff file configuration.
+[[rule]]
+include = ["**/ruff.toml"]
+
+[rule.formatting]
+reorder_keys = true
+# We want to reorder the keys
+# so they stay in alphabetical order.
+
+[rule.schema]
+path = "https://www.schemastore.org/ruff.json"
+
+
+# Sorting of non order dependent arrays.
+[[rule]]
+include = ["**/ruff.toml"]
+keys = [
+    "lint.isort.sections",
+    "lint.pep8-naming",
+    "lint.per-file-ignores",
+    "lint.pydocstyle",
+    "lint.pyflakes",
+    "lint.pylint",
+]
+
+[rule.formatting]
+reorder_arrays = true
+# We want to reorder the sortable array elements
+# so they stay in alphabetical order.

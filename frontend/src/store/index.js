@@ -4,6 +4,7 @@ import api from "../services/api.js";
 export const useApiStore = defineStore("api", {
   state: () => ({
     songs: [],
+    playList: []
   }),
   actions: {
     async fetchCatalog() {
@@ -12,6 +13,14 @@ export const useApiStore = defineStore("api", {
         this.songs = response.data;
       } catch (error) {
         console.error("Error fetching catalog:", error);
+      }
+    },
+    async fetchPlaylist(){
+      try {
+        const response = await api.getPlaylist();
+        this.playList = response.data;
+      } catch (error) {
+        console.error("Error fetching playlist:", error);
       }
     },
   },

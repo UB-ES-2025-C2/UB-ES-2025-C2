@@ -19,6 +19,9 @@ export default {
 
   getSongs(){
     return AuthService.getAxiosInstance().get("/api/v1/songs/");
+  },
+  getPlaylist(){
+    return AuthService.getAxiosInstance().get("/api/v1/playlist/");
   }
 
 };
