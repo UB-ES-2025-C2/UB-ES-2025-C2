@@ -6,7 +6,7 @@ erDiagram
     User{
         string name
     }
-    UserProfile {        
+    UserProfile {
         int userId PK
         string nickname
         string description
@@ -21,8 +21,8 @@ erDiagram
         string topic
         date createdAt
     }
-    
-    
+
+
     Generes{
         string name
     }
@@ -31,28 +31,28 @@ erDiagram
         date followDate
     }
 
-    
+
     Song {
         int songId PK
         string name
-        mp4 file   
+        mp4 file
         date uploadDate
         int ownerId
     }
     ActionForYouPage {
         string reasonWhyIsRecomend
     }
-    
-    
+
+
     Favorite {
         date createdAt
     }
 
     Rating {
-        int value  
+        int value
     }
 
-    
+
     Comment {
         int anonymous_level
         string content
@@ -81,14 +81,14 @@ erDiagram
 
     ActionForYouPage ||--o{ Follow : "Recomend something"
     UserProfile ||--o{ Generes: "Favorite Generes"
-    Song ||--o{ Generes:"Generos"        
+    Song ||--o{ Generes:"Generos"
     Song ||--o{ UserProfile : "Author"
-    
-    classDef weakEntity fill:#f9f,stroke-dasharray: 5 5
-    class ActionForYouPage weakEntity
+
 
 
 ```
+    classDef weakEntity fill:#f9f,stroke-dasharray: 5 5
+    class ActionForYouPage weakEntity
 
 
 
