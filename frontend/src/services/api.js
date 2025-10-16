@@ -22,6 +22,17 @@ export default {
   },
   getPlaylist(){
     return AuthService.getAxiosInstance().get("/api/v1/playlist/");
+  }, 
+  getUser(name) {
+    const token = localStorage.getItem("access");
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/userprofile/by-username/${encodeURIComponent(name)}`,
+    );
+  },
+  searchNUsers(name) {
+    const token = localStorage.getItem("access");
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/search/user/?q=${encodeURIComponent(name)}`
+    );
   }
-
 };

@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'musicSpace.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'music_space.settings')
 
 application = get_asgi_application()

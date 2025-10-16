@@ -1,23 +1,70 @@
 [project]
-name = "back"
+name = "music_space"
 version = "0.1.0"
-description = "Music space"
+description = "MusicSpace social network's backend."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
-    "django>=5.2.7",
     "django-cors-headers>=4.9.0",
+    "django-debug-toolbar>=6.0.0",
     "django-health-check>=3.20.0",
-    "djangorestframework>=3.16.1",
+    "django>=5.2.7",
     "djangorestframework-simplejwt>=5.5.1",
+    "djangorestframework>=3.16.1",
     "drf-nested-routers>=0.95.0",
     "drf-spectacular>=0.28.0",
     "pillow>=11.3.0",
 ]
 
+
 [dependency-groups]
+# Development dependencies.
 dev = [
-    "allure-pytest>=2.15.0",
-    "pylint>=4.0.0",
-    "pytest>=8.4.2",
+    { include-group = "docs" },
+    { include-group = "lint-format" },
+    { include-group = "test" },
 ]
+# Documentation generation dependencies.
+docs = []
+# Linter and formatter dependencies.
+lint-format = ["ruff>=0.14.0"]
+# Testing dependencies.
+test = ["allure-pytest>=2.15.0", "pytest-asyncio>=1.1.0", "pytest>=8.4.1"]
+
+
+# Runner of the Python modules.
+[project.scripts]
+music_space = "manage:main"
+
+
+[build-system]
+requires = ["uv_build>=0.9.2,<0.10.0"]
+build-backend = "uv_build"
+
+
+# Ruff configuration extended from workspace root ruff configuration.
+[tool.ruff]
+extend = "./ruff.toml"
+
+
+# UV configuration.
+[tool.uv]
+compile-bytecode = true
+# Custom: Compile to bytecode for efficiency.
+default-groups = ["dev"]
+# Custom: The default group active is dev by default.
+fork-strategy = "requires-python"
+# Default: Use the latest available packages.
+managed = true
+# Default: All projects are managed by UV.
+package = true
+# Defult: All projects are packages.
+python-preference = "only-managed"
+# Custom: Only managed Python installations should be used.
+required-version = ">=0.9.2"
+# Custom: Requires at least 0.9.2 UV.
+
+
+# UV build backend configuration.
+[tool.uv.build-backend]
+module-root = ""
