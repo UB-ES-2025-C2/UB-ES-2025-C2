@@ -76,3 +76,15 @@ class UserProfileByUsernameView(APIView):
 
         except User.DoesNotExist or UserProfile.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
+class UsernameSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')
+
+        if not query:
+            return Response({'error': 'Se requiere el parámetro "q".'}, status=status.HTTP_400_BAD_REQUEST)
+
+        users = User.objects.filter(username__icontains=query)[:10]  # Limitado a 10 resultados
+        usernames = [{'username': user.username} for user in users]
+
+        return Response(usernames, status=status.HTTP_200_OK)
