@@ -21,4 +21,7 @@ urlpatterns = [
 
     # Ruta personalizada para buscar el usuario por su nombre de usuario
     path("userprofile/by-username/<str:username>/", UserProfileByUsernameView.as_view(), name="userprofile-by-username"),
+
+    # Ruta para buscar usuarios por username
+    path("search/user/", UsernameSearchView.as_view(), name="username-search"),
 ]
