@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt import authentication
+from rest_framework.views import APIView
 
 from . import serializers
 from .serializers import *
@@ -59,3 +60,19 @@ class PlaylistSongViewSet(viewsets.ViewSet):
         song.save()
 
         return Response({"status": "added"}, status=status.HTTP_201_CREATED)
+    
+class UserProfileByUsernameView(APIView):
+    def get(self, request, username):
+        try:
+            #Buscar el usuario por su nombre de usuario
+            user = User.objects.get(username=username)
+
+            # Obtener el perfil asociado al usuario
+            profile = UserProfile.objects.get(user=user)
+
+            # Serializar y devolver los datos del perfil
+            serializer = UserProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist or UserProfile.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)

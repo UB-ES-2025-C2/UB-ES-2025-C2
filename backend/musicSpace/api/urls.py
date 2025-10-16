@@ -18,4 +18,7 @@ playlistRut.register(r'songs', PlaylistSongViewSet, basename='playlist-song')
 urlpatterns = [
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
+
+    # Ruta personalizada para buscar el usuario por su nombre de usuario
+    path("userprofile/by-username/<str:username>/", UserProfileByUsernameView.as_view(), name="userprofile-by-username"),
 ]
