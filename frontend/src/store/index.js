@@ -4,7 +4,9 @@ import api from "../services/api.js";
 export const useApiStore = defineStore("api", {
   state: () => ({
     songs: [],
-    playList: []
+    playList: [],
+    userResult: null,
+    nUsersResult: null
   }),
   actions: {
     async fetchCatalog() {
@@ -23,5 +25,23 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching playlist:", error);
       }
     },
+    async getUser(name) {
+      try {
+        const response = await api.getUser(name);
+        this.userResult = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }   
+    },
+    async searchNUsers(name) {
+      try {
+        const response = await api.searchNUsers(name);
+        this.nUsersResult = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Error searching users:", error);
+      }
   },
+}
 });

@@ -1,0 +1,155 @@
+{
+    // Blanks around fences, even as list items.
+    "blanks-around-fences": {
+        "list_items": true
+    },
+    // Blanks around headings, two above and one below.
+    "blanks-around-headings": {
+        "lines_above": 2,
+        "lines_below": 1
+    },
+    // Code blocks should always be fenced (no indented).
+    "code-block-style": {
+        "style": "fenced"
+    },
+    // Fenced code blocks should use backticks (no tildes).
+    "code-fence-style": {
+        "style": "backtick"
+    },
+    // Emphasized text should always use asterisk, not underscore.
+    "emphasis-style": {
+        "style": "asterisk"
+    },
+    // There should always be a code language in code blocks but it can also have parameters.
+    "fenced-code-language": {
+        "language_only": false
+    },
+    // The first line should always be a level one header, the only one.
+    "first-line-h1": {
+        "allow_preamble": false,
+        "level": 1
+    },
+    // Only #-followed headings should be accepted.
+    "heading-style": {
+        "style": "atx"
+    },
+    // For horizontal lines, `---` should be used.
+    "hr-style": {
+        "style": "---"
+    },
+    // Line length should always be capped at 80, unless it's an unbreakable line.
+    "line-length": {
+        "code_block_line_length": 80,
+        "code_blocks": true,
+        "heading_line_length": 80,
+        "headings": true,
+        "line_length": 80,
+        "stern": true,
+        "strict": false,
+        "tables": true
+    },
+    // Link fragments defaults, which are sensible enough.
+    "link-fragments": {
+        "ignore_case": false,
+        "ignored_pattern": ""
+    },
+    // To use image references as "Markdown comments", the used labels should be either // or #.
+    "link-image-reference-definitions": {
+        "ignored_definitions": [
+            "//",
+            "#"
+        ]
+    },
+    // Only auto, full and shortcut links should be used, never collapsed or inline of any kind. (One should either use the link itself <>, use the same label as the text or a label different from the text, preferrably this last one).
+    "link-image-style": {
+        "autolink": true,
+        "collapsed": false,
+        "full": true,
+        "inline": false,
+        "shortcut": true,
+        "url_inline": false
+    },
+    // Single line and multiline lists should have one space of separation from the marker.
+    "list-marker-space": {
+        "ol_multi": 1,
+        "ol_single": 1,
+        "ul_multi": 1,
+        "ul_single": 1
+    },
+    // Sibling headings should not be named the same, but cousin headings neither.
+    "no-duplicate-heading": {
+        "siblings_only": false
+    },
+    // Tabs should be used nowhere, not even in code blocks.
+    "no-hard-tabs": {
+        "code_blocks": true,
+        "ignore_code_languages": [ ],
+        "spaces_per_tab": 4
+    },
+    // Inline HTMl should only be allowed for hard breaks (or other elements that are deemed necessary).
+    "no-inline-html": {
+        "allowed_elements": [
+            "br"
+        ]
+    },
+    // There can be a maximum of 3 empty lines for proper code separation.
+    "no-multiple-blanks": {
+        "maximum": 3
+    },
+    // Blanks around blockquotes, even as list items.
+    "no-multiple-space-blockquote": {
+        "list_items": true
+    },
+    // No trailing before line breaks, not even hard ones.
+    "no-trailing-spaces": {
+        "br_spaces": 0,
+        "list_item_empty_lines": false,
+        "strict": true
+    },
+    // Ordered lists should always be ordered in code, since correction and linting is easily automated and it provides information.
+    "ol-prefix": {
+        "style": "ordered"
+    },
+    // Proper casing for names should be used everywhere, even in code blocks.
+    "proper-names": {
+        "code_blocks": true,
+        "html_elements": true,
+        "names": [
+            "Scalely",
+            "OpenAI",
+            "Supabase",
+            "supabase.com",
+            "Apollo"
+        ]
+    },
+    // Labels should all be defined, unless it's [x] or [X] (because of checklists) and shortcut links.
+    "reference-links-images": {
+        "ignored_labels": [
+            "x",
+            "X"
+        ],
+        "shortcut_syntax": false
+    },
+    // There should only be one level one heading.
+    "single-h1": {
+        "level": 1
+    },
+    // Boldened text should always use asterisk, not underscore.
+    "strong-style": {
+        "style": "asterisk"
+    },
+    // Tables should have leading and trailing pipes because it makes them clearer.
+    "table-pipe-style": {
+        "style": "leading_and_trailing"
+    },
+    // List indentation should be of 2 spaces.
+    "ul-indent": {
+        "indent": 2,
+        "start_indent": 2,
+        "start_indented": false
+    },
+    // Bullets for unordered lists should be * for topmost lists, + for sublists, and - for sublists of sublists.
+    "ul-style": {
+        "style": "sublist"
+    }
+}
