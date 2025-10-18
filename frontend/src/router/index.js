@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import LogIn from "../views/LogIn.vue";
 import SignUp from "../views/SignUp.vue";
 import Home from "../views/Home.vue";
+import Search from "../views/Search.vue";
 
 import { useAuthStore } from "../store/authStore";
 
@@ -20,7 +21,11 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
-  }
+  },
+  { path: '/search', 
+    name: "search",
+    component: Search },
+
 ];
 
 const router = createRouter({
