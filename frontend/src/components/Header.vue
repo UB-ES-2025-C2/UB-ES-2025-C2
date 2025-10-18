@@ -1,21 +1,39 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const q = ref('')
+
+// Funció per enviar la cerca
+function onSubmit() {
+  const term = q.value.trim()
+  if (!term) return
+  router.push({ path: '/search', query: { q: term } })
+}
+</script>
+
 <template>
   <header class="header">
-    <!-- Logo -->
-    <div class = "header-left">
+    <!-- Bloc esquerre -->
+    <div class="header-left">
       <img src="../assets/logo_musicSPace.png" alt="Logo" class="logo" />
-    
 
-    <!-- Icone home -->
-    
+      <!-- Icona home -->
       <button class="home-btn" @click="$router.push('/')">
-          <img src="../icons/home.svg" class="home-icon" />
+        <img src="../icons/home.svg" class="home-icon" />
       </button>
-    <!-- Barra de búsqueda -->
-    <div class="search-bar">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" placeholder="Què vols reproduir?" />
-      <i class="fas search-end"></i>
-    </div>
+
+      <!-- Barra de búsqueda -->
+      <form class="search-bar" @submit.prevent="onSubmit">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          v-model="q"
+          type="search"
+          placeholder="Què vols reproduir?"
+          aria-label="Cercar"
+        />
+      </form>
     </div>
 
     <!-- Navegació dreta -->
@@ -27,10 +45,6 @@
     </nav>
   </header>
 </template>
-
-<script setup>
-// No cal JS addicional per aquesta versió bàsica
-</script>
 
 <style scoped>
 .header {
@@ -114,7 +128,7 @@
   color: #ffffff;
   width: 100%;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .search-icon,

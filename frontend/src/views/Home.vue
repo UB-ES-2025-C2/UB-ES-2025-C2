@@ -1,8 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "../store/authStore";
-import "../assets/main.css";
-import Header from "../components/Header.vue";
 import {useApiStore } from "../store/index.js";
 
 const authStore = useAuthStore();
