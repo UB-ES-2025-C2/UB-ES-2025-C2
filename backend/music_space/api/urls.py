@@ -24,4 +24,10 @@ urlpatterns = [
 
     # Ruta para buscar usuarios por username
     path("search/user/", UsernameSearchView.as_view(), name="username-search"),
+
+    # Ruta personalizada para buscar canciones por título
+    path("songs/by-name/<str:name>/", SongByNameView.as_view(), name="song-by-name"),
+
+    # Ruta para buscar canciones por título
+    path("search/song/", SongNameSearchView.as_view(), name="song-name-search"),
 ]
