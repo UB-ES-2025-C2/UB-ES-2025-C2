@@ -84,3 +84,28 @@ class UsernameSearchView(APIView):
         nickname = [{'username': user.nickname} for user in users]
 
         return Response(nickname, status=status.HTTP_200_OK)
+    
+class SongByNameView(APIView):
+    def get(self, request, name):
+        try:
+            # Obtener la canción por título
+            song = Song.objects.get(name=name)
+
+            # Serializar y devolver los datos de la canción
+            serializer = SongSerializer(song)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Song.DoesNotExist:
+            return Response({'error': 'Canción no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+class SongNameSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')
+
+        if not query:
+            return Response({'error': 'Se requiere el parámetro "q".'}, status=status.HTTP_400_BAD_REQUEST)
+
+        songs = Song.objects.filter(name__icontains=query)[:10]  # Limitado a 10 resultados
+        names = [{'name': song.name} for song in songs]
+
+        return Response(names, status=status.HTTP_200_OK)
