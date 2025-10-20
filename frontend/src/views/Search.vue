@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useApiStore } from "../store";
+import { useApiStore } from "../store/guestApi.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -27,12 +27,21 @@ async function runSearch() {
   const q = (route.query.q || "").toString().trim();
   if (!q) {
     api.nUsersResult = [];
+    api.songResults = [];
     return;
   }
   if (activeTab.value === "users" || activeTab.value === "all") {
     await api.searchNUsers(q);
   }
+  if (activeTab.value === "songs" || activeTab.value === "all") {
+    await api.searchsongByAnyThingh(q, "", "", "");
+  }
+  if (activeTab.value === "playlists" || activeTab.value === "all") {
+    await api.searchplaylistSongsByName(q);
+  }
+  
 }
+
 
 function setTab(tab) {
   activeTab.value = tab;
@@ -45,6 +54,7 @@ watch(() => route.query.q, runSearch);
 </script>
 
 <template>
+  <!--<img :src="'http://127.0.0.1:8000/covers/default.png'" alt="" />-->
   <section class="search-page">
     <div class="tabs">
       <button
@@ -94,22 +104,22 @@ watch(() => route.query.q, runSearch);
       <p v-else>Sense resultats.</p>
     </div>
 
-    <div v-if="activeTab === 'songs'">
-      <ul v-if="mockSongs.length" class="results-list">
-        <li v-for="song in mockSongs" :key="song.id" class="song-card">
+    <div v-if="activeTab === 'songs' || activeTab === 'all'">
+      <ul v-if="api.songResults?.length" class="results-list">
+        <li v-for="song in api.songResults" :key="song.id" class="song-card">
           <div class="song-image">
-            <img :src="song.image" alt="foto de canción" />
+            <img :src="song.cover" alt="foto de canción" />
           </div>
           <div class="song-info">
-            <strong>{{ song.title }}</strong>
-            <p>{{ song.artists }}</p>
+            <strong>{{ song.name }}</strong>
+            <p>{{ song.artist }}</p>
           </div>
         </li>
       </ul>
       <p v-else>No hi ha cançons.</p>
     </div>
 
-    <div v-if="activeTab === 'playlists'">
+    <div v-if="activeTab === 'playlists'|| activeTab === 'all'">
       <ul v-if="mockPlaylists.length" class="results-list">
         <li v-for="playlist in mockPlaylists" :key="playlist.id" class="playlist-card">
           <div class="playlist-image">

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed  } from "vue";
 import { useAuthStore } from "../store/authStore";
-import {useApiStore } from "../store/index.js";
+import {useApiStore } from "../store/guestApi.js";
 
 const authStore = useAuthStore();
 const apiStore = useApiStore();
@@ -23,21 +23,21 @@ const mockPlaylists = ref([
     name: "Playlist 1", 
     description: "Playlist d'èxits mundials",
     topic: "Èxits mundials",
-    image: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" 
+    cover: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" 
   },
   { 
     id: 2, 
     name: "Playlist 2",
     description: "Playlist de pop",
     topic: "Pop",
-    image: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg"
+    cover: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg"
   },
   { 
     id: 3,
     name: "Playlist3",
     description: "Playlist de rock",
     topic: "Rock",
-    image: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg"
+    cover: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg"
   }
 ]);
 
@@ -78,7 +78,7 @@ const headerUsername = computed(() => {
       <li v-for="song in apiStore.songs" :key="song.id" class="card">
         <!-- Imagen de la canción -->
         <div class="card-image">
-          <img :src="song.image" alt="Foto de canción"/>
+          <img :src="song.cover" alt="Foto de canción"/>
         </div>
 
         <!-- Info: nombre y artista -->
@@ -101,7 +101,7 @@ const headerUsername = computed(() => {
         <ul class="cards-list">
           <li v-for="playlist in pls" :key="playlist.id" class="card">
             <div class="card-image">
-              <img :src="playlist.image" alt="Foto de playlist" />
+              <img :src="playlist.cover" alt="Foto de playlist" />
             </div>
             <div class="card-info">
               <strong>{{ playlist.name }}</strong>
