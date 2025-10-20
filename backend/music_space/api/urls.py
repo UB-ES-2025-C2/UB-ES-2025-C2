@@ -15,13 +15,14 @@ router.register(r'playlist', PlayListViewSet, basename='playlist')
 playlistRut = NestedSimpleRouter(router, r'playlist', lookup='playlist')
 playlistRut.register(r'songs', PlaylistSongViewSet, basename='playlist-song')
 
-songUser = NestedSimpleRouter(router, r'userprofile', lookup='userprofile')
-songUser.register(r'songs', SongViewSet, basename='userprofile-song')
+userprofilerute = NestedSimpleRouter(router, r'userprofile', lookup='userprofile')
+userprofilerute.register(r'songs', SongViewSet, basename='userprofile-song')
+userprofilerute.register(r'playlist', PlayListViewSet, basename='playlist-user')
 
 urlpatterns = [
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
-    path("", include(songUser.urls)),
+    path("", include(userprofilerute.urls)),
     # Ruta personalizada para buscar el usuario por su nombre de usuario
     path(
         "userprofile/by-username/<str:username>/",

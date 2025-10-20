@@ -16,6 +16,7 @@ const buscarNUsers = async () => {
   await apiStore.searchNUsers(nusers.value);
 };
 
+
 /*mock data para playlists de prueba*/
 const mockPlaylists = ref([
   { 
@@ -44,7 +45,7 @@ const mockPlaylists = ref([
 /* Agrupamos las playlists por topic */
 const playlistsByTopic = computed(() => {
   const grouped = {};
-  mockPlaylists.value.forEach(pl => {
+  apiStore.playList.forEach(pl => {
     const topic = pl.topic || "Sense tema";
     if (!grouped[topic]) grouped[topic] = [];
     grouped[topic].push(pl);
@@ -55,6 +56,7 @@ const playlistsByTopic = computed(() => {
 onMounted(() => {
   authStore.initializeAuthStore();
   apiStore.fetchCatalog();
+  apiStore.fetchPlaylists();
 });
 
 // Nombre para la cabecera

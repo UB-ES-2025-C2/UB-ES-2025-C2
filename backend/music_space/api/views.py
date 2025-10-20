@@ -37,11 +37,15 @@ class SongViewSet(viewsets.ModelViewSet):
             qs = qs.filter(author_id=userprofile_pk)
         return qs
 
-
 class PlayListViewSet(viewsets.ModelViewSet):
-    queryset = PlayList.objects.all()
     serializer_class = PlayListSerializer
-
+    def get_queryset(self):
+        qs = PlayList.objects.all()
+        userprofile_pk = self.kwargs.get("userprofile_pk")
+        if userprofile_pk:
+            userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
+            qs = qs.filter(owner=userprofile)
+        return qs
 
 class PlaylistSongViewSet(viewsets.ViewSet):
     """
@@ -98,7 +102,7 @@ class UsernameSearchView(APIView):
         users = UserProfile.objects.filter(nickname__icontains=query)[
             :10
         ]  # Limitado a 10 resultados
-        nickname = [{'username': user.nickname, "id": user.id} for user in users]
+        nickname = [{'username': user.nickname, "id":user.id} for user in users]
 
         return Response(nickname, status=status.HTTP_200_OK)
 
