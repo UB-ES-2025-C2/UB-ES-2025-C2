@@ -29,6 +29,7 @@ const userPlaylists = ref([]);
 
 async function runUserSongs(id_user) {
       userSongs.value = await api.getUserSongs(id_user);
+      userPlaylists.value = await api.getUserPlaylists(id_user);
 }
 
 onMounted(() => {
@@ -45,7 +46,6 @@ onMounted(() => {
 
     /* Assignem cançons y playlists amb mock */
     runUserSongs(userData.value.id_user);
-    userPlaylists.value = mockPlaylists; 
   }
 });
 </script>
@@ -85,7 +85,7 @@ onMounted(() => {
       <ul class="cards-list">
         <li v-for="playlist in userPlaylists" :key="playlist.id" class="playlist-card">
           <div class="playlist-image">
-            <img :src="playlist.image" alt="foto de playlist" />
+            <img :src="playlist.cover" alt="foto de playlist" />
           </div>
           <div class="playlist-info">
             <strong>{{ playlist.name }}</strong>

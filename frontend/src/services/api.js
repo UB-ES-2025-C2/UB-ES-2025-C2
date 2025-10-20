@@ -40,6 +40,11 @@ export default {
       `/api/v1/userprofile/${user_id}/songs/`
     );
   },
+  getUserPlaylists(user_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/userprofile/${user_id}/playlist/`
+    );
+  },
   searchsongByAnyThingh(name, topic, artist, exact) {
     const token = localStorage.getItem("access");
     return AuthService.getAxiosInstance().get(

@@ -72,6 +72,16 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching user songs:", error);
       }
   },
+  async getUserPlaylists(userId) {
+      try {
+        const response = await api.getUserPlaylists(userId);    
+        this.playlistResults = response.data;
+        return response.data;
+      }
+      catch (error) {
+        console.error("Error fetching user playlists:", error);
+      }
+  },
   async searchsongByTopic(topic) {
       try {
         const response = await api.searchsongByTopic(topic);
