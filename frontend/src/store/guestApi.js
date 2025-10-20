@@ -34,7 +34,7 @@ export const useApiStore = defineStore("api", {
         return response.data;
       } catch (error) {
         console.error("Error fetching user:", error);
-      }   
+      }
     },
     async searchNUsers(name) {
       try {
@@ -61,6 +61,25 @@ export const useApiStore = defineStore("api", {
         return response.data;
       } catch (error) {
         console.error("Error searching song:", error);
+      }
+  },
+  async getUserSongs(userId) {
+      try {
+        const response = await api.getUserSongs(userId);
+        this.songResults = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching user songs:", error);
+      }
+  },
+  async getUserPlaylists(userId) {
+      try {
+        const response = await api.getUserPlaylists(userId);
+        this.playlistResults = response.data;
+        return response.data;
+      }
+      catch (error) {
+        console.error("Error fetching user playlists:", error);
       }
   },
   async searchsongByTopic(topic) {

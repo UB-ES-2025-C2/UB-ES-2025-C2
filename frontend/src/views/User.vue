@@ -27,6 +27,11 @@ const userData = ref(null);
 const userSongs = ref([]);
 const userPlaylists = ref([]);
 
+async function runUserSongs(id_user) {
+      userSongs.value = await api.getUserSongs(id_user);
+      userPlaylists.value = await api.getUserPlaylists(id_user);
+}
+
 onMounted(() => {
   /* Buscar usuari en la API/store per username */
   const foundUser = api.nUsersResult.find(u => u.username === username);
@@ -39,8 +44,7 @@ onMounted(() => {
     };
 
     /* Assignem cançons y playlists amb mock */
-    userSongs.value = mockSongs;       
-    userPlaylists.value = mockPlaylists; 
+    runUserSongs(userData.value.id_user);
   }
 });
 </script>
@@ -80,7 +84,7 @@ onMounted(() => {
       <ul class="cards-list">
         <li v-for="playlist in userPlaylists" :key="playlist.id" class="playlist-card">
           <div class="playlist-image">
-            <img :src="playlist.image" alt="foto de playlist" />
+            <img :src="playlist.cover" alt="foto de playlist" />
           </div>
           <div class="playlist-info">
             <strong>{{ playlist.name }}</strong>

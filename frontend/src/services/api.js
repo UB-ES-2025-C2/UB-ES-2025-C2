@@ -22,7 +22,7 @@ export default {
   },
   getPlaylist(){
     return AuthService.getAxiosInstance().get("/api/v1/playlist/");
-  }, 
+  },
   getUser(name) {
     const token = localStorage.getItem("access");
     return AuthService.getAxiosInstance().get(
@@ -33,6 +33,16 @@ export default {
     const token = localStorage.getItem("access");
     return AuthService.getAxiosInstance().get(
       `/api/v1/search/user/?q=${encodeURIComponent(name)}`
+    );
+  },
+  getUserSongs(user_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/userprofile/${user_id}/songs/`
+    );
+  },
+  getUserPlaylists(user_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/userprofile/${user_id}/playlist/`
     );
   },
   searchsongByAnyThingh(name, topic, artist, exact) {
