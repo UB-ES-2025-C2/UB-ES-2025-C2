@@ -19,7 +19,7 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching catalog:", error);
       }
     },
-    async fetchPlaylist(){
+    async fetchPlaylists(){
       try {
         const response = await api.getPlaylist();
         this.playList = response.data;
