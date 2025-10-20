@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -140,15 +141,13 @@ SPECTACULAR_SETTINGS = {
     # a common prefix. Use '' to disable.
     # Mainly used for tag extraction, where paths like '/api/v1/albums' with
     # a SCHEMA_PATH_PREFIX regex '/api/v[0-9]' would yield the tag 'albums'.
-    'SCHEMA_PATH_PREFIX': '/api/v[0-9]'
+    'SCHEMA_PATH_PREFIX': '/api/v[0-9]',
     # OTHER SETTINGS
 }
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny'
-    ],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 CORS_URLS_REGEX = r"^/api/.*$"

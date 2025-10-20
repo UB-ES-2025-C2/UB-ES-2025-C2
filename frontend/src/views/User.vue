@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useApiStore } from "../store";
+import { useApiStore } from "../store/guestApi.js";
 
 const route = useRoute();
 const username = route.params.username;
@@ -27,6 +27,10 @@ const userData = ref(null);
 const userSongs = ref([]);
 const userPlaylists = ref([]);
 
+async function runUserSongs(id_user) {
+      userSongs.value = await api.getUserSongs(id_user);
+}
+
 onMounted(() => {
   /* Buscar usuari en la API/store per username */
   const foundUser = api.nUsersResult.find(u => u.username === username);
@@ -35,11 +39,12 @@ onMounted(() => {
     userData.value = {
       username: foundUser.username,
       followers: mockFollowers,
-      following: mockFollowing
+      following: mockFollowing,
+      id_user: foundUser.id
     };
 
     /* Assignem cançons y playlists amb mock */
-    userSongs.value = mockSongs;       
+    runUserSongs(userData.value.id_user);
     userPlaylists.value = mockPlaylists; 
   }
 });
@@ -64,11 +69,11 @@ onMounted(() => {
       <ul class="cards-list">
         <li v-for="song in userSongs" :key="song.id" class="song-card">
           <div class="song-image">
-            <img :src="song.image" alt="foto de canción" />
+            <img :src="song.cover" alt="foto de canción" />
           </div>
           <div class="song-info">
-            <strong>{{ song.title }}</strong>
-            <p>{{ song.artists }}</p>
+            <strong>{{ song.name }}</strong>
+            <p>{{ song.artist }}</p>
           </div>
         </li>
       </ul>

@@ -1,19 +1,14 @@
-from rest_framework import viewsets, filters, status, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework_simplejwt import authentication
+from rest_framework import filters, status, viewsets
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import *
-from rest_framework import mixins
+from .serializers import *  # noqa: F403
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list` and `retrieve` actions.
-    """
+    """This viewset automatically provides `list` and `retrieve` actions."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
@@ -24,10 +19,23 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
+
 class SongViewSet(viewsets.ModelViewSet):
-    queryset = Song.objects.all()
     serializer_class = SongSerializer
     filter_backends = [filters.SearchFilter]
+
+    def get_queryset(self):
+        name = self.request.query_params.get("name")
+        topic = self.request.query_params.get("topic")
+        artist = self.request.query_params.get("artist")
+        exact_name = self.request.query_params.get("exact_name")
+        qs = Song.songManager.filter_query(
+            name=name, topic=topic, artist=artist, exact_name=exact_name
+        )
+        userprofile_pk = self.kwargs.get("userprofile_pk")
+        if userprofile_pk:
+            qs = qs.filter(author_id=userprofile_pk)
+        return qs
 
 
 class PlayListViewSet(viewsets.ModelViewSet):
@@ -39,6 +47,7 @@ class PlaylistSongViewSet(viewsets.ViewSet):
     """
     Gestiona les cançons dins d’una playlist
     """
+
     def list(self, request, playlist_pk=None):
         playlist = get_object_or_404(PlayList, pk=playlist_pk)
         songs = playlist.playlists.all()
@@ -59,6 +68,7 @@ class PlaylistSongViewSet(viewsets.ViewSet):
 
         return Response({"status": "added"}, status=status.HTTP_201_CREATED)
 
+
 class UserProfileByUsernameView(APIView):
     def get(self, request, username):
         try:
@@ -70,21 +80,29 @@ class UserProfileByUsernameView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except User.DoesNotExist or UserProfile.DoesNotExist:
-            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class UsernameSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
 
         if not query:
-            return Response({'error': 'Se requiere el parámetro "q".'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Se requiere el parámetro "q".'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-
-        users = UserProfile.objects.filter(nickname__icontains=query)[:10]  # Limitado a 10 resultados
-        nickname = [{'username': user.nickname} for user in users]
+        users = UserProfile.objects.filter(nickname__icontains=query)[
+            :10
+        ]  # Limitado a 10 resultados
+        nickname = [{'username': user.nickname, "id": user.id} for user in users]
 
         return Response(nickname, status=status.HTTP_200_OK)
-    
+
+
 class SongByNameView(APIView):
     def get(self, request, name):
         try:
@@ -96,16 +114,24 @@ class SongByNameView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Song.DoesNotExist:
-            return Response({'error': 'Canción no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'error': 'Canción no encontrada'}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class SongNameSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
 
         if not query:
-            return Response({'error': 'Se requiere el parámetro "q".'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Se requiere el parámetro "q".'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        songs = Song.objects.filter(name__icontains=query)[:10]  # Limitado a 10 resultados
+        songs = Song.objects.filter(name__icontains=query)[
+            :10
+        ]  # Limitado a 10 resultados
         names = [{'name': song.name} for song in songs]
 
         return Response(names, status=status.HTTP_200_OK)

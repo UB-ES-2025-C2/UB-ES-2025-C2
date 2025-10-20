@@ -10,10 +10,10 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 
-
 # Models
 from saved.battleship.api.models import Player, Shot
 from saved.battleship.api.models import User
+
 
 class UserTestCase(TestCase):
     def setUp(self):
