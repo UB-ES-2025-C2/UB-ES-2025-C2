@@ -36,6 +36,4 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static('/uploads/', document_root=settings.BASE_DIR / 'uploads')
     urlpatterns += static('/covers/', document_root=settings.BASE_DIR / 'covers')
-    urlpatterns += static(
-        '/profile_pics/', document_root=settings.BASE_DIR / 'profile_pics'
-    )
+    urlpatterns += static('/profile_pics/', document_root=settings.BASE_DIR / 'profile_pics')

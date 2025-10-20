@@ -6,7 +6,9 @@ from django.db import models
 
 # managers:
 class SongManager(models.Manager):
-    def filter_query(self, name=None, topic=None, artist=None, exact_name=False):
+    def filter_query(
+        self, name=None, topic=None, artist=None, exact_name=False
+    ):
         """
         Filtra cançons segons topic, artist o playlist (si s’especifiquen).
         Si no hi ha filtres, retorna totes.
