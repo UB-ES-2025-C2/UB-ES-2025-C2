@@ -5,9 +5,9 @@ import {useApiStore } from "../store/guestApi.js";
 
 const authStore = useAuthStore();
 const apiStore = useApiStore();
-const username = ref(""); 
+const username = ref("");
 
-const nusers = ref(""); 
+const nusers = ref("");
 
 const buscarUsuari = async () => {
   await apiStore.getUser(username.value);
@@ -18,21 +18,21 @@ const buscarNUsers = async () => {
 
 /*mock data para playlists de prueba*/
 const mockPlaylists = ref([
-  { 
-    id: 1, 
-    name: "Playlist 1", 
+  {
+    id: 1,
+    name: "Playlist 1",
     description: "Playlist d'èxits mundials",
     topic: "Èxits mundials",
-    cover: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" 
+    cover: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg"
   },
-  { 
-    id: 2, 
+  {
+    id: 2,
     name: "Playlist 2",
     description: "Playlist de pop",
     topic: "Pop",
     cover: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg"
   },
-  { 
+  {
     id: 3,
     name: "Playlist3",
     description: "Playlist de rock",
@@ -78,7 +78,8 @@ const headerUsername = computed(() => {
       <li v-for="song in apiStore.songs" :key="song.id" class="card">
         <!-- Imagen de la canción -->
         <div class="card-image">
-          <img :src="song.cover" alt="Foto de canción"/>
+          <img :src="song.image" alt="Foto de canción"/>
+
         </div>
 
         <!-- Info: nombre y artista -->
@@ -90,7 +91,7 @@ const headerUsername = computed(() => {
         <!-- Reproductor de audio -->
         <audio :src="song.file_audio" controls class="song-audio"></audio>
 
-        
+
       </li>
     </ul>
 
@@ -150,11 +151,11 @@ const headerUsername = computed(() => {
 .card-info p {
   color: #aaa;
   margin: 2px 0 0;
-  font-size: 0.9rem; 
+  font-size: 0.9rem;
 }
 
 .song-audio {
-  width: 100%; 
+  width: 100%;
   border-radius: 4px;
 }
 

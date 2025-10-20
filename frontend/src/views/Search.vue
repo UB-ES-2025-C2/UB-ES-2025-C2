@@ -22,7 +22,6 @@ const mockPlaylists = ref([
   { id: 3, name: "Playlist de prueba 3", user: "usuarideprova", image: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg" },
 ]);
 
-
 async function runSearch() {
   const q = (route.query.q || "").toString().trim();
   if (!q) {
@@ -47,6 +46,10 @@ function setTab(tab) {
   activeTab.value = tab;
   router.replace({ path: "/search", query: { q: route.query.q, tab } });
   runSearch();
+}
+
+function goToUser(username) {
+  router.push({ name: "user", params: { username } });
 }
 
 onMounted(runSearch);
@@ -93,7 +96,9 @@ watch(() => route.query.q, runSearch);
           v-for="user in api.nUsersResult"
           :key="user.id || user.username"
           class="user-card"
+          @click="goToUser(user.username)"
         >
+          
           <div class="avatar"></div>
           <div class="user-info">
             <strong>{{ user.username }}</strong>
