@@ -3,6 +3,7 @@ import LogIn from "../views/LogIn.vue";
 import SignUp from "../views/SignUp.vue";
 import Home from "../views/Home.vue";
 import Search from "../views/Search.vue";
+import User from "../views/User.vue";
 
 import { useAuthStore } from "../store/authStore";
 
@@ -25,7 +26,11 @@ const routes = [
   { path: '/search', 
     name: "search",
     component: Search },
-
+  {
+    path: "/user/:username",
+    name: "user",
+    component: User,
+  },
 ];
 
 const router = createRouter({

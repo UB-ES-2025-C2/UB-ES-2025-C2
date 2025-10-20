@@ -79,6 +79,7 @@ const headerUsername = computed(() => {
         <!-- Imagen de la canción -->
         <div class="card-image">
           <img :src="song.image" alt="Foto de canción"/>
+          
         </div>
 
         <!-- Info: nombre y artista -->
