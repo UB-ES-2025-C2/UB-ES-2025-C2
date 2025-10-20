@@ -40,8 +40,8 @@ function onSubmit() {
     <nav class="header-right">
       <a href="#">Assistència</a>
       <span class="divider"></span>
-      <a href="#">Registrar-se</a>
-      <button class="login-btn">Iniciar sessió</button>
+      <a href="/signup">Registrar-se</a>
+      <button class="login-btn" @click="$router.push('/login')">Iniciar sessió</button>
     </nav>
   </header>
 </template>

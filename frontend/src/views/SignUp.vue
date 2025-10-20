@@ -103,7 +103,9 @@ const logOut = () => {
         </div>
         
       </form>
-      <button class="btn btn-primary" @click="goBackToLogin"> Log In </button>
+      <div style="text-align: center;">
+        <button class="btn btn-primary" @click="goBackToLogin">Log In</button>
+      </div>
     </div>
   </div>
 </template>

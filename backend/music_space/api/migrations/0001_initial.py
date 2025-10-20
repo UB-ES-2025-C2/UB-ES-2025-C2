@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,7 +16,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlayList',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=50)),
                 ('description', models.CharField(max_length=1000)),
                 ('topic', models.CharField(max_length=50)),
@@ -26,23 +33,65 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('nickname', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, default='', max_length=1000)),
-                ('profilePic', models.CharField(blank=True, default='', max_length=1000)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    'description',
+                    models.CharField(blank=True, default='', max_length=1000),
+                ),
+                (
+                    'profilePic',
+                    models.CharField(blank=True, default='', max_length=1000),
+                ),
+                (
+                    'user',
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='Song',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=50)),
                 ('artist', models.CharField(max_length=1000)),
                 ('topic', models.CharField(max_length=50)),
                 ('file_audio', models.FileField(upload_to='uploads/')),
-                ('playlists', models.ManyToManyField(blank=True, related_name='playlists', to='api.playlist')),
-                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='author', to='api.userprofile')),
+                (
+                    'playlists',
+                    models.ManyToManyField(
+                        blank=True, related_name='playlists', to='api.playlist'
+                    ),
+                ),
+                (
+                    'author',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='author',
+                        to='api.userprofile',
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
@@ -53,6 +102,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playlist',
             name='watched',
-            field=models.ManyToManyField(blank=True, related_name='watched', to='api.userprofile'),
+            field=models.ManyToManyField(
+                blank=True, related_name='watched', to='api.userprofile'
+            ),
         ),
     ]
