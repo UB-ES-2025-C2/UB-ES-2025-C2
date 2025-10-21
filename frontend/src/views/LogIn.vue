@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "../store/authStore";
-import "../assets/main.css";
+import "../assets/css/main.css";
 const authStore = useAuthStore();
 
 const username = ref("");
@@ -42,7 +42,7 @@ const logOut = () => {
       <div class="mb-3" style="border: 1px solid black;">
       </div>
       <div class="mb-3">
-        
+
       </div>
       <button class="btn btn-primary mr-2" @click="startSession">
         Go to catalog
@@ -72,7 +72,7 @@ const logOut = () => {
         <button class="btn btn-primary w-100" :disabled="authStore.loading">
           {{ authStore.loading ? "Logging in..." : "Log In" }}
         </button>
-        
+
         <div v-if="authStore.error" class="text-danger mt-2">
           {{ authStore.error }}
         </div>
@@ -116,7 +116,7 @@ const logOut = () => {
 }
 .button-group {
   display: flex;
-  gap: 0.5rem; 
+  gap: 0.5rem;
 }
 
 </style>

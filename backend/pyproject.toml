@@ -1,5 +1,5 @@
 [project]
-name = "music_space"
+name = "music-space"
 version = "0.1.0"
 description = "MusicSpace social network's backend."
 readme = "README.md"
@@ -42,7 +42,7 @@ test = ["allure-pytest>=2.15.0", "pytest-asyncio>=1.1.0", "pytest>=8.4.1"]
 
 # Runner of the Python modules.
 [project.scripts]
-music_space = "manage:main"
+music-space = "manage:main"
 
 
 [build-system]
