@@ -4,6 +4,7 @@ import SignUp from "../views/SignUp.vue";
 import Home from "../views/Home.vue";
 import Search from "../views/Search.vue";
 import User from "../views/User.vue";
+import SongDetailById from "../views/SongDetailById.vue"; 
 
 import { useAuthStore } from "../store/authStore";
 
@@ -31,6 +32,8 @@ const routes = [
     name: "user",
     component: User,
   },
+   { path: "/song/:id(\\d+)", name: "song-by-id", component: SongDetailById, props: true },
+
 ];
 
 const router = createRouter({
