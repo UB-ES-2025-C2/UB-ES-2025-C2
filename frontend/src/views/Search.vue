@@ -52,6 +52,10 @@ function goToUser(username) {
   router.push({ name: "user", params: { username } });
 }
 
+function goToPlaylist(id) {
+  router.push({ name: "playlist", params: { id } });
+}
+
 onMounted(runSearch);
 watch(() => route.query.q, runSearch);
 
@@ -135,7 +139,14 @@ function goToSong(id) {
 
     <div v-if="activeTab === 'playlists'|| activeTab === 'all'">
       <ul v-if="mockPlaylists.length" class="results-list">
-        <li v-for="playlist in mockPlaylists" :key="playlist.id" class="playlist-card">
+        <li
+          v-for="playlist in mockPlaylists"
+          :key="playlist.id"
+          class="playlist-card"
+          @click="goToPlaylist(playlist.id)"
+          role="button"
+          tabindex="0"
+        >
           <div class="playlist-image">
             <img :src="playlist.image" alt="foto de playlist" />
           </div>
