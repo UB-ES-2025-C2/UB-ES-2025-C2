@@ -19,14 +19,17 @@ jobs:
           ISSUE_TITLE="${{ github.event.issue.title }}"
           SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')
           BRANCH_NAME="issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Clonar y crear branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ steps.issue_info.outputs.branch_name }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} repo
+          git clone --branch dev https://x-access-token:${TOKEN}@github.com/${{ github.repository }} repo
           cd repo
 
           git checkout -b "$BRANCH_NAME"
