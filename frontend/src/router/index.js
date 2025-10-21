@@ -4,7 +4,8 @@ import SignUp from "../views/SignUp.vue";
 import Home from "../views/Home.vue";
 import Search from "../views/Search.vue";
 import User from "../views/User.vue";
-import SongDetailById from "../views/SongDetailById.vue"; 
+import SongDetailById from "../views/SongDetailById.vue";
+import Playlists from "../views/Playlists.vue";
 
 import { useAuthStore } from "../store/authStore";
 
@@ -24,7 +25,7 @@ const routes = [
     name: "home",
     component: Home,
   },
-  { path: '/search', 
+  { path: '/search',
     name: "search",
     component: Search },
   {
@@ -32,7 +33,18 @@ const routes = [
     name: "user",
     component: User,
   },
-   { path: "/song/:id(\\d+)", name: "song-by-id", component: SongDetailById, props: true },
+  {
+    path: "/song/:id(\\d+)",
+    name: "song-by-id",
+    component: SongDetailById,
+    props: true
+  },
+  {
+    path: "/playlist/:id",
+    name: "playlist",
+    component: Playlists,
+    props: true,
+  },
 
 ];
 
