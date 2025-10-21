@@ -37,8 +37,10 @@ dist-ssr
 # Vendor directory
 vendor
 
-# Vitest coverage folder
+# Test folders
 coverage
+playwright-report
+test-results
 
 # Vite local files
 *.local
@@ -255,6 +257,10 @@ pyrightconfig.json
 
 # IDE specific files
 *.sw?
+
+# Logs
+logs
+*.log
 
 # OS specific ignores
 .DS_Store

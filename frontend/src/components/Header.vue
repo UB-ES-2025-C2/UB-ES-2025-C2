@@ -21,7 +21,7 @@ function onSubmit() {
 
       <!-- Icona home -->
       <button class="home-btn" @click="$router.push('/')">
-        <img src="../icons/home.svg" class="home-icon" />
+        <img src="../assets/icons/home.svg" class="home-icon" />
       </button>
 
       <!-- Barra de búsqueda -->
@@ -48,9 +48,9 @@ function onSubmit() {
 
 <style scoped>
 .header {
-  
+
   display: flex;
-  width: 100%;    
+  width: 100%;
   align-items: center;
   justify-content: space-between;
   background-color: #000000;
