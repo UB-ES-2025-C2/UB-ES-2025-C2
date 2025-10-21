@@ -22,6 +22,23 @@ const mockPlaylists = ref([
   { id: 3, name: "Playlist de prueba 3", user: "usuarideprova", image: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg" },
 ]);
 
+const userNames = ref({}); 
+
+async function loadUserNames() {
+  if (!api.playlistResults) return;
+
+  for (const playlist of api.playlistResults) {
+    for (const id of playlist.owner) {
+      if (!userNames.value[id]) {
+        const user = await api.getUserById(id);
+        userNames.value[id] = user?.nickname || "Usuari desconegut";
+      }
+    }
+  }
+}
+
+
+
 async function runSearch() {
   const q = (route.query.q || "").toString().trim();
   if (!q) {
@@ -36,9 +53,9 @@ async function runSearch() {
     await api.searchsongByAnyThingh(q, "", "", "");
   }
   if (activeTab.value === "playlists" || activeTab.value === "all") {
-    await api.searchplaylistSongsByName(q);
+    await api.getplayListByAnythingh(q, "", "");
+    await loadUserNames();
   }
-
 }
 
 
@@ -138,9 +155,9 @@ function goToSong(id) {
     </div>
 
     <div v-if="activeTab === 'playlists'|| activeTab === 'all'">
-      <ul v-if="mockPlaylists.length" class="results-list">
+      <ul v-if="api.playlistResults.length" class="results-list">
         <li
-          v-for="playlist in mockPlaylists"
+          v-for="playlist in api.playlistResults"
           :key="playlist.id"
           class="playlist-card"
           @click="goToPlaylist(playlist.id)"
@@ -148,11 +165,14 @@ function goToSong(id) {
           tabindex="0"
         >
           <div class="playlist-image">
-            <img :src="playlist.image" alt="foto de playlist" />
+            <img :src="playlist.cover" alt="foto de playlist" />
           </div>
           <div class="playlist-info">
             <strong>{{ playlist.name }}</strong>
-            <p>De {{ playlist.user }}</p>
+            <div v-for="id in playlist.owner" :key="id">
+              <p v-if="userNames[id]">De {{ userNames[id] }}</p>
+              <p v-else>Carregant...</p>
+            </div>
           </div>
         </li>
       </ul>
