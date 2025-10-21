@@ -1,0 +1,35 @@
+name: Create branch on issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+
+    steps:
+      - name: Obtener info del issue
+        id: issue_info
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Clonar y crear branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} repo
+          cd repo
+
+          git fetch origin dev
+          git checkout -b ${{ steps.issue_info.outputs.BRANCH_NAME }} origin/dev
+
+          git push origin ${{ steps.issue_info.outputs.BRANCH_NAME }}
