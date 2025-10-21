@@ -1,11 +1,11 @@
 {
     "recommendations": [
+        // Editor configurations.
+        "EditorConfig.EditorConfig",
         // Error visualization.
         "usernamehw.errorlens",
         // GitHub Actions.
         "github.vscode-github-actions",
-        // Jupyter Notebooks.
-        "ms-toolsai.jupyter",
         // Icons.
         "vscode-icons-team.vscode-icons",
         // Live Server.
@@ -15,15 +15,21 @@
         "davidanson.vscode-markdownlint", // Linter.
         "yzhang.markdown-all-in-one", // Overall QOL.
         // Python.
-        "batisteo.vscode-django", // Django
+        "batisteo.vscode-django", // Django.
         "charliermarsh.ruff", // Linter-Formatter.
         "lextudio.restructuredtext", // Sphinx source.
         "ms-python.debugpy", // Debugger.
         "ms-python.vscode-python-envs", // Virtual Environments.
         // TOML.
         "tamasfe.even-better-toml", // Linter-Formatter.
-        // Vue + Vite
-        "vue.volar", // Vue.
+        // Web
         "antfu.vite", // Vite.
+        "christian-kohler.npm-intellisense", // NPM.
+        "dbaeumer.vscode-eslint", // Linter.
+        "esbenp.prettier-vscode", // Formatter.
+        "ms-playwright.playwright", // Overall Tester.
+        "oxc.oxc-vscode", // Linter extension.
+        "vitest.explorer", // Vite Tester.
+        "vue.volar", // Vue.
     ]
 }
