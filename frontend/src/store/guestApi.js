@@ -8,7 +8,8 @@ export const useApiStore = defineStore("api", {
     userResult: [],
     nUsersResult: [],
     songResults: [],
-    playlistResults: []
+    playlistResults: [],
+    songDetail: null,
   }),
   actions: {
     async fetchCatalog() {
@@ -99,6 +100,16 @@ export const useApiStore = defineStore("api", {
       } catch (error) {
         console.error("Error searching playlist:", error);
       }
+  },
+  async getSongByName(name) {         // ⬅️ mateixa idea que getUser
+    try {
+      const res = await api.getSongByName(name);
+      this.songDetail = res.data;
+      return res.data;
+    } catch (e) {
+      console.error("Error fetching song by name:", e);
+      throw e;
+    }
   },
   }
 });
