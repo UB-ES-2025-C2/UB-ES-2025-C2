@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        // Python debugging.
+        {
+            "args": [
+                "dev",
+            ],
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "ENVIRONMENT": "dev"
+            },
+            "justMyCode": false,
+            "module": "manage",
+            "name": "PYTHON:DEV",
+            "preLaunchTask": "BUILD:DEV",
+            "request": "launch",
+            "stopOnEntry": true,
+            "type": "debugpy"
+        },
+    ],
+    "version": "0.2.0"
+}

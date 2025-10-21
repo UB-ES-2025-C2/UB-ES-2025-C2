@@ -51,7 +51,6 @@ class PlaylistSongViewSet(viewsets.ViewSet):
     """
     Gestiona les cançons dins d’una playlist
     """
-
     def list(self, request, playlist_pk=None):
         playlist = get_object_or_404(PlayList, pk=playlist_pk)
         songs = playlist.playlists.all()

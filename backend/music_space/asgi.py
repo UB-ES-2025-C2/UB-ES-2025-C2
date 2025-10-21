@@ -1,5 +1,5 @@
 """
-ASGI config for musicSpace project.
+ASGI config for music_space project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

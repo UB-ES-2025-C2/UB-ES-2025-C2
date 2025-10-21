@@ -1,0 +1,29 @@
+{
+    "recommendations": [
+        // Error visualization.
+        "usernamehw.errorlens",
+        // GitHub Actions.
+        "github.vscode-github-actions",
+        // Jupyter Notebooks.
+        "ms-toolsai.jupyter",
+        // Icons.
+        "vscode-icons-team.vscode-icons",
+        // Live Server.
+        "yandeu.five-server",
+        // Markdown.
+        "bierner.github-markdown-preview", // Task blocks and others.
+        "davidanson.vscode-markdownlint", // Linter.
+        "yzhang.markdown-all-in-one", // Overall QOL.
+        // Python.
+        "batisteo.vscode-django", // Django
+        "charliermarsh.ruff", // Linter-Formatter.
+        "lextudio.restructuredtext", // Sphinx source.
+        "ms-python.debugpy", // Debugger.
+        "ms-python.vscode-python-envs", // Virtual Environments.
+        // TOML.
+        "tamasfe.even-better-toml", // Linter-Formatter.
+        // Vue + Vite
+        "vue.volar", // Vue.
+        "antfu.vite", // Vite.
+    ]
+}

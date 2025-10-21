@@ -3,6 +3,14 @@ name = "music_space"
 version = "0.1.0"
 description = "MusicSpace social network's backend."
 readme = "README.md"
+authors = [
+    { name = "Paula Diez Criado" },
+    { name = "Marta Herranz Lozano" },
+    { name = "Sílvia Elisabeth Romero García", email = "silviae.romgar@gmail.com" },
+    { name = "Marc Santos Romo" },
+    { name = "Flavià Serret Martí" },
+    { name = "Laura Servat Bach" },
+]
 requires-python = ">=3.13"
 dependencies = [
     "django-cors-headers>=4.9.0",
