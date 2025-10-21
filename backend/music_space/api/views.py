@@ -37,24 +37,34 @@ class SongViewSet(viewsets.ModelViewSet):
             qs = qs.filter(author_id=userprofile_pk)
         return qs
 
+
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
+
     def get_queryset(self):
-        qs = PlayList.objects.all()
+        # qs = PlayList.objects.all()
+        name = self.request.query_params.get("name")
+        topic = self.request.query_params.get("topic")
+        exact_name = self.request.query_params.get("exact_name")
+        qs = PlayList.playListManager.filter_query(
+            name=name, topic=topic, exact_name=exact_name
+        )
         userprofile_pk = self.kwargs.get("userprofile_pk")
         if userprofile_pk:
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(owner=userprofile)
         return qs
 
+
 class PlaylistSongViewSet(viewsets.ViewSet):
     """
     Gestiona les cançons dins d’una playlist
     """
+
     def list(self, request, playlist_pk=None):
         playlist = get_object_or_404(PlayList, pk=playlist_pk)
         songs = playlist.playlists.all()
-        serializer = SongSerializer(songs, many=True)
+        serializer = SongSerializer(songs, many=True, context={'request': request})
         return Response(serializer.data)
 
     def create(self, request, playlist_pk=None):
@@ -101,7 +111,7 @@ class UsernameSearchView(APIView):
         users = UserProfile.objects.filter(nickname__icontains=query)[
             :10
         ]  # Limitado a 10 resultados
-        nickname = [{'username': user.nickname, "id":user.id} for user in users]
+        nickname = [{'username': user.nickname, "id": user.id} for user in users]
 
         return Response(nickname, status=status.HTTP_200_OK)
 

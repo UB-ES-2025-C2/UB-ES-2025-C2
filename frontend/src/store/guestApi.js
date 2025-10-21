@@ -28,6 +28,15 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching playlist:", error);
       }
     },
+    async getplayListByAnythingh(name, topic, exact_name) {
+      try {
+        const response = await api.getplayListByAnythingh(name, topic, exact_name);
+        this.playlistResults = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching playlist by criteria:", error);
+      }
+    },
     async getUser(name) {
       try {
         const response = await api.getUser(name);
@@ -36,6 +45,14 @@ export const useApiStore = defineStore("api", {
       } catch (error) {
         console.error("Error fetching user:", error);
       }   
+    },
+    async getUserById(userId) {
+      try {
+        const response = await api.getUserById(userId);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching user by ID:", error);
+      }
     },
     async searchNUsers(name) {
       try {
@@ -53,6 +70,15 @@ export const useApiStore = defineStore("api", {
         return response.data;
       } catch (error) {
         console.error("Error searching song:", error);
+      }
+  },
+  async getPlaylistFromUser(userId) {
+      try {
+        const response = await api.getPlaylistFromUser(userId);
+        this.playlistResults = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching user playlist:", error);
       }
   },
   async searchsongByAnyThingh(name, topic, artist, exact) {
@@ -92,16 +118,7 @@ export const useApiStore = defineStore("api", {
         console.error("Error searching song:", error);
       }
   },
-  async searchplaylistSongsByName(name) {
-      try {
-        const response = await api.searchplaylistSongsByName(name);
-        this.playlistResults = response.data;
-        return response.data;
-      } catch (error) {
-        console.error("Error searching playlist:", error);
-      }
-  },
-  async getSongByName(name) {         // ⬅️ mateixa idea que getUser
+  async getSongByName(name) {         
     try {
       const res = await api.getSongByName(name);
       this.songDetail = res.data;
@@ -111,5 +128,23 @@ export const useApiStore = defineStore("api", {
       throw e;
     }
   },
-  }
-});
+  async getSongFromPlayList(playlistId) {
+    try {
+      const res = await api.getSongsByPlaylistId(playlistId);
+      this.songs = res.data;
+      return res.data;
+    } catch (e) {
+      console.error("Error fetching songs from playlist:", e);
+      throw e;
+    }
+  },
+  async getPlaylistById(playlistId) {
+    try {
+      const res = await api.getPlaylistById(playlistId);
+      return res.data;
+    } catch (e) {
+      console.error("Error fetching playlist by ID:", e);
+      throw e;
+    }
+  },
+}});

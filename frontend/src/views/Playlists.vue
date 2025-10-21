@@ -1,19 +1,20 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useApiStore } from "../store/guestApi.js";
 
 const route = useRoute();
 const playlistId = route.params.id;
-
+const api = useApiStore();
+const mockOwner = ref("");
 // Mock data para otros campos
-const mockOwner = "usuarideprova";
 const mockSavedTimes = 123;
-const mockSongsCount = 5;
-const mockSongs = ref([
+
+/*const mockSongs = ref([
   { id: 1, name: "Canción 1", artist: "Artista A", cover: "https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg" },
   { id: 2, name: "Canción 2", artist: "Artista B", cover: "https://www.udiscovermusica.com/wp-content/uploads/sites/7/2022/09/Pink-Floyd-Dark-Side-Of-The-Moon-1536x1536-1-1024x1024.jpeg" },
   { id: 3, name: "Canción 3", artist: "Artista C", cover: "https://marketplace.canva.com/EAGL6BH8Rhg/1/0/1600w/canva-portada-%C3%A1lbum-m%C3%BAsica-moderno-qMT-zlb07JY.jpg" },
-]);
+]);*/
 
 // Mock playlists para simular búsqueda por id
 const mockPlaylists = [
@@ -34,9 +35,20 @@ const mockPlaylists = [
 ];
 
 const playlistData = ref(null);
+async function  loadPlaylistData(playlistId) {
+  playlistData.value = await api.getPlaylistById(playlistId);
+  await api.getSongFromPlayList(playlistId);
+  const ownerPromises = playlistData.value.owner.map(id => api.getUserById(id));
+  const ownersData = await Promise.all(ownerPromises);
+
+  // Crear un string amb els noms separats per comes
+  mockOwner.value = ownersData.map(user => user.nickname).join(', ');
+  console.log("Owners loaded:", mockOwner.value);
+}
 
 onMounted(() => {
-  playlistData.value = mockPlaylists.find(p => p.id == playlistId);
+  loadPlaylistData(playlistId);
+  //playlistData.value = api.getPlaylistById(playlistId);
 });
 </script>
 
@@ -58,7 +70,7 @@ onMounted(() => {
     <!-- Canciones -->
     <div class="playlist-songs">
       <ul>
-        <li v-for="song in mockSongs" :key="song.id" class="song-card">
+        <li v-for="song in api.songs" :key="song.id" class="song-card">
           <div class="song-image">
             <img :src="song.cover" alt="cover canción" />
           </div>

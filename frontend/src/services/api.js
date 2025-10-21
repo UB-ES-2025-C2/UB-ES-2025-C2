@@ -23,6 +23,20 @@ export default {
   getPlaylist(){
     return AuthService.getAxiosInstance().get("/api/v1/playlist/");
   }, 
+  getPlaylistFromUser(user_id){
+    return AuthService.getAxiosInstance().get(`/api/v1/userprofile/${user_id}/playlist/`);
+  }, 
+  getplayListByAnythingh(name, topic, exact_name){
+    const token = localStorage.getItem("access");
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/playlist/?name=${encodeURIComponent(name)}&topic=${encodeURIComponent(topic)}&exact_name=${exact_name}`
+    );
+  },
+  getUserById(user_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/userprofile/${user_id}/`,
+    );
+  },
   getUser(name) {
     const token = localStorage.getItem("access");
     return AuthService.getAxiosInstance().get(
@@ -67,11 +81,18 @@ export default {
   return AuthService.getAxiosInstance().get(
     `/api/v1/songs/by-name/${encodeURIComponent(name)}/`
   );
-},
-getSongById(id) {
-  return AuthService.getAxiosInstance().get(`/api/v1/songs/${id}/`); 
-}
-
-
-  
+  },
+  getSongById(id) {
+    return AuthService.getAxiosInstance().get(`/api/v1/songs/${id}/`);
+  },
+  getSongsByPlaylistId(playlist_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/playlist/${playlist_id}/songs/`
+    );
+  },
+  getPlaylistById(playlist_id) {
+    return AuthService.getAxiosInstance().get(
+      `/api/v1/playlist/${playlist_id}/`
+    );
+  },
 };

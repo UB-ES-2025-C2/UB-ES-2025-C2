@@ -31,7 +31,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
 
-
 class PlayListSerializer(serializers.ModelSerializer):
     watched = UserProfileSerializer(many=True, read_only=True)
 
