@@ -63,5 +63,15 @@ export default {
       `/api/v1/search/song/?topic=${encodeURIComponent(topic)}`
     );
   },
+  getSongByName(name) {
+  return AuthService.getAxiosInstance().get(
+    `/api/v1/songs/by-name/${encodeURIComponent(name)}/`
+  );
+},
+getSongById(id) {
+  return AuthService.getAxiosInstance().get(`/api/v1/songs/${id}/`); 
+}
+
+
   
 };

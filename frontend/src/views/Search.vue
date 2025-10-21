@@ -7,7 +7,7 @@ const route = useRoute();
 const router = useRouter();
 const api = useApiStore();
 
-const activeTab = ref("users"); // pestanya seleccionada per defecte
+const activeTab = ref("all"); // pestanya seleccionada per defecte
 
 /*mock data fins tenir backend*/
 const mockSongs = ref([
@@ -54,6 +54,10 @@ function goToUser(username) {
 
 onMounted(runSearch);
 watch(() => route.query.q, runSearch);
+
+function goToSong(id) {
+  router.push({ name: "song-by-id", params: { id } });
+}
 </script>
 
 <template>
@@ -111,17 +115,22 @@ watch(() => route.query.q, runSearch);
 
     <div v-if="activeTab === 'songs' || activeTab === 'all'">
       <ul v-if="api.songResults?.length" class="results-list">
-        <li v-for="song in api.songResults" :key="song.id" class="song-card">
-          <div class="song-image">
-            <img :src="song.cover" alt="foto de canción" />
-          </div>
-          <div class="song-info">
-            <strong>{{ song.name }}</strong>
-            <p>{{ song.artist }}</p>
-          </div>
-        </li>
+        <li
+        v-for="song in api.songResults"
+        :key="song.id"
+        class="song-card"
+        @click="goToSong(song.id)"
+        role="button"
+        tabindex="0"
+      >
+        <div class="song-image"><img :src="song.cover" alt="" /></div>
+        <div class="song-info">
+          <strong>{{ song.name }}</strong>
+          <p>{{ song.artist }}</p>
+        </div>
+      </li>
       </ul>
-      <p v-else>No hi ha cançons.</p>
+      <p v-else></p>
     </div>
 
     <div v-if="activeTab === 'playlists'|| activeTab === 'all'">
