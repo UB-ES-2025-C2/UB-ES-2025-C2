@@ -29,7 +29,5 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} repo
           cd repo
 
-          git fetch origin dev
-          git checkout -b ${{ steps.issue_info.outputs.BRANCH_NAME }} origin/dev
-
-          git push origin ${{ steps.issue_info.outputs.BRANCH_NAME }}
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
