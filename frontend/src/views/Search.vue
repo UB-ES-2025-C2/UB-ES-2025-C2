@@ -38,7 +38,7 @@ async function runSearch() {
   if (activeTab.value === "playlists" || activeTab.value === "all") {
     await api.searchplaylistSongsByName(q);
   }
-  
+
 }
 
 
@@ -102,7 +102,7 @@ function goToSong(id) {
           class="user-card"
           @click="goToUser(user.username)"
         >
-          
+
           <div class="avatar"></div>
           <div class="user-info">
             <strong>{{ user.username }}</strong>
@@ -110,7 +110,7 @@ function goToSong(id) {
           </div>
         </li>
       </ul>
-      <p v-else>Sense resultats.</p>
+      <p v-else></p>
     </div>
 
     <div v-if="activeTab === 'songs' || activeTab === 'all'">
@@ -153,7 +153,7 @@ function goToSong(id) {
 
 <style scoped>
 .search-page {
-  padding: 20px 40px;  
+  padding: 20px 40px;
   color: white;
   background-color: #121212;
   min-height: 100vh;
