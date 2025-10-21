@@ -2,17 +2,73 @@
     // Language configurations.
     //
     //
-    // 1. Python.
+    // 1. CSS.
+    "[css]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 2. HTML.
+    "[html]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 3. JavaScript.
+    "[javascript]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 4. JavaScript React.
+    "[javascriptreact]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 5. Python.
     "[python]": {
         // 1.1. Default Formatter: Ruff.
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
     //
     //
-    // 2. TOML.
+    // 6. SCSS.
+    "[scss]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 7. TOML.
     "[toml]": {
         // 2.1. Default Formatter: Even Better TOML.
         "editor.defaultFormatter": "tamasfe.even-better-toml"
+    },
+    //
+    //
+    // 8. TypeScript.
+    "[typescript]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 9. TypeScript React.
+    "[typescriptreact]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //
+    //
+    // 10. Vue.
+    "[vue]": {
+        // 1.1. Default Formatter: Prettier.
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     //
     //
@@ -29,8 +85,7 @@
     // 1.2. Code Actions.
     "editor.codeActions.triggerOnFocusChange": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.markdownlint": "never", // Never fix automatically.
-        "source.fixAll.ruff": "never", // Never fix automatically.
+        "source.fixAll": "never", // Never fix automatically.
         "source.organizeImports.ruff": "explicit", // Sort automatically.
         "source.organizeLinkDefinitions": "explicit", // Sort automatically.
         "source.sort.json": "explicit" // Sort automatically.
@@ -53,6 +108,23 @@
     "editor.tabSize": 4,
     //
     //
+    //
+    // Extension configurations (1).
+    //
+    //
+    // 1. ESLint configurations.
+    //
+    // 1.1. Configuration file.
+    "eslint.options": {
+        "overrideConfigFile": "./frontend/eslint.config.js"
+    },
+    "eslint.useFlatConfig": true,
+    //
+    //
+    //
+    // General configurations (2).
+    //
+    //
     // 2. Explorer configurations.
     //
     // 2.1. File nesting.
@@ -61,11 +133,15 @@
         "__init__.py": "*.py, py.typed", // All Python files from a module are part of it, and also the `py.typed` file.
         ".gitignore": ".gitattributes", // The gitattributes file is part of the git configuration, which should always have a gitignore file.
         "App.vue": "main.js, main.ts, style.css", // All Vue apps related files should go under it.
+        "index.html": "*.html", // All HTML files should go under the index file.
         "index.js": "*.js", // All JavaScript files should go under the index file.
         "index.ts": "*.ts", // All JavaScript files should go under the index file.
-        "package.json": ".prettierrc.json, package-lock.json, env.d.ts, eslint.config.ts, eslint.config.js, tsconfig.json, vite.config.js, vite.config.ts", // All Java/TypeScript related files should go under the package.json file.
+        "main.css": "*.css", // All CSS files should go under the main file.
+        "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig", // All Web related files should go under the package.json file. These are given by Vue.
         "pyproject.toml": ".python-version, *ruff.toml, manage.py, setup.py, uv.lock, uv.toml", // All python project related files should go under it, including the dependencies configuration and the setup files.
-        "README.md": ".markdownlint*, *.md, LICENSE*" // The Markdown linter configuration file and the rest of the Markdown and LICENSE files should go under README.md, which should always exist.
+        "README.md": ".markdownlint*, *.md, LICENSE*", // The Markdown linter configuration file and the rest of the Markdown and LICENSE files should go under README.md, which should always exist.
+        "tsconfig.json": "tsconfig.*.json, env.d.ts", // All TypeScript related files should go under the tsconfig.json file. These are given by Vue.
+        "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*" // All Vite related files should go under the vite.config.js/ts file. These are given by Vue.
     },
     //
     //
@@ -87,6 +163,7 @@
         "**/.gitignore": true, // Gitignore, shouldn't change often.
         "**/.idea": true, // The IntelliJ Idea folder, should only be edited by IntelliJ users.
         "**/.markdownlint*": true, // Markdownlint configurations, shouldn't change often.
+        "**/.oxlintrc.json": true, // Oxlint configuration file, shouldn't need further modifications.
         "**/.prettierrc.json": true, // Prettier configuration file, shouldn't need further modifications.
         "**/.pytest_cache": true, // The pytest's cache folder, cache folders should always be excluded.
         "**/.python-version": true, // The Python interpreter's version, shouldn't change often.
@@ -101,7 +178,7 @@
         "**/eslint.config.?s": true, // ESLint configuration file, shouldn't need further modifications.
         "**/index.html": true, // Vue index file, shouldn't need further modifications.
         "**/LICENSE*": true, // All license files shouldn't need to be modified after being added.
-        //"**/package*.json": true, // NPM package files, manged by npm, shouldn't be manually modified.
+        "**/package*.json": true, // NPM package files, manged by npm, shouldn't be manually modified.
         "**/py.typed": true, // Python type verification support marker, should only be set only once.
         "**/src/*/main.py": true, // File used only to allow for VSCode debugging, shouldn't need further modifications.
         "**/tsconfig*.json": true, // TypeScript configuration files, shouldn't be manually modified as it is autogenerated.
@@ -110,7 +187,7 @@
         // Temporary exclusions.
         // "backend/music_space/tests": true // Tests folder, should only be visible when working on tests.
         "frontend/public": true // Public folder, should only be visible when editing public files.
-        // "frontend/private": true, // Private folder, should only be visible when editing user specific files.
+    // "frontend/private": true, // Private folder, should only be visible when editing user specific files.
     },
     //
     // 3.4. Newlines and whitespace.
@@ -149,65 +226,65 @@
     //
     //
     //
-    // Extension configurations (1).
+    // Extension configurations (2).
     //
     //
-    // 1. JSON configurations.
+    // 2. JSON configurations.
     //
-    // 1.1. Enable formatting.
+    // 2.1. Enable formatting.
     "json.format.enable": true,
     //
-    // 1.2. Keep lines.
+    // 2.2. Keep lines.
     "json.format.keepLines": true,
     //
     //
-    // 2. Markdown configurations.
+    // 3. Markdown configurations.
     //
-    // 2.1. Indicators.
+    // 3.1. Indicators.
     "markdown.extension.bold.indicator": "**",
     //
-    // 2.2. Auto-completion.
+    // 3.2. Auto-completion.
     "markdown.extension.completion.enabled": true,
     //
-    // 2.1. Indicators. (continuation).
+    // 3.1. Indicators. (continuation).
     "markdown.extension.italic.indicator": "*",
     //
-    // 2.3. Identation size.
+    // 3.3. Identation size.
     "markdown.extension.list.indentationSize": "inherit",
     //
-    // 2.4. Ordered list.
+    // 3.4. Ordered list.
     "markdown.extension.orderedList.autoRenumber": true, // Autorenumber wrong markers.
     "markdown.extension.orderedList.marker": "ordered", // Ordered markers.
     //
-    // 2.5. Auto show preview.
+    // 3.5. Auto show preview.
     // "markdown.extension.preview.autoShowPreviewToSide": true,
     //
-    // 2.6. Absolute paths.
+    // 3.6. Absolute paths.
     "markdown.extension.print.absoluteImgPath": false,
     //
-    // 2.7. Action buttons.
+    // 3.7. Action buttons.
     "markdown.extension.showActionButtons": true,
     //
-    // 2.8. Indentation normalization.
+    // 3.8. Indentation normalization.
     "markdown.extension.tableFormatter.normalizeIndentation": true,
     //
     //
-    // 3. Markdownlint configurations.
+    // 4. Markdownlint configurations.
     //
-    // 3.1. Configuration file.
+    // 4.1. Configuration file.
     "markdownlint.configFile": ".markdownlint.jsonc",
     //
     //
     //
-    // General configurations (2).
+    // General configurations (3).
     //
     //
     // 4. Notebook configurations.
     //
     // 4.1. Code Actions.
     "notebook.codeActionsOnSave": {
-        "source.fixAll.markdownlint": "never",
-        "source.organizeLinkDefinitions": "explicit"
+        "source.fixAll": "never", // Never fix automatically.
+        "source.organizeLinkDefinitions": "explicit" // Sort automatically.
     },
     //
     // 4.2. Formatting.
@@ -216,12 +293,24 @@
     //
     //
     //
-    // Extension configurations (2).
+    // Extension configurations (3).
     //
     //
-    // 4. Python Environments configurations.
+    // 5. Oxlint configurations.
     //
-    // 4.1. Projects.
+    // 5.1. Configuration file.
+    "oxc.configPath": "./frontend/.oxlintrc.json",
+    //
+    //
+    // 6. Prettier configurations.
+    //
+    // 6.1. Configuration file.
+    "prettier.configPath": "./frontend/.prettierrc.json",
+    //
+    //
+    // 7. Python Environments configurations.
+    //
+    // 7.1. Projects.
     "python-envs.pythonProjects": [
         {
             "envManager": "ms-python.python:venv",
@@ -231,25 +320,25 @@
     ],
     //
     //
-    // 5. Python configurations.
+    // 8. Python configurations.
     //
-    // 5.1. Environment auto activation.
+    // 8.1. Environment auto activation.
     "python.terminal.activateEnvironment": false, // Environment autoactivation is useless since we use UV.
     //
-    // 5.2. Testing.
+    // 8.2. Testing.
     "python.testing.pytestArgs": [
         "tests"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false, // No need since we use pytest.
     //
-    // 5.3. Python Environments extension.
+    // 8.3. Python Environments extension.
     "python.useEnvironmentsExtension": true,
     //
     //
-    // 6. Ruff configurations.
+    // 9. Ruff configurations.
     //
-    // 6.1. Code Actions.
+    // 9.1. Code Actions.
     "ruff.codeAction.disableRuleComment": {
         "enable": true
     },
@@ -257,52 +346,52 @@
         "enable": true
     },
     //
-    // 6.2. Configuration.
-    "ruff.configuration": "backend/ruff.toml",
+    // 9.2. Configuration.
+    "ruff.configuration": "./backend/ruff.toml",
     "ruff.configurationPreference": "filesystemFirst",
     //
-    // 6.3. Enabling.
+    // 9.3. Enabling.
     "ruff.enable": true,
     //
-    // 6.4. Formatter backend.
+    // 9.4. Formatter backend.
     "ruff.format.backend": "internal",
     //
-    // 6.5. Formatting preview.
+    // 9.5. Formatting preview.
     "ruff.format.preview": false,
     //
-    // 6.6. Import strategy.
+    // 9.6. Import strategy.
     "ruff.importStrategy": "fromEnvironment",
     //
-    // 6.7. Interpreter.
-    "ruff.interpreter": [ ],
+    // 9.7. Interpreter.
+    "ruff.interpreter": [],
     //
-    // 6.8. Linter enabling.
+    // 9.8. Linter enabling.
     "ruff.lint.enable": true,
     //
-    // 6.9. Linting preview.
+    // 9.9. Linting preview.
     "ruff.lint.preview": true,
     //
-    // 6.10. Language Server Provider.
+    // 9.10. Language Server Provider.
     "ruff.nativeServer": "on",
     //
-    // 6.11. Ruff path.
-    "ruff.path": [ ],
+    // 9.11. Ruff path.
+    "ruff.path": [],
     //
-    // 6.12. Syntax errors.
+    // 9.12. Syntax errors.
     "ruff.showSyntaxErrors": true,
     //
-    // 6.13. Trace.
+    // 9.13. Trace.
     "ruff.trace.server": "verbose",
     //
     //
-    // 7. VSCode Icons configurations.
+    // 10. VSCode Icons configurations.
     //
-    // 7.1. File associations.
+    // 10.1. File associations.
     "vsicons.associations.files": [
         // `.env` files should be seen as key files.
         {
             "extensions": [
-                ".env",
+                ".env"
             ],
             "filename": false,
             "format": "svg",
@@ -311,7 +400,7 @@
         // `pyproject.toml` files should be seen as Python files.
         {
             "extensions": [
-                "pyproject.toml",
+                "pyproject.toml"
             ],
             "filename": true,
             "format": "svg",
@@ -326,15 +415,15 @@
             "filename": true,
             "format": "svg",
             "icon": "pytyped"
-        },
+        }
     ],
     //
-    // 7.2. Folders associations.
+    // 10.2. Folders associations.
     "vsicons.associations.folders": [
         // `.ruff_cache` folders should be seen as Python folders just like `__pycache__`.
         {
             "extensions": [
-                ".ruff_cache",
+                ".ruff_cache"
             ],
             "format": "svg",
             "icon": "python"
@@ -342,7 +431,7 @@
         // The Backend folder is essentially the database with its API.
         {
             "extensions": [
-                "backend",
+                "backend"
             ],
             "format": "svg",
             "icon": "db"
@@ -350,7 +439,7 @@
         // The Backend folder is essentially the database with its API.
         {
             "extensions": [
-                "backend",
+                "backend"
             ],
             "format": "svg",
             "icon": "db"
@@ -358,7 +447,7 @@
         // The Frontend folder is essentially the client of the app.
         {
             "extensions": [
-                "frontend",
+                "frontend"
             ],
             "format": "svg",
             "icon": "client"
@@ -366,16 +455,16 @@
         // The music_space folders are our app folders.
         {
             "extensions": [
-                "music_space",
+                "music_space"
             ],
             "format": "svg",
             "icon": "audio"
-        },
+        }
     ],
     //
     //
     //
-    // General configurations (3).
+    // General configurations (4).
     //
     //
     // 5. Workbench configurations.
