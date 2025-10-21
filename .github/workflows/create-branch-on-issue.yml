@@ -15,10 +15,9 @@ jobs:
       - name: Obtener info del issue
         id: issue_info
         run: |
-          ISSUE_NUMBER=${{ github.event.issue.number }}
           ISSUE_TITLE="${{ github.event.issue.title }}"
-          SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' )
-          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
+          SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')
+          BRANCH_NAME="${SAFE_TITLE}"
           echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Clonar y crear branch
