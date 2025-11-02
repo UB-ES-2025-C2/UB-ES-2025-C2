@@ -20,6 +20,7 @@ const routes = [
     path: '/SignUp',
     name: 'sign_up',
     component: SignUp,
+    meta: { hideChrome: true },
   },
   {
     path: '/',
