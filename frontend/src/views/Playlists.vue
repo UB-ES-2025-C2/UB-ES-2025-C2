@@ -72,11 +72,11 @@ onMounted(() => {
       <ul>
         <li v-for="song in api.songs" :key="song.id" class="song-card">
           <div class="song-image">
-            <img :src="song.cover" alt="cover canción" />
+            <img :src="song.song.cover" alt="cover canción" />
           </div>
           <div class="song-info">
-            <strong>{{ song.name }}</strong>
-            <p>{{ song.artist }}</p>
+            <strong>{{ song.song.name }}</strong>
+            <p>{{ song.song.artist }}</p>
           </div>
         </li>
       </ul>
