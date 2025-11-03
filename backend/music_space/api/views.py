@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.authentication import BasicAuthentication, \
     SessionAuthentication
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, MethodNotAllowed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,12 +19,10 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email']
     authentication_classes = []
-
     def get_permissions(self):
-        if self.request.method == 'post':
+        if self.request.method == 'POST':
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
-
+        raise MethodNotAllowed(self.request.method)
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -83,12 +81,13 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
         song = serializer.validated_data['song']
         if PlaylistSong.objects.filter(playlist=playlist, song=song).exists():
             raise ValidationError("Aquesta cançó ja existeix a la playlist.")
-        pos = playlist.songs.count() + 1
+        pos = playlist.songs.count() + 1 #augmentem en 1 la posició
         serializer.save(playlist=playlist, song=song, position=pos)
 
 
 class FollowersViewSet(viewsets.ModelViewSet):
     serializer_class = FollowersSerializer
+    permission_classes = [IsAuthenticatedForWrite]
 
     def get_queryset(self):
         userprofile_pk = self.kwargs.get("userprofile_pk")
@@ -112,6 +111,7 @@ class FollowersViewSet(viewsets.ModelViewSet):
 
 class FollowingViewSet(viewsets.ModelViewSet):
     serializer_class = FollowingSerializer
+    permission_classes = [IsAuthenticatedForWrite]
 
     def get_queryset(self):
         userprofile_pk = self.kwargs.get("userprofile_pk")
