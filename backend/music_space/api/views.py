@@ -81,7 +81,7 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
         song = serializer.validated_data['song']
         if PlaylistSong.objects.filter(playlist=playlist, song=song).exists():
             raise ValidationError("Aquesta cançó ja existeix a la playlist.")
-        pos = playlist.songs.count() + 1
+        pos = playlist.songs.count() + 1 #augmentem en 1 la posició
         serializer.save(playlist=playlist, song=song, position=pos)
 
 
