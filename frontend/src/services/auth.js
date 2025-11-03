@@ -51,6 +51,21 @@ class AuthService {
   isLoggedIn() {
     return !!localStorage.getItem('access')
   }
+  getAxiosInstanceGuest() {
+    const apiUrl = import.meta.env.VITE_API_URL
+
+    const instance = axios.create({
+      baseURL: apiUrl,
+    })
+    return instance
+  }
+  postSong(song) {
+    const res = this.getAxiosInstance().post(
+        `/api/v1/songs/`,
+       song
+    );
+    return res;
+  }
 
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL

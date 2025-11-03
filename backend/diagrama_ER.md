@@ -23,6 +23,7 @@ erDiagram
         PNG cover
     }
 
+
     Generes {
         string name
     }
@@ -38,6 +39,12 @@ erDiagram
         date uploadDate
         int ownerId
         PNG cover
+    }
+
+    PlaylistSong{
+        int songId PK
+        int playlistId PK
+        int position
     }
     ActionForYouPage {
         string reasonWhyIsRecomend
@@ -60,6 +67,7 @@ erDiagram
         string content
         date sentAt
     }
+    UserProfile }o--o{ Song : "Author"
     User 1 to 1 UserProfile: is
     PlayList }o--o{ Song: "contains"
     UserProfile one or more to one or more PlayList: owner
@@ -69,14 +77,15 @@ erDiagram
     Rating ||--|| Song: "Associat"
     UserProfile ||--o{ Rating: "done by"
     UserProfile ||--o{ Comment: "Commented"
+    UserProfile ||--o{ Generes: "Favorite Generes"
+    Song ||--o{ Generes: "Generos"
+
+
     Message }o--|| Follow: "Send"
     Comment ||--|| Song: "In"
     UserProfile ||--o{ Follow: "follows"
     UserProfile ||--o{ Follow: "followed"
     ActionForYouPage ||--o{ Follow: "Recomend something"
-    UserProfile ||--o{ Generes: "Favorite Generes"
-    Song ||--o{ Generes: "Generos"
-    Song ||--o{ UserProfile: "Author"
 
 
 

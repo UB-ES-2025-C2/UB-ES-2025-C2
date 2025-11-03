@@ -147,4 +147,20 @@ export const useApiStore = defineStore("api", {
       throw e;
     }
   },
+  async getFollowers(userId) {
+    try {
+      const response = await api.getFollowers(userId);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching followers:", error);
+    }
+    },
+    async getFollowing(userId) {
+      try {
+        const response = await api.getFollowing(userId);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching following:", error);
+      }
+    }
 }});
