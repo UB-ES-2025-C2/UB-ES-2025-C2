@@ -19,7 +19,7 @@ onMounted(() => {
 })
 
 const startSession = async () => {
-  window.location.href = '/Catalog'
+  window.location.href = '/'
 }
 
 const goBackToLogin = () => {
@@ -279,10 +279,16 @@ const logOut = () => authStore.logout()
   margin-bottom: 0.75rem;
 }
 .actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: stretch;
 }
+.actions .btn {
+  width: 100%;
+}
+
 
 /* Form */
 .form {

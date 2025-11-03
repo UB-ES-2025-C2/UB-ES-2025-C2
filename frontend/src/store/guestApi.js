@@ -44,7 +44,7 @@ export const useApiStore = defineStore("api", {
         return response.data;
       } catch (error) {
         console.error("Error fetching user:", error);
-      }   
+      }
     },
     async getUserById(userId) {
       try {
@@ -101,7 +101,7 @@ export const useApiStore = defineStore("api", {
   },
   async getUserPlaylists(userId) {
       try {
-        const response = await api.getUserPlaylists(userId);    
+        const response = await api.getUserPlaylists(userId);
         this.playlistResults = response.data;
         return response.data;
       }
@@ -118,7 +118,7 @@ export const useApiStore = defineStore("api", {
         console.error("Error searching song:", error);
       }
   },
-  async getSongByName(name) {         
+  async getSongByName(name) {
     try {
       const res = await api.getSongByName(name);
       this.songDetail = res.data;
@@ -147,4 +147,20 @@ export const useApiStore = defineStore("api", {
       throw e;
     }
   },
+  async getFollowers(userId) {
+    try {
+      const response = await api.getFollowers(userId);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching followers:", error);
+    }
+    },
+    async getFollowing(userId) {
+      try {
+        const response = await api.getFollowing(userId);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching following:", error);
+      }
+    }
 }});

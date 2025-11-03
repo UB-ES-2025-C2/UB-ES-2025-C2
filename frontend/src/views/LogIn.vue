@@ -15,7 +15,7 @@ onMounted(() => {
 })
 
 const startSession = async () => {
-  window.location.href = '/Catalog'
+  window.location.href = '/'
 }
 
 const SignUp = () => {
@@ -188,12 +188,17 @@ const logOut = () => {
   color: var(--muted);
   margin-bottom: 0.75rem;
 }
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
-}
 
+.actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: stretch;
+}
+.actions .btn {
+  width: 100%;
+}
 /* Form */
 .form {
   width: 100%;
@@ -346,4 +351,5 @@ const logOut = () => {
   outline: 3px solid rgba(255, 45, 141, 0.6);
   outline-offset: 3px;
 }
+
 </style>
