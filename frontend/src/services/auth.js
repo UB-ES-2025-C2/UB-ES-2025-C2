@@ -18,12 +18,7 @@ class AuthService {
         email: user.email,
         password: user.password,
         password_conf: user.password_conf,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+      }
     )
   }
 

@@ -85,11 +85,3 @@ class FollowingSerializer(serializers.ModelSerializer):
         model = Follow
         fields = ['id', 'followed', 'followed_id', 'date_added']
 
-
-class AddSongToPlaylistSerializer(serializers.Serializer):
-    song_id = serializers.IntegerField()
-
-    def validate_song_id(self, value):
-        if not Song.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Aquest song_id no existeix")
-        return value
