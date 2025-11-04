@@ -2,7 +2,7 @@ import axios from "axios";
 import {useAuthStore} from "../store/authStore.js";
 
 class AuthService {
-    
+
     async login(user) {
         return this.getAxiosInstance().post("/api/token/", {
             username: user.username,
