@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { useAuthStore } from '../store/authStore.js'
 
 class AuthService {
   async login(user) {
@@ -7,19 +6,6 @@ class AuthService {
       username: user.username,
       password: user.password,
     })
-  }
-  signUp(user) {
-    const accessToken = this.getAccessToken()
-
-    return this.getAxiosInstance().post(
-      '/api/v1/user/',
-      {
-        username: user.username,
-        email: user.email,
-        password: user.password,
-        password_conf: user.password_conf,
-      }
-    )
   }
 
   refresh(refreshToken) {
