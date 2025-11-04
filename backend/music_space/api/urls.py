@@ -23,6 +23,11 @@ userprofilerute.register(r'following', FollowingViewSet, basename='following-use
 
 
 urlpatterns = [
+    path(
+        "userprofile/by-token/",
+        UserProfileByTokenView.as_view(),
+        name="userprofile-by-token",
+    ),
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
     path("", include(userprofilerute.urls)),

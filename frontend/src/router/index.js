@@ -6,6 +6,7 @@ import Search from '../views/Search.vue'
 import User from '../views/User.vue'
 import SongDetailById from '../views/SongDetailById.vue'
 import Playlists from '../views/Playlists.vue'
+import Profile from '../views/Profile.vue'
 
 import { useAuthStore } from '../store/authStore'
 
@@ -43,6 +44,13 @@ const routes = [
     path: '/playlist/:id',
     name: 'playlist',
     component: Playlists,
+    props: true,
+  },
+  {
+    path: '/profile/:id',
+    name: 'profile',
+    component: Profile,
+    meta: { requiresAuth: true },
     props: true,
   },
 ]

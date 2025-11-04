@@ -90,4 +90,16 @@ export default {
       `/api/v1/userprofile/${user_id}/following/`
     );
   },
+  changeImage(user_id, formData) {
+    return axiosInstance.patch(
+      `/api/v1/userprofile/${user_id}/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+  },
+
 };

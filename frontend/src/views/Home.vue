@@ -1,11 +1,15 @@
 <script setup>
 import { ref, onMounted, computed  } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import {useApiStore } from "../store/guestApi.js";
 
 const authStore = useAuthStore();
 const apiStore = useApiStore();
 const username = ref("");
+
+const route = useRoute();
+const router = useRouter();
 
 const nusers = ref("");
 
@@ -15,6 +19,10 @@ const buscarUsuari = async () => {
 const buscarNUsers = async () => {
   await apiStore.searchNUsers(nusers.value);
 };
+function viewprofile() {
+  const myid = authStore.user_id;
+  router.push({ name: "profile" , params: { id: myid } });
+}
 
 
 /*mock data para playlists de prueba*/
@@ -72,6 +80,7 @@ const headerUsername = computed(() => {
     <section class="home-header">
       <p class="made-for">Fet per a</p>
       <h1 class="username">{{ headerUsername }}</h1>
+      <button @click="viewprofile">View Profile</button>
     </section>
 
     <!-- Canciones -->
