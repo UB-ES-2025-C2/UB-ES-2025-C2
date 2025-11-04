@@ -2,7 +2,6 @@ import axios from 'axios'
 import { useAuthStore } from '../store/authStore.js'
 
 class AuthService {
-
     async login(user) {
         return this.getAxiosInstance().post("/api/token/", {
             username: user.username,
@@ -31,16 +30,25 @@ class AuthService {
   signUp(user) {
     const accessToken = this.getAccessToken()
 
-    return this.getAxiosInstance().post(
-      '/api/v1/user/',
-      {
-        username: user.username,
-        email: user.email,
-        password: user.password,
-        password_conf: user.password_conf,
-      }
-    )
-  }
+    async login(user) {
+        return this.getAxiosInstance().post("/api/token/", {
+            username: user.username,
+            password: user.password,
+        });
+    }
+    signUp(user) {
+      const accessToken = this.getAccessToken();
+      return this.getAxiosInstance().post("/api/v1/user/", {
+          username: user.username,
+          email: user.email,
+          password:user.password,
+          password_conf: user.password_conf,
+        }, {
+          headers: {
+              Authorization: `Bearer ${accessToken}`
+          }
+        });
+    }
 
   refresh(refreshToken) {
     return Promise.resolve(
