@@ -27,12 +27,7 @@ function onSubmit() {
       <!-- Barra de búsqueda -->
       <form class="search-bar" @submit.prevent="onSubmit">
         <i class="fas fa-search search-icon"></i>
-        <input
-          v-model="q"
-          type="search"
-          placeholder="Què vols reproduir?"
-          aria-label="Cercar"
-        />
+        <input v-model="q" type="search" placeholder="Què vols reproduir?" aria-label="Cercar" />
       </form>
     </div>
 
@@ -48,7 +43,6 @@ function onSubmit() {
 
 <style scoped>
 .header {
-
   display: flex;
   width: 100%;
   align-items: center;
@@ -60,18 +54,18 @@ function onSubmit() {
   font-family: 'Open Sans', sans-serif;
 }
 
-.header-left{
+.header-left {
   display: flex;
   align-items: center;
-  gap: 16px;           /* separació entre logo, home i cercador */
-  flex: 1;            /* ← clau: ocupa tot l'espai disponible */
-  min-width: 0;       /* evita que el flex-item limiti l’ample del fill */
+  gap: 16px; /* separació entre logo, home i cercador */
+  flex: 1; /* ← clau: ocupa tot l'espai disponible */
+  min-width: 0; /* evita que el flex-item limiti l’ample del fill */
   height: 64px;
 }
 
 .logo {
-  width: 110px;
-  height: 54px;
+  width: 54px;
+  height: 50px;
 }
 .home-btn {
   display: flex;
@@ -80,7 +74,7 @@ function onSubmit() {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background-color: #1a1a1a;       /* cercle fosc */
+  background-color: #1a1a1a; /* cercle fosc */
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -90,7 +84,7 @@ function onSubmit() {
 .home-icon {
   width: 22px;
   height: 22px;
-  color: #ffffff;                  /* casa rosa corporativa */
+  color: #ffffff; /* casa rosa corporativa */
   transition: color 0.3s ease;
 }
 

@@ -22,7 +22,7 @@ const mockPlaylists = ref([
   { id: 3, name: "Playlist de prueba 3", user: "usuarideprova", image: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg" },
 ]);
 
-const userNames = ref({}); 
+const userNames = ref({});
 
 async function loadUserNames() {
   if (!api.playlistResults) return;
@@ -124,7 +124,9 @@ function goToSong(id) {
           @click="goToUser(user.username)"
         >
 
-          <div class="avatar"></div>
+          <div class="avatar">
+            <img v-if="user.profilePic" :src="user.profilePic" alt="Profile Picture" />
+          </div>
           <div class="user-info">
             <strong>{{ user.username }}</strong>
             <p>{{ user.email || 'Usuari registrat' }}</p>
@@ -237,6 +239,13 @@ function goToSong(id) {
   width: 50px;
   height: 50px;
   background: linear-gradient(135deg, #aaa, #aaa);
+  border-radius: 50%;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 50%;
 }
 

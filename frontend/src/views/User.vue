@@ -11,6 +11,8 @@ const api = useApiStore();
 const mockFollowers = 123;
 const mockFollowing = 45;
 
+
+/*
 // Mockdata de cançons
 const mockSongs = [
   { id: 1, title: "Canción 1", artists: "Artista A", image: "https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg" },
@@ -22,30 +24,38 @@ const mockPlaylists = [
   { id: 1, name: "Playlist 1", user: "usuarideprova", image: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" },
   { id: 2, name: "Playlist 2", user: "usuarideprova", image: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg" }
 ];
+*/
+const followers = ref([]);
+const following = ref([]);
 
 const userData = ref(null);
 const userSongs = ref([]);
 const userPlaylists = ref([]);
 
 async function runUserSongs(id_user) {
-      userSongs.value = await api.getUserSongs(id_user);
-      userPlaylists.value = await api.getUserPlaylists(id_user);
+  followers.value = await api.getFollowers(id_user);
+  following.value = await api.getFollowing(id_user);
+  userSongs.value = await api.getUserSongs(id_user);
+  userPlaylists.value = await api.getUserPlaylists(id_user);
+
 }
 
-onMounted(() => {
+onMounted(async () => {
   /* Buscar usuari en la API/store per username */
   const foundUser = api.nUsersResult.find(u => u.username === username);
+  /* Assignem cançons y playlists amb mock */
+
+  await runUserSongs(foundUser.id);
 
   if (foundUser) {
     userData.value = {
       username: foundUser.username,
-      followers: mockFollowers,
-      following: mockFollowing,
-      id_user: foundUser.id
+      followers: followers.value.length,
+      following: following.value.length,
+      id_user: foundUser.id,
+      profile_picture: foundUser.profilePic
     };
 
-    /* Assignem cançons y playlists amb mock */
-    runUserSongs(userData.value.id_user);
   }
 });
 </script>
@@ -54,7 +64,9 @@ onMounted(() => {
   <div v-if="userData" class="user-profile">
     <!-- Foto i dades -->
     <div class="header">
-      <div class="avatar"></div>
+      <div class="avatar">
+        <img v-if="userData.profile_picture" :src="userData.profile_picture" alt="Profile Picture" />
+      </div>
       <div class="user-info">
         <h1>{{ userData.username }}</h1>
         <p class="followers">
@@ -118,6 +130,12 @@ onMounted(() => {
   width: 150px;
   height: 150px;
   background: linear-gradient(135deg, #aaa, #aaa);
+  border-radius: 50%;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 50%;
 }
 
