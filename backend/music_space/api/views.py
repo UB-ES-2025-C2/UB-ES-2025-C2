@@ -2,12 +2,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.authentication import BasicAuthentication, \
     SessionAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.exceptions import ValidationError, MethodNotAllowed
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import Token
 
-from .permisions import IsAuthenticatedForWrite
 from .serializers import *  # noqa: F403
 
 
@@ -27,11 +29,12 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
     filter_backends = [filters.SearchFilter]
-    permission_classes = [IsAuthenticatedForWrite]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         name = self.request.query_params.get("name")
@@ -50,7 +53,7 @@ class SongViewSet(viewsets.ModelViewSet):
 
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
-    permission_classes = [IsAuthenticatedForWrite]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
     def get_queryset(self):
@@ -69,7 +72,7 @@ class PlayListViewSet(viewsets.ModelViewSet):
 
 class PlaylistSongViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSongSerializer
-    permission_classes = [IsAuthenticatedForWrite]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         playlist_pk = self.kwargs.get("playlist_pk")
@@ -87,7 +90,7 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
 
 class FollowersViewSet(viewsets.ModelViewSet):
     serializer_class = FollowersSerializer
-    permission_classes = [IsAuthenticatedForWrite]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         userprofile_pk = self.kwargs.get("userprofile_pk")
@@ -111,7 +114,7 @@ class FollowersViewSet(viewsets.ModelViewSet):
 
 class FollowingViewSet(viewsets.ModelViewSet):
     serializer_class = FollowingSerializer
-    permission_classes = [IsAuthenticatedForWrite]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         userprofile_pk = self.kwargs.get("userprofile_pk")
@@ -135,6 +138,7 @@ class FollowingViewSet(viewsets.ModelViewSet):
 
 
 class UserProfileByUsernameView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request, username):
         try:
             # Obtener el perfil asociado al usuario
@@ -151,6 +155,7 @@ class UserProfileByUsernameView(APIView):
 
 
 class UsernameSearchView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request):
         query = request.query_params.get('q', '')
 
@@ -172,6 +177,7 @@ class UsernameSearchView(APIView):
 
 
 class SongByNameView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request, name):
         try:
             # Obtener la canción por título
@@ -188,6 +194,7 @@ class SongByNameView(APIView):
 
 
 class SongNameSearchView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request):
         query = request.query_params.get('q', '')
 
@@ -203,3 +210,9 @@ class SongNameSearchView(APIView):
         names = [{'name': song.name} for song in songs]
 
         return Response(names, status=status.HTTP_200_OK)
+
+class UserProfileByTokenView(APIView):
+    def get(self, request):
+        profile = get_object_or_404(UserProfile, user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)

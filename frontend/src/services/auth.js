@@ -2,6 +2,33 @@ import axios from 'axios'
 import { useAuthStore } from '../store/authStore.js'
 
 class AuthService {
+    async login(user) {
+        return this.getAxiosInstance().post("/api/token/", {
+            username: user.username,
+            password: user.password,
+        });
+    }
+    signUp(user) {
+      const accessToken = this.getAccessToken();
+      return this.getAxiosInstance().post("/api/v1/user/", {
+          username: user.username,
+          email: user.email,
+          password:user.password,
+          password_conf: user.password_conf,
+        }, {
+          headers: {
+              Authorization: `Bearer ${accessToken}`
+          }
+        });
+    }
+  async login(user) {
+    return this.getAxiosInstance().post('/api/token/', {
+      username: user.username,
+      password: user.password,
+    })
+  }
+  signUp(user) {
+    const accessToken = this.getAccessToken()
 
     async login(user) {
         return this.getAxiosInstance().post("/api/token/", {
@@ -47,6 +74,31 @@ class AuthService {
   isLoggedIn() {
     return !!localStorage.getItem('access')
   }
+  postSong(song) {
+    const res = this.getAxiosInstance().post(
+        `/api/v1/songs/`,
+       song
+    );
+    return res;
+  }
+  getUserByToken() {
+    // El header Authorization ja s'afegeix per getAxiosInstance()
+    return this.getAxiosInstance().get(`/api/v1/userprofile/by-token/`)
+  }
+  changeProfilePicture(id, file) {
+    const formData = new FormData();
+    formData.append('profilePic', file);
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${id}/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+  }
+
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
 
@@ -54,13 +106,6 @@ class AuthService {
       baseURL: apiUrl,
     })
     return instance
-  }
-  postSong(song) {
-    const res = this.getAxiosInstance().post(
-        `/api/v1/songs/`,
-       song
-    );
-    return res;
   }
 
   getAxiosInstance() {
