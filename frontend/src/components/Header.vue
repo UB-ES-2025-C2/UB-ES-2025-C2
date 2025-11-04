@@ -17,7 +17,7 @@ function onSubmit() {
   <header class="header">
     <!-- Bloc esquerre -->
     <div class="header-left">
-      <img src="../assets/logo_musicSPace.png" alt="Logo" class="logo" />
+      <img src="../assets/logo_musicSpace.png" alt="Logo" class="logo" />
 
       <!-- Icona home -->
       <button class="home-btn" @click="$router.push('/')">
