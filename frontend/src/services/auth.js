@@ -46,6 +46,31 @@ class AuthService {
   isLoggedIn() {
     return !!localStorage.getItem('access')
   }
+  postSong(song) {
+    const res = this.getAxiosInstance().post(
+        `/api/v1/songs/`,
+       song
+    );
+    return res;
+  }
+  getUserByToken() {
+    // El header Authorization ja s'afegeix per getAxiosInstance()
+    return this.getAxiosInstance().get(`/api/v1/userprofile/by-token/`)
+  }
+  changeProfilePicture(id, file) {
+    const formData = new FormData();
+    formData.append('profilePic', file);
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${id}/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+  }
+
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
 
@@ -53,13 +78,6 @@ class AuthService {
       baseURL: apiUrl,
     })
     return instance
-  }
-  postSong(song) {
-    const res = this.getAxiosInstance().post(
-        `/api/v1/songs/`,
-       song
-    );
-    return res;
   }
 
   getAxiosInstance() {
