@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a3f10fbf-cbf2-4370-88a1-0e3346f00958" name="Changes" comment="" />
+    <list default="true" id="a3f10fbf-cbf2-4370-88a1-0e3346f00958" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/main_musicspace.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/main_musicspace.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,9 +12,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "flaviaserret04"
+  }
 }]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/UB-ES-2025-C2/UB-ES-2025-C2.git",
+    "accountId": "077944ab-6389-47e6-b113-34aeafe00274"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="33nJCfohAPGu5IoWPVP5ooZp5a2" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -25,6 +39,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "to.speed.mode.migration.done": "true",
@@ -73,6 +89,7 @@
       <option name="presentableId" value="Default" />
       <updated>1759946777175</updated>
       <workItem from="1759946779252" duration="49000" />
+      <workItem from="1762182933435" duration="54000" />
     </task>
     <servers />
   </component>

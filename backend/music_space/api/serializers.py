@@ -31,6 +31,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
 
+
 class PlayListSerializer(serializers.ModelSerializer):
     watched = UserProfileSerializer(many=True, read_only=True)
 
@@ -40,17 +41,47 @@ class PlayListSerializer(serializers.ModelSerializer):
 
 
 class SongSerializer(serializers.ModelSerializer):
-    playlists = PlayListSerializer(many=True, read_only=True)
-
     class Meta:
         model = Song
         fields = '__all__'
 
 
-class AddSongToPlaylistSerializer(serializers.Serializer):
-    song_id = serializers.IntegerField()
+class PlayListSongSerializer(serializers.ModelSerializer):
+    song = SongSerializer(read_only=True)
+    song_id = serializers.PrimaryKeyRelatedField(
+        queryset=Song.objects.all(),
+        source='song',
+        write_only=True
+    )
+    position = serializers.IntegerField(required=False)
 
-    def validate_song_id(self, value):
-        if not Song.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Aquest song_id no existeix")
-        return value
+    class Meta:
+        model = PlaylistSong
+        fields = ['id', 'song', 'song_id', 'position']
+
+
+class FollowersSerializer(serializers.ModelSerializer):
+    follower = UserProfileSerializer(read_only=True)
+    follower_id = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(),
+        source='follower',
+        write_only=True
+    )
+
+    class Meta:
+        model = Follow
+        fields = ['id', 'follower', 'follower_id', 'date_added']
+
+
+class FollowingSerializer(serializers.ModelSerializer):
+    followed = UserProfileSerializer(read_only=True)
+    followed_id = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(),
+        source='followed',
+        write_only=True
+    )
+
+    class Meta:
+        model = Follow
+        fields = ['id', 'followed', 'followed_id', 'date_added']
+

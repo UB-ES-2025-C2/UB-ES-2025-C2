@@ -1,5 +1,5 @@
-import axios from "axios";
-import {useAuthStore} from "../store/authStore.js";
+import axios from 'axios'
+import { useAuthStore } from '../store/authStore.js'
 
 class AuthService {
 
@@ -23,62 +23,75 @@ class AuthService {
         });
     }
 
-    refresh(refreshToken) {
+  refresh(refreshToken) {
+    return Promise.resolve(
+      JSON.stringify({
+        access: 'mockAccessToken',
+      }),
+    )
+  }
 
-        return Promise.resolve(
-            JSON.stringify({
-                access: "mockAccessToken",
-            })
-        );
-    }
+  logout() {
+    localStorage.removeItem('access')
+    localStorage.removeItem('refresh')
+  }
 
-    logout() {
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-    }
+  getAccessToken() {
+    return localStorage.getItem('access')
+  }
 
-    getAccessToken() {
-        return localStorage.getItem("access");
-    }
+  getRefreshToken() {
+    return localStorage.getItem('refresh')
+  }
 
-    getRefreshToken() {
-        return localStorage.getItem("refresh");
-    }
+  isLoggedIn() {
+    return !!localStorage.getItem('access')
+  }
+  getAxiosInstanceGuest() {
+    const apiUrl = import.meta.env.VITE_API_URL
 
-    isLoggedIn() {
-        return !!localStorage.getItem("access");
-    }
+    const instance = axios.create({
+      baseURL: apiUrl,
+    })
+    return instance
+  }
+  postSong(song) {
+    const res = this.getAxiosInstance().post(
+        `/api/v1/songs/`,
+       song
+    );
+    return res;
+  }
 
-    getAxiosInstance() {
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const accessToken = this.getAccessToken();
+  getAxiosInstance() {
+    const apiUrl = import.meta.env.VITE_API_URL
+    const accessToken = this.getAccessToken()
 
-        const instance = axios.create({
-            baseURL: apiUrl,
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            },
-        });
-        instance.interceptors.response.use(
-            (response) => response,
-            async (error) => {
-                if (error.response.status === 401 && this.isLoggedIn()) {
-                    try {
-                        const response = await this.refresh(this.getRefreshToken());
-                        localStorage.setItem("access", response.data.access);
-                        error.config.headers["Authorization"] =
-                            "Bearer " + response.data.access;
+    const instance = axios.create({
+      baseURL: apiUrl,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    instance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response.status === 401 && this.isLoggedIn()) {
+          try {
+            const response = await this.refresh(this.getRefreshToken())
+            localStorage.setItem('access', response.data.access)
+            error.config.headers['Authorization'] = 'Bearer ' + response.data.access
 
-                        return axios.request(error.config);
-                    } catch (err) {
-                        this.logout();
-                    }
-                }
-                return Promise.reject(error);
-            }
-        );
-        return instance;
-    }
+            return axios.request(error.config)
+          } catch (err) {
+            this.logout()
+          }
+        }
+        return Promise.reject(error)
+      },
+    )
+    return instance
+  }
 }
 
-export default new AuthService();
+export default new AuthService()
