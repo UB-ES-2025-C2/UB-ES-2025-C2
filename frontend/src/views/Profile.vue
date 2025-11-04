@@ -2,29 +2,19 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useApiStore } from "../store/guestApi.js";
+import auth from "@/services/auth.js";
 
 const route = useRoute();
-const username = route.params.username;
+const user_id = route.params.id;
 const api = useApiStore();
 
 // Mockdata de seguidors y seguint
 const mockFollowers = 123;
 const mockFollowing = 45;
 
-
-/*
-// Mockdata de cançons
-const mockSongs = [
-  { id: 1, title: "Canción 1", artists: "Artista A", image: "https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg" },
-  { id: 2, title: "Canción 2", artists: "Artista B", image: "https://www.udiscovermusica.com/wp-content/uploads/sites/7/2022/09/Pink-Floyd-Dark-Side-Of-The-Moon-1536x1536-1-1024x1024.jpeg" }
-];
-
-// Mockdata de playlists
-const mockPlaylists = [
-  { id: 1, name: "Playlist 1", user: "usuarideprova", image: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" },
-  { id: 2, name: "Playlist 2", user: "usuarideprova", image: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg" }
-];
-*/
+const selectedFile = ref(null);
+const previewImage = ref(null);
+const fileInput = ref(null);
 const followers = ref([]);
 const following = ref([]);
 
@@ -37,36 +27,69 @@ async function runUserSongs(id_user) {
   following.value = await api.getFollowing(id_user);
   userSongs.value = await api.getUserSongs(id_user);
   userPlaylists.value = await api.getUserPlaylists(id_user);
+}
+
+
+function triggerFileInput() {
+  fileInput.value.click();
+}
+
+function onFileSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedFile.value = file;
+  //previewImage.value = URL.createObjectURL(file);
+  // Aquí pots fer el POST a la teva API per pujar la imatge
+  auth.changeProfilePicture(user_id, file).then((response) => {
+    if (response.status === 200) {
+      previewImage.value = URL.createObjectURL(file);
+    }
+  }).catch((error) => {
+    console.error("Error uploading profile picture:", error);
+  });
 
 }
 
 onMounted(async () => {
-  /* Buscar usuari en la API/store per username */
-  const foundUser = api.nUsersResult.find(u => u.username === username);
-  /* Assignem cançons y playlists amb mock */
+  // Primer obtenim les cançons i playlists
+  await runUserSongs(user_id);
 
-  await runUserSongs(foundUser.id);
+  // Ara obtenim l'usuari pel seu ID
+  const found = await api.getUserById(user_id);
 
-  if (foundUser) {
+  if (found) {
     userData.value = {
-      username: foundUser.username,
+      username: found.nickname,
       followers: followers.value.length,
       following: following.value.length,
-      id_user: foundUser.id,
-      profile_picture: foundUser.profilePic
+      id_user: user_id,
+      profile_picture: found.profilePic
     };
-
   }
 });
+
 </script>
 
 <template>
   <div v-if="userData" class="user-profile">
     <!-- Foto i dades -->
     <div class="header">
-      <div class="avatar">
-        <img v-if="userData.profile_picture" :src="userData.profile_picture" alt="Profile Picture" />
+
+      <div class="avatar" @click="triggerFileInput">
+        <input
+          ref="fileInput"
+          name="profilePic"
+          type="file"
+          @change="onFileSelected"
+          style="display: none"
+        />
+        <img
+          v-if="previewImage || userData.profile_picture"
+          :src="previewImage || userData.profile_picture"
+          alt="Profile Picture"
+        />
       </div>
+
       <div class="user-info">
         <h1>{{ userData.username }}</h1>
         <p class="followers">

@@ -18,8 +18,16 @@ playlistRut.register(r'songs', PlaylistSongViewSet, basename='playlist-song')
 userprofilerute = NestedSimpleRouter(router, r'userprofile', lookup='userprofile')
 userprofilerute.register(r'songs', SongViewSet, basename='userprofile-song')
 userprofilerute.register(r'playlist', PlayListViewSet, basename='playlist-user')
+userprofilerute.register(r'followers', FollowersViewSet, basename='followers-user')
+userprofilerute.register(r'following', FollowingViewSet, basename='following-user')
+
 
 urlpatterns = [
+    path(
+        "userprofile/by-token/",
+        UserProfileByTokenView.as_view(),
+        name="userprofile-by-token",
+    ),
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
     path("", include(userprofilerute.urls)),
