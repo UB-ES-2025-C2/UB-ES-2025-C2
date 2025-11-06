@@ -64,10 +64,6 @@ export const useAuthStore = defineStore("auth", {
     async signUp(user){
       // Create User:
       await AuthService.signUp(user);
-      this.login({
-            username: user.username,
-            password: user.password,
-      });
     },
     async changeProfilePicture(file) {
       return AuthService.changeProfilePicture(file);
