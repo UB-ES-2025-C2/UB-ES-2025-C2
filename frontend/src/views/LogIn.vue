@@ -60,13 +60,14 @@ const logOut = () => {
 
       <!-- Login form -->
       <form class="form" @submit.prevent="authenticateUser" autocomplete="off">
-        <label class="label" for="identifier">Correu electrònic o nom d'usuari</label>
+        <label class="label" for="identifier">Nom d'usuari</label>
         <input
           id="identifier"
           class="input"
           type="text"
           v-model.trim="username"
-          placeholder="e.g. user@example.com"f
+          placeholder="e.g user"
+          f
           required
         />
 
@@ -77,7 +78,7 @@ const logOut = () => {
             class="input"
             :type="showPassword ? 'text' : 'password'"
             v-model="password"
-            placeholder="Your password"
+            placeholder="La teva contrasenya"
             required
           />
           <button
