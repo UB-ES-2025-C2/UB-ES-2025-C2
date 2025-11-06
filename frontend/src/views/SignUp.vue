@@ -1,82 +1,82 @@
-<!-- src/views/Signup.vue (or replace your current file) -->
+<!-- src/views/Signup.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/authStore'
 
+const router = useRouter()
 const authStore = useAuthStore()
 
 const username = ref('')
+const email = ref('')
 const password = ref('')
 const password_conf = ref('')
-const email = ref('')
 
 const showPassword = ref(false)
 const showPasswordConf = ref(false)
-const formError = ref('')
 
+const formError = ref('')
 const success = ref(false)
 const successMessage = ref('')
 
 onMounted(() => {
-  authStore.initializeAuthStore()
+  authStore.initializeAuthStore?.()
+  // Si el usuari ja està autenticat, no té sentit mostrar el registre:
+  if (authStore.isAuthenticated) router.replace('/')
 })
-
-const startSession = async () => {
-  window.location.href = '/'
-}
-
-const goBackToLogin = () => {
-  window.location.href = '/login'
-}
 
 const mismatch = computed(
   () => !!password.value && !!password_conf.value && password.value !== password_conf.value,
 )
 
-const isValidEmail = (email) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return regex.test(email)
-}
+const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
 
 const authenticateUser = async () => {
-  formError.value = '' // clear old errors
+  formError.value = ''
 
   if (!username.value || !password.value || !password_conf.value || !email.value) {
     formError.value = "Has d'omplir tots els camps"
     return
   }
-
   if (!isValidEmail(email.value)) {
-    formError.value = 'El correo elctrònic no és vàlid'
+    formError.value = 'El correu electrònic no és vàlid'
     return
   }
-
-  if (password.value !== password_conf.value) {
+  if (mismatch.value) {
     formError.value = 'Les contrasenyes no coincideixen'
     return
   }
 
   try {
+    // IMPORTANT: signUp NO ha de guardar token ni marcar isAuthenticated
     await authStore.signUp({
       username: username.value,
-      password: password.value,
       email: email.value,
+      password: password.value,
       password_conf: password_conf.value,
     })
 
+    // Xarxa de seguretat per garantir que NO quedem loguejats si el backend envia token:
+    if (authStore.isAuthenticated) {
+      await (authStore.logout?.() ?? Promise.resolve())
+    }
+
     success.value = true
-    successMessage.value =
-      ' El teu usuari s’ha creat correctament. Seràs redirigit a la pàgina d’inici de sessió.'
+    successMessage.value = 'El teu usuari s’ha creat correctament. Ara podràs iniciar sessió.'
+
+    // Redirecció suau a la pantalla d'inici de sessió
     setTimeout(() => {
-      window.location.href = '/login'
-    }, 2500)
+      router.push('/login')
+    }, 2000)
   } catch (e) {
+    // Mostra l’error del store si existeix
     formError.value = authStore.error || 'Error en el registre.'
+    // console opcional per a debug durant desenvolupament
     console.error(e)
   }
 }
 
-const logOut = () => authStore.logout()
+const goBackToLogin = () => router.push('/login')
 </script>
 
 <template>
@@ -87,25 +87,14 @@ const logOut = () => authStore.logout()
         <img src="../assets/logo_musicSpace.png" alt="MusicSpace logo" class="logo" />
       </div>
 
-      <h1 id="signup-title" class="title">
-        Registra't i gaudeix de totes les funcionalitatss<br />
-      </h1>
+      <h1 id="signup-title" class="title">Registra't i gaudeix de totes les funcionalitats</h1>
 
-      <section v-if="success" class="signed-in">
+      <section v-if="success" class="signed-in" aria-live="polite">
         <p class="success">{{ successMessage }}</p>
       </section>
 
-      <!-- If already authenticated -->
-      <section v-if="authStore.isAuthenticated" class="signed-in">
-        <p class="muted">You’re logged in.</p>
-        <div class="actions">
-          <button class="btn btn-primary" @click="startSession">Go to Catalog</button>
-          <button class="btn btn-ghost" @click="logOut">Log Out</button>
-        </div>
-      </section>
-
-      <!-- Sign up form -->
-      <form v-else class="form" @submit.prevent="authenticateUser" autocomplete="on" novalidate>
+      <!-- Formulari de registre (sempre mostra; si ja està loguejat es redirigeix a onMounted) -->
+      <form class="form" @submit.prevent="authenticateUser" autocomplete="on" novalidate>
         <label class="label" for="username">Nom d'usuari</label>
         <input
           id="username"
@@ -114,7 +103,7 @@ const logOut = () => authStore.logout()
           v-model.trim="username"
           name="username"
           autocomplete="username"
-          placeholder="Your username"
+          placeholder="El teu nom d'usuari"
           required
         />
 
@@ -126,7 +115,7 @@ const logOut = () => authStore.logout()
           v-model.trim="email"
           name="email"
           autocomplete="email"
-          placeholder="you@example.com"
+          placeholder="tu@exemple.com"
           required
         />
 
@@ -139,14 +128,15 @@ const logOut = () => authStore.logout()
             v-model="password"
             name="new-password"
             autocomplete="new-password"
-            placeholder="Create a password"
+            placeholder="Crea una contrasenya"
             required
+            aria-describedby="passwordHelp"
           />
           <button
             type="button"
             class="toggle-password"
             @click="showPassword = !showPassword"
-            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            :aria-label="showPassword ? 'Amaga la contrasenya' : 'Mostra la contrasenya'"
           >
             <svg
               v-if="!showPassword"
@@ -167,8 +157,11 @@ const logOut = () => authStore.logout()
             </svg>
           </button>
         </div>
+        <small id="passwordHelp" class="muted" aria-live="polite">
+          Utilitza com a mínim 8 caràcters.
+        </small>
 
-        <label class="label" for="password_conf">Confirmació contrasenya</label>
+        <label class="label" for="password_conf">Confirmació de la contrasenya</label>
         <div class="password-wrapper">
           <input
             id="password_conf"
@@ -177,7 +170,7 @@ const logOut = () => authStore.logout()
             v-model="password_conf"
             name="new-password-confirm"
             autocomplete="new-password"
-            placeholder="Repeat your password"
+            placeholder="Repeteix la contrasenya"
             required
             :aria-invalid="mismatch ? 'true' : 'false'"
           />
@@ -185,7 +178,7 @@ const logOut = () => authStore.logout()
             type="button"
             class="toggle-password"
             @click="showPasswordConf = !showPasswordConf"
-            :aria-label="showPasswordConf ? 'Hide password' : 'Show password'"
+            :aria-label="showPasswordConf ? 'Amaga la confirmació' : 'Mostra la confirmació'"
           >
             <svg
               v-if="!showPasswordConf"
@@ -207,15 +200,14 @@ const logOut = () => authStore.logout()
           </button>
         </div>
 
-        <p v-if="mismatch" class="error">Passwords do not match.</p>
-
-        <p v-if="formError" class="form-error">{{ formError }}</p>
+        <p v-if="mismatch" class="error" role="alert">Les contrasenyes no coincideixen.</p>
+        <p v-if="formError" class="form-error" role="alert" aria-live="assertive">
+          {{ formError }}
+        </p>
 
         <button class="btn btn-primary" :disabled="authStore.loading || mismatch">
-          {{ authStore.loading ? 'Signing Up...' : 'Sign Up' }}
+          {{ authStore.loading ? 'Registrant...' : "Registra't" }}
         </button>
-
-        <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
 
         <p class="register">
           Ja tens un compte?
@@ -289,23 +281,13 @@ const logOut = () => authStore.logout()
   font-size: clamp(1.35rem, 1.15rem + 1vw, 1.8rem);
 }
 
-/* Signed-in state */
+/* Signed-in state placeholder */
 .signed-in {
   width: 100%;
 }
 .muted {
   color: var(--muted);
-  margin-bottom: 0.75rem;
-}
-.actions {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0.75rem;
-  width: 100%;
-  align-items: stretch;
-}
-.actions .btn {
-  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 /* Form */
@@ -341,6 +323,7 @@ const logOut = () => authStore.logout()
   box-shadow: none;
   background-color: var(--input-bg);
 }
+
 /* Password eye */
 .password-wrapper {
   position: relative;
@@ -408,19 +391,8 @@ const logOut = () => authStore.logout()
 .btn-primary:active {
   transform: translateY(1px) scale(0.995);
 }
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-}
-.btn-ghost:hover {
-  border-color: #4a4a4a;
-}
-.btn-ghost.small {
-  height: 38px;
-  padding: 0 14px;
-}
 
-/* Login */
+/* Login link */
 .register {
   margin-top: 0.4rem;
   font-size: 0.95rem;
@@ -440,10 +412,22 @@ const logOut = () => authStore.logout()
   border-color: #fff;
 }
 
-/* Inline errors */
-.error {
+/* Errors / success */
+.error,
+.form-error {
   color: #ff9bbd;
   text-align: left;
+}
+.form-error {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+.success {
+  color: #6aff6a;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.75rem;
 }
 
 /* Autofill fixes */
@@ -461,19 +445,5 @@ input:-webkit-autofill:active {
 :focus-visible {
   outline: 3px solid rgba(255, 45, 141, 0.6);
   outline-offset: 3px;
-}
-
-.form-error {
-  color: #ff9bbd;
-  text-align: center;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-.success {
-  color: #6aff6a;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 0.75rem;
 }
 </style>

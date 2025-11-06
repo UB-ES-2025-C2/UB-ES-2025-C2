@@ -58,24 +58,15 @@ const logOut = () => {
 
       <h1 id="login-title" class="title">Inicia sessió a<br />MusicSpace</h1>
 
-      <!-- If already authenticated -->
-      <section v-if="authStore.isAuthenticated" class="signed-in">
-        <p class="muted">You’re logged in.</p>
-        <div class="actions">
-          <button class="btn btn-primary" @click="startSession">Go to Catalog</button>
-          <button class="btn btn-ghost" @click="logOut">Log Out</button>
-        </div>
-      </section>
-
       <!-- Login form -->
-      <form v-else class="form" @submit.prevent="authenticateUser" autocomplete="off">
+      <form class="form" @submit.prevent="authenticateUser" autocomplete="off">
         <label class="label" for="identifier">Correu electrònic o nom d'usuari</label>
         <input
           id="identifier"
           class="input"
           type="text"
           v-model.trim="username"
-          placeholder="e.g. user@example.com"
+          placeholder="e.g. user@example.com"f
           required
         />
 
