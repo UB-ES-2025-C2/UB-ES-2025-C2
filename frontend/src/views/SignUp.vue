@@ -14,6 +14,9 @@ const showPassword = ref(false)
 const showPasswordConf = ref(false)
 const formError = ref('')
 
+const success = ref(false)
+const successMessage = ref('')
+
 onMounted(() => {
   authStore.initializeAuthStore()
 })
@@ -35,7 +38,7 @@ const isValidEmail = (email) => {
   return regex.test(email)
 }
 
-const authenticateUser = () => {
+const authenticateUser = async () => {
   formError.value = '' // clear old errors
 
   if (!username.value || !password.value || !password_conf.value || !email.value) {
@@ -53,12 +56,24 @@ const authenticateUser = () => {
     return
   }
 
-  authStore.signUp({
-    username: username.value,
-    password: password.value,
-    email: email.value,
-    password_conf: password_conf.value,
-  })
+  try {
+    await authStore.signUp({
+      username: username.value,
+      password: password.value,
+      email: email.value,
+      password_conf: password_conf.value,
+    })
+
+    success.value = true
+    successMessage.value =
+      ' El teu usuari s’ha creat correctament. Seràs redirigit a la pàgina d’inici de sessió.'
+    setTimeout(() => {
+      window.location.href = '/login'
+    }, 2500)
+  } catch (e) {
+    formError.value = authStore.error || 'Error en el registre.'
+    console.error(e)
+  }
 }
 
 const logOut = () => authStore.logout()
@@ -75,6 +90,10 @@ const logOut = () => authStore.logout()
       <h1 id="signup-title" class="title">
         Registra't i gaudeix de totes les funcionalitatss<br />
       </h1>
+
+      <section v-if="success" class="signed-in">
+        <p class="success">{{ successMessage }}</p>
+      </section>
 
       <!-- If already authenticated -->
       <section v-if="authStore.isAuthenticated" class="signed-in">
@@ -289,7 +308,6 @@ const logOut = () => authStore.logout()
   width: 100%;
 }
 
-
 /* Form */
 .form {
   width: 100%;
@@ -450,5 +468,12 @@ input:-webkit-autofill:active {
   text-align: center;
   font-size: 0.9rem;
   margin-top: 0.5rem;
+}
+
+.success {
+  color: #6aff6a;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.75rem;
 }
 </style>
