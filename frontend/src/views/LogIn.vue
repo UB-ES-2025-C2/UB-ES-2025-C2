@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/authStore'
-// keep your global CSS import if needed
-// import "../assets/css/main.css";
 
+const router = useRouter()
 const authStore = useAuthStore()
 
 const username = ref('')
@@ -14,24 +14,37 @@ onMounted(() => {
   authStore.initializeAuthStore()
 })
 
-const startSession = async () => {
-  window.location.href = '/'
-}
-
-const SignUp = () => {
-  window.location.href = '/SignUp'
-}
-
-const authenticateUser = () => {
+// ⬇️ This function now only logs in, then redirects automatically
+const authenticateUser = async () => {
   if (!username.value || !password.value) {
     alert('Please enter both username and password.')
     return
   }
-  authStore.login({ username: username.value, password: password.value })
+
+  try {
+    await authStore.login({
+      username: username.value,
+      password: password.value,
+    })
+
+    // If login succeeded → redirect automatically
+    if (authStore.isAuthenticated) {
+      router.push({ name: 'home' })
+    } else if (authStore.error) {
+      alert(authStore.error)
+    }
+  } catch (error) {
+    console.error('Login failed:', error)
+  }
+}
+
+const SignUp = () => {
+  router.push({ name: 'sign_up' })
 }
 
 const logOut = () => {
   authStore.logout()
+  router.push({ name: 'logIn' })
 }
 </script>
 
@@ -66,7 +79,7 @@ const logOut = () => {
           required
         />
 
-        <label class="label" for="password">Password</label>
+        <label class="label" for="password">Constrasenya</label>
         <div class="password-wrapper">
           <input
             id="password"
@@ -103,7 +116,7 @@ const logOut = () => {
         </div>
 
         <button class="btn btn-primary" :disabled="authStore.loading">
-          {{ authStore.loading ? 'Logging in...' : 'Iniciar Sessió' }}
+          {{ authStore.loading ? 'Iniciant Sessió...' : 'Iniciar Sessió' }}
         </button>
 
         <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
@@ -351,5 +364,4 @@ const logOut = () => {
   outline: 3px solid rgba(255, 45, 141, 0.6);
   outline-offset: 3px;
 }
-
 </style>
