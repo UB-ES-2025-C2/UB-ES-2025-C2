@@ -21,8 +21,6 @@ const successMessage = ref('')
 
 onMounted(() => {
   authStore.initializeAuthStore?.()
-  // Si el usuari ja està autenticat, no té sentit mostrar el registre:
-  if (authStore.isAuthenticated) router.replace('/')
 })
 
 const mismatch = computed(
@@ -69,10 +67,125 @@ const authenticateUser = async () => {
       router.push('/login')
     }, 2000)
   } catch (e) {
-    // Mostra l’error del store si existeix
-    formError.value = authStore.error || 'Error en el registre.'
-    // console opcional per a debug durant desenvolupament
-    console.error(e)
+    console.error('SIGNUP ERROR DEBUG:', e?.response?.status, e?.response?.data)
+    formError.value = humanizeSignupError(e)
+  }
+}
+
+// Robust error normalizer for signup
+function humanizeSignupError(e) {
+  // 0) No response (network/CORS)
+  if (!e?.response) {
+    return 'No es pot connectar amb el servidor. Revisa la connexió o la configuració de CORS.'
+  }
+
+  const { status, data } = e.response
+
+  // Utility: collect all strings inside an object/array to search
+  const collectStrings = (x, out = []) => {
+    if (typeof x === 'string') out.push(x)
+    else if (Array.isArray(x)) x.forEach((i) => collectStrings(i, out))
+    else if (x && typeof x === 'object') Object.values(x).forEach((v) => collectStrings(v, out))
+    return out
+  }
+
+  // 1) Common simple shapes
+  // string payload
+  if (typeof data === 'string') {
+    return classifyByContent(data)
+  }
+  // { detail: "..." }
+  if (typeof data?.detail === 'string') {
+    return classifyByContent(data.detail)
+  }
+  // { message: "..." } (Express, Nest…)
+  if (typeof data?.message === 'string') {
+    return classifyByContent(data.message)
+  }
+
+  // 2) Field-based errors
+  // DRF style: { email: ["..."], username: ["..."] }
+  if (data?.email) {
+    const msg = Array.isArray(data.email) ? data.email[0] : data.email
+    return preferEmailMessage(msg)
+  }
+  if (data?.username) {
+    const msg = Array.isArray(data.username) ? data.username[0] : data.username
+    if (looksLikeExists(msg)) return "Aquest nom d'usuari ja existeix."
+  }
+
+  // FastAPI validation: { detail: [ { loc: [...,'email'], msg: "..." }, ... ] }
+  if (Array.isArray(data?.detail)) {
+    const emailItem = data.detail.find((it) =>
+      JSON.stringify(it.loc || [])
+        .toLowerCase()
+        .includes('email'),
+    )
+    if (emailItem?.msg) return preferEmailMessage(emailItem.msg)
+    if (data.detail[0]?.msg) return data.detail[0].msg
+  }
+
+  // 3) Nested error containers
+  // { errors: { email: "..." } } or { error: { email: ["..."] } }
+  if (data?.errors?.email) return preferEmailMessage(data.errors.email)
+  if (data?.error?.email) return preferEmailMessage(data.error.email)
+
+  // { errors: [ { field: 'email', message: '...' } ] }
+  if (Array.isArray(data?.errors)) {
+    const eItem = data.errors.find((it) => (it.field || '').toLowerCase() === 'email')
+    if (eItem?.message) return preferEmailMessage(eItem.message)
+  }
+
+  // 4) Database-specific messages
+  // Prisma P2002 unique constraint
+  if (data?.code === 'P2002' || data?.errorCode === 'P2002') {
+    const metaTarget = (data?.meta?.target || []).join(',').toLowerCase()
+    if (metaTarget.includes('email')) return 'Aquest correu electrònic ja està registrat.'
+    return 'Ja existeix un registre duplicat.'
+  }
+
+  // Mongo duplicate key (E11000)
+  // e.g., { message: 'E11000 duplicate key error collection ... dup key: { email: "x@x.com" }' }
+  const all = collectStrings(data).join(' ').toLowerCase()
+  if (all.includes('e11000') || all.includes('duplicate key')) {
+    if (all.includes('email')) return 'Aquest correu electrònic ja està registrat.'
+    return 'Ja existeix un registre duplicat.'
+  }
+
+  // 5) Fallback by HTTP status
+  if (status === 409) return 'Ja existeix un compte amb aquestes dades.'
+  if (status === 400) return 'Dades invàlides en el formulari.'
+  return 'Error en el registre.'
+
+  // ---- helpers ----
+  function looksLikeExists(s = '') {
+    const t = String(s).toLowerCase()
+    // multilingual/variants for "already used/taken/existing/registered"
+    return /(exist|taken|used|in use|registered|duplicate|duplicat|ocupad|utilitzat|ya existe|registrad)/.test(
+      t,
+    )
+  }
+  function preferEmailMessage(msg) {
+    return looksLikeExists(msg)
+      ? 'Aquest correu electrònic ja està registrat.'
+      : typeof msg === 'string'
+        ? msg
+        : 'Problema amb el correu electrònic.'
+  }
+  function classifyByContent(s) {
+    const t = String(s).toLowerCase()
+    if (t.includes('email')) {
+      return looksLikeExists(t)
+        ? 'Aquest correu electrònic ja està registrat.'
+        : s || 'Problema amb el correu electrònic.'
+    }
+    if (t.includes('username') || t.includes('user name') || t.includes("nom d'usuari")) {
+      return looksLikeExists(t)
+        ? "Aquest nom d'usuari ja existeix."
+        : s || "Problema amb el nom d'usuari."
+    }
+    if (looksLikeExists(t)) return 'Ja existeix un compte amb aquestes dades.'
+    return s || 'Error en el registre.'
   }
 }
 
@@ -157,9 +270,6 @@ const goBackToLogin = () => router.push('/login')
             </svg>
           </button>
         </div>
-        <small id="passwordHelp" class="muted" aria-live="polite">
-          Utilitza com a mínim 8 caràcters.
-        </small>
 
         <label class="label" for="password_conf">Confirmació de la contrasenya</label>
         <div class="password-wrapper">
