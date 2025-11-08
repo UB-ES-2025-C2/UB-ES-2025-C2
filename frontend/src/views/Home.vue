@@ -23,6 +23,9 @@ function viewprofile() {
   const myid = authStore.user_id
   router.push({ name: 'profile', params: { id: myid } })
 }
+function goToSongDetail(songId) {
+  router.push({ name: 'song-by-id', params: { id: Number(songId) } })
+}
 
 /*mock data para playlists de prueba*/
 const mockPlaylists = ref([
@@ -81,7 +84,7 @@ const headerUsername = computed(() => {
   <!-- Canciones -->
   <h2>Cançons</h2>
   <ul class="cards-list">
-    <li v-for="song in apiStore.songs" :key="song.id" class="card">
+    <li v-for="song in apiStore.songs" :key="song.id" class="card" @click="goToSongDetail(song.id)">
       <!-- Imagen de la canción -->
       <div class="card-image">
         <img :src="song.cover" alt="Foto de canción" />
