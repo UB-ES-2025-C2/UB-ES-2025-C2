@@ -1,9 +1,9 @@
-name: Build & Push Frontend & Backend to Docker Hub for Preproduction
+name: Build & Push Frontend & Backend to Docker Hub for Production
 
 on:
   push:
     branches:
-      - staging
+      - prod
 
 jobs:
   build-and-push:
@@ -34,10 +34,10 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile-devops
           build-args: |
-            VITE_API_URL=${{ secrets.PREPROD_API_URL }}
+            VITE_API_URL=${{ secrets.PROD_API_URL }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:${{ steps.extract_branch.outputs.branch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-prod:${{ steps.extract_branch.outputs.branch }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-prod:latest
 
       # ---------- BACKEND ----------
       - name: Build and push BACKEND image
@@ -47,5 +47,5 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile-devops
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:${{ steps.extract_branch.outputs.branch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-prod:${{ steps.extract_branch.outputs.branch }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-prod:latest
