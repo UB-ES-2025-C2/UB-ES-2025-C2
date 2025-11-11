@@ -4,16 +4,6 @@ ARG PORT="8000"
 ARG SECRET_KEY="django-insecure-abcdef123456"
 ARG UID="988"
 
-# Add a user for the runner.
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid ${UID} \
-    "backend"
-
 # Set environment variables.
 # Prevents Python from writing pyc files to disk.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -37,14 +27,11 @@ RUN chown -R backend:backend /app
 WORKDIR /app
 
 # Copy the Django project to the container.
-ADD --chown=backend:backend ./music_space /app/music_space
-COPY --chown=backend:backend ./pyproject.toml ./manage.py ./README.md /app/
+ADD ./music_space /app/music_space
+COPY ./pyproject.toml ./manage.py ./README.md /app/
 
 # Run this command to synchronize all dependencies.
 RUN ["/bin/uv", "sync", "--no-cache", "--dev", "--no-group", "prod"]
-
-# Change permissions of the venv.
-RUN chown -R backend:backend ./.venv
 
 # Expose the Django port.
 EXPOSE ${PORT}

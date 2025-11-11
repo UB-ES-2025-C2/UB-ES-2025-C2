@@ -14,8 +14,8 @@ RUN mkdir /app
 WORKDIR /app
 
 # Copy the Django project to the container.
-ADD --chown=backend:backend ./music_space /app/music_space
-COPY --chown=backend:backend ./pyproject.toml ./manage.py ./README.md /app/
+ADD ./music_space /app/music_space
+COPY ./pyproject.toml ./manage.py ./README.md /app/
 
 # Set environment variables.
 # Prevents Python from buffering stdout and stderr.
@@ -30,16 +30,6 @@ ARG PORT
 ARG SECRET_KEY
 ARG UID
 
-# Add a user for the runner.
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid ${UID} \
-    "backend"
-
 # Set environment variables.
 # Prevents Python from buffering stdout and stderr.
 ENV PYTHONUNBUFFERED=1
@@ -53,7 +43,7 @@ ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend"
 ENV DJANGO_PORT=${PORT:-"8000"}
 
 # Copy the built app from the builder stage
-COPY --chown=backend:backend --from=builder /app /app
+COPY --from=builder /app /app
 
 # Set the working directory inside the container.
 WORKDIR /app
