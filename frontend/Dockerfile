@@ -30,18 +30,8 @@ FROM nginx:alpine AS production
 ARG PORT
 ARG UID
 
-# Add a user for the runner.
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid ${UID} \
-    "frontend"
-
 # Copy the build application
-COPY --chown=frontend:frontend --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose the Vue port.
 EXPOSE 80
