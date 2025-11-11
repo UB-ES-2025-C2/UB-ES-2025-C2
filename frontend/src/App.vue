@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
+import PlayerBar from './components/PlayerBar.vue' // ⬅️ nou
 
 const route = useRoute()
 </script>
@@ -17,7 +18,8 @@ const route = useRoute()
     <header>
       <Header />
     </header>
-    <div class="app-shell">
+    <div class="app-shell with-player">
+      <!-- ⬅️ coixí per al reproductor -->
       <div class="app-layout">
         <aside class="sidebar-card">
           <Sidebar />
@@ -27,6 +29,9 @@ const route = useRoute()
           <router-view />
         </main>
       </div>
+
+      <!-- Reproductor global, visible a tot el layout per defecte -->
+      <PlayerBar />
     </div>
   </template>
 </template>
@@ -39,12 +44,18 @@ const route = useRoute()
   display: block; /* your Login.vue already centers its contents */
 }
 
-/* --- your existing styles (unchanged) --- */
+/* --- existing styles --- */
 .app-shell {
   min-height: 100dvh;
   background: #000000;
   padding: 12px;
 }
+
+/* Reserva espai inferior per al reproductor global (~92px + marge) */
+.with-player {
+  padding-bottom: 104px;
+}
+
 .app-layout {
   display: grid;
   grid-template-columns: 300px 1fr;

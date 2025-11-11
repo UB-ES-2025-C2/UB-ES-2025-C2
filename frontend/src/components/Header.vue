@@ -41,8 +41,24 @@ const goHome = () => router.push({ name: 'home' })
 const goLogin = () => router.push({ name: 'logIn' })
 const goSignUp = () => router.push({ name: 'sign_up' })
 const goProfile = () => {
-  const id = authStore.user?.id ?? authStore.user?.username
-  if (id != null) router.push({ name: 'profile', params: { id } })
+  // si no hi ha sessió, porta a login
+  if (!authStore?.isAuthenticated) {
+    router.push({ name: 'logIn' })
+    menuOpen.value = false
+    return
+  }
+
+  // el teu store a vegades usa user_id; fem un fallback robust
+  const id = authStore.user_id ?? authStore.user?.id ?? authStore.user?.username
+
+  if (id == null) {
+    // si per algun motiu no tenim id, com a darrer recurs: home
+    router.push({ name: 'home' })
+  } else {
+    // la teva ruta és /profile/:id i props: true
+    router.push({ name: 'profile', params: { id: String(id) } })
+  }
+
   menuOpen.value = false
 }
 
@@ -362,5 +378,4 @@ const cancelLogout = () => {
 .btn-confirm:hover {
   background: #ff5aa8;
 }
-
 </style>
