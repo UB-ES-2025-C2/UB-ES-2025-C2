@@ -23,12 +23,14 @@
           <p class="meta">
             {{ song.artist }}
             <span v-if="song.topic"> • {{ song.topic }}</span>
-            <span v-if="durationSec"> • {{ formatTime(durationSec) }}</span>
+            <span v-if="isCurrentSong && player.duration">
+              • {{ formatTime(player.duration) }}
+            </span>
           </p>
 
           <div class="controls">
             <button class="btn play" @click="togglePlay">
-              <span v-if="!isPlaying">▶</span>
+              <span v-if="!(isCurrentSong && player.isPlaying)">▶</span>
               <span v-else>⏸</span>
             </button>
             <button class="btn ghost" title="Afegir a playlist">＋</button>
@@ -50,36 +52,15 @@
           <div class="t-title">{{ song.name }}</div>
           <div class="t-artist">{{ song.artist }}</div>
         </div>
-        <div class="t-time">{{ formatTime(durationSec) }}</div>
-      </div>
-
-      <!-- PROGRESS BAR -->
-      <div v-if="song.file_audio" class="player">
-        <div class="timeline">
-          <span class="t">{{ formatTime(currentTime) }}</span>
-          <input
-            type="range"
-            min="0"
-            :max="Math.max(durationSec, 0.001)"
-            step="0.01"
-            v-model.number="seekValue"
-            @input="onSeek"
-          />
-          <span class="t">{{ formatTime(durationSec) }}</span>
+        <div class="t-time">
+          <span v-if="isCurrentSong && player.duration">
+            {{ formatTime(player.duration) }}
+          </span>
+          <span v-else>—</span>
         </div>
       </div>
 
-      <!-- ÀUDIO ocult: fem servir controls propis -->
-      <audio
-        v-if="song.file_audio"
-        ref="audioRef"
-        :src="song.file_audio"
-        preload="metadata"
-        @loadedmetadata="onLoadedMetadata"
-        @timeupdate="onTimeUpdate"
-        @ended="onEnded"
-        style="display:none"
-      ></audio>
+      <!-- ⛔️ Barra de progrés i <audio> locals eliminats: ho gestiona PlayerBar.vue -->
     </div>
   </section>
 </template>
@@ -88,64 +69,40 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import api from "../services/api";
+import { usePlayerStore } from "@/store/playerStore";
 
 const route = useRoute();
+const player = usePlayerStore();
+
 const song = ref(null);
 const loading = ref(true);
 const error = ref("");
 
-const audioRef = ref(null);
-const isPlaying = ref(false);
-const durationSec = ref(0);
-const currentTime = ref(0);
-const seekValue = ref(0);
-
 const heroStyle = computed(() => ({ background: "linear-gradient(#1f415b, #102735)" }));
 const bgStyle = computed(() =>
-  song.value?.cover
-    ? { backgroundImage: `url('${song.value.cover}')` }
-    : {}
+  song.value?.cover ? { backgroundImage: `url('${song.value.cover}')` } : {}
 );
 
+// És la cançó que s’està reproduint?
+const isCurrentSong = computed(() => {
+  return !!(player.current && song.value && player.current.id === song.value.id);
+});
+
 function formatTime(sec) {
-  if (!sec || sec === Infinity) return "0:00";
+  if (!Number.isFinite(sec) || sec <= 0) return "0:00";
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+// Play/Pausa delegats al reproductor global
 function togglePlay() {
-  const a = audioRef.value;
-  if (!a) return;
-  if (a.paused) {
-    a.play();
-    isPlaying.value = true;
+  if (!song.value) return;
+  if (isCurrentSong.value) {
+    player.toggle();
   } else {
-    a.pause();
-    isPlaying.value = false;
+    player.playSong(song.value);
   }
-}
-
-function onLoadedMetadata(e) {
-  durationSec.value = e.target.duration || 0;
-}
-
-function onTimeUpdate(e) {
-  currentTime.value = e.target.currentTime || 0;
-  // si l’usuari no està arrossegant, mantenim el range sincronitzat
-  seekValue.value = currentTime.value;
-}
-
-function onSeek() {
-  const a = audioRef.value;
-  if (!a) return;
-  a.currentTime = seekValue.value;
-}
-
-function onEnded() {
-  isPlaying.value = false;
-  currentTime.value = 0;
-  seekValue.value = 0;
 }
 
 onMounted(async () => {
@@ -228,7 +185,7 @@ onMounted(async () => {
   font-size: 16px;
 }
 .play {
-  background: #ff3896; /* verd Spotify */
+  background: #ff3896;
   color: #fff;
   width: 56px;
   height: 56px;
@@ -267,64 +224,13 @@ onMounted(async () => {
   border-radius: 10px;
   margin: 4px 16px;
 }
-.track-row:hover {
-  background: rgba(255,255,255,0.06);
-}
-.idx {
-  color: #cbd5e1;
-  text-align: center;
-}
-.track-main .t-title {
-  font-weight: 600;
-}
-.track-main .t-artist {
-  color: #a3a3a3;
-  font-size: 0.95rem;
-}
-.t-time {
-  justify-self: end;
-  color: #cbd5e1;
-}
-
-/* PLAYER (barra de progrés) */
-.player {
-  padding: 8px 24px 24px;
-}
-.timeline {
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
-  align-items: center;
-  gap: 12px;
-}
-.timeline .t {
-  color: #cbd5e1;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-.timeline input[type="range"] {
-  width: 100%;
-  appearance: none;
-  height: 4px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 999px;
-  outline: none;
-}
-.timeline input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: #ff3896;
-  margin-top: -5px;
-  box-shadow: 0 0 0 6px rgba(30, 215, 96, 0.25);
-}
-.timeline input[type="range"]::-moz-range-thumb {
-  width: 14px; height: 14px; border: none; border-radius: 50%;
-  background: #ff3896;
-}
+.track-row:hover { background: rgba(255,255,255,0.06); }
+.idx { color: #cbd5e1; text-align: center; }
+.track-main .t-title { font-weight: 600; }
+.track-main .t-artist { color: #a3a3a3; font-size: 0.95rem; }
+.t-time { justify-self: end; color: #cbd5e1; }
 
 /* FEEDBACK */
-.loading, .error {
-  padding: 2rem;
-}
+.loading, .error { padding: 2rem; }
 .error { color: #fca5a5; }
 </style>
