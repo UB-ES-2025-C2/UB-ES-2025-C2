@@ -1,9 +1,9 @@
-name: Build & Push Frontend & Backend to Docker Hub for Preproduction
+name: Build & Push Frontend & Backend to Docker Hub for Production
 
 on:
   push:
     branches:
-      - preprod
+      - prod
 
 jobs:
   build-and-push:
@@ -32,10 +32,13 @@ jobs:
         with:
           push: true
           context: ./frontend
-          file: ./frontend/Dockerfile-devops
+          file: ./frontend/Dockerfile
+          build-args: |
+            PORT=80
+            VITE_API_URL=${{ secrets.PROD_API_URL }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:${{ steps.extract_branch.outputs.branch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-prod:${{ steps.extract_branch.outputs.branch }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-prod:latest
 
       # ---------- BACKEND ----------
       - name: Build and push BACKEND image
@@ -43,7 +46,9 @@ jobs:
         with:
           push: true
           context: ./backend
-          file: ./backend/Dockerfile-devops
+          file: ./backend/Dockerfile
+          build-args: |
+            PORT=80
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:${{ steps.extract_branch.outputs.branch }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-prod:${{ steps.extract_branch.outputs.branch }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-prod:latest
