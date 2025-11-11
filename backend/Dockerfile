@@ -3,6 +3,7 @@ FROM python:3.14-alpine AS builder
 ARG PORT="8000"
 ARG SECRET_KEY="django-insecure-abcdef123456"
 ARG UID="988"
+ARG HOST="0.0.0.0"
 
 # Copy UV from the UV image.
 COPY --from=ghcr.io/astral-sh/uv:latest --chown=backend:backend /uv /uvx /bin/
@@ -29,6 +30,7 @@ FROM python:3.14-alpine AS production
 ARG PORT
 ARG SECRET_KEY
 ARG UID
+ARG HOST
 
 # Set environment variables.
 # Prevents Python from buffering stdout and stderr.
@@ -38,7 +40,7 @@ ENV SECRET_KEY=${SECRET_KEY:-"django-insecure-abcdef123456"}
 # Deactivate debug mode for Django.
 ENV DJANGO_DEBUG="0"
 # Allowed hosts for Django.
-ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend"
+ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend${HOST:-"0.0.0.0"}"
 # Port for Django
 ENV DJANGO_PORT=${PORT:-"8000"}
 

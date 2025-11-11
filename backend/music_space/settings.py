@@ -15,12 +15,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR.parent / ".env")  # Carrega les variables del .env
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +24,7 @@ load_dotenv(BASE_DIR.parent / ".env")  # Carrega les variables del .env
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=0))
+DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="0"))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
@@ -97,7 +93,6 @@ DATABASES = {
         },
     }
 }
-
 
 
 # Password validation
