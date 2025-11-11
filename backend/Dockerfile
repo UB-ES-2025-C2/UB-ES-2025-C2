@@ -1,32 +1,74 @@
-# Use the official Python runtime image
-FROM python:3.13
+# Use the official Python image for the builder stage.
+FROM python:3.14-alpine AS builder
+ARG PORT="8000"
+ARG SECRET_KEY="django-insecure-abcdef123456"
+ARG UID="988"
 
-# Create the app directory
+# Copy UV from the UV image.
+COPY --from=ghcr.io/astral-sh/uv:latest --chown=backend:backend /uv /uvx /bin/
+
+# Create the app directory.
 RUN mkdir /app
 
-# Set the working directory inside the container
+# Set the working directory inside the container.
 WORKDIR /app
 
-# Set environment variables
-# Prevents Python from writing pyc files to disk
-ENV PYTHONDONTWRITEBYTECODE=1
-#Prevents Python from buffering stdout and stderr
+# Copy the Django project to the container.
+ADD --chown=backend:backend ./music_space /app/music_space
+COPY --chown=backend:backend ./pyproject.toml ./manage.py ./README.md /app/
+
+# Set environment variables.
+# Prevents Python from buffering stdout and stderr.
 ENV PYTHONUNBUFFERED=1
 
-# Upgrade pip
-RUN pip install --upgrade pip
+# Run this command to synchronize all dependencies.
+RUN ["/bin/uv", "sync", "--no-dev", "--group", "prod"]
 
-# Copy the Django project  and install dependencies
-COPY requirements.txt  /app/
+# Use the official Python image for the production stage.
+FROM python:3.14-alpine AS production
+ARG PORT
+ARG SECRET_KEY
+ARG UID
 
-# run this command to install all dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Add a user for the runner.
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid ${UID} \
+    "backend"
 
-# Copy the Django project to the container
-COPY . /app/
+# Set environment variables.
+# Prevents Python from buffering stdout and stderr.
+ENV PYTHONUNBUFFERED=1
+# Secret key for the Django database.
+ENV SECRET_KEY=${SECRET_KEY:-"django-insecure-abcdef123456"}
+# Deactivate debug mode for Django.
+ENV DJANGO_DEBUG="0"
+# Allowed hosts for Django.
+ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend"
+# Port for Django
+ENV DJANGO_PORT=${PORT:-"8000"}
 
-# Expose the Django port
-EXPOSE 8000
+# Copy the built app from the builder stage
+COPY --chown=backend:backend --from=builder /app /app
 
-# Run Django’s development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Set the working directory inside the container.
+WORKDIR /app
+
+# Expose the Django port.
+EXPOSE ${PORT}
+
+# Change the user.
+# USER backend:backend -> Failed canonicalization of Python.
+
+# Change the stop singal.
+STOPSIGNAL SIGQUIT
+
+# Activate the virtual environment.
+RUN source ./.venv/bin/activate
+
+# Start the application using Gunicorn.
+CMD ["sh", "-c", "./.venv/bin/gunicorn --bind 0.0.0.0:$DJANGO_PORT --workers 3 music_space.wsgi:application"]

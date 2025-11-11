@@ -270,6 +270,9 @@ desktop.ini
 # Private folder
 private
 
+# Environment variables
+*.env*
+
 # End of project agnostic ignores
 
 
@@ -277,5 +280,13 @@ private
 
 
 # Start of project specific ignores
+
+# Django migrations
+api/migrations
+
+# Uploads folder
+uploads
+profile_pics
+covers
 
 # End of project specific ignores
