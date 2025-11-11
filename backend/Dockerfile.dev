@@ -40,4 +40,4 @@ EXPOSE ${PORT}
 # USER backend:backend -> Failed canonicalization of Python.
 
 # Run Django’s development server.
-CMD ["uv", "run", "--no-cache", "--dev", "--no-group", "prod", "music-space", "runserver", "0.0.0.0:${PORT}"]
+CMD ["sh", "-c", "uv run --no-cache --dev --no-group prod music-space runserver 0.0.0.0:$PORT"]
