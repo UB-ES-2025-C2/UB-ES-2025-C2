@@ -49,5 +49,10 @@
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.1.14"
-  }
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs][Vue script setup docs] to learn more.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
