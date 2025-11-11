@@ -6,4 +6,4 @@ class ApiConfig(AppConfig):
     name = 'music_space.api'
 
     def ready(self):
-        import music_space.api.signals
+        import music_space.api.signals  # noqa: F401

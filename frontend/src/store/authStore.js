@@ -10,12 +10,14 @@ export const useAuthStore = defineStore("auth", {
     isAuthenticated: false,
     loading: false,
     error: null,
+    user_id: null,
   }),
   actions: {
     initializeAuthStore() {
       this.username = localStorage.getItem("username");
       this.accessToken = localStorage.getItem("access");
       this.refreshToken = localStorage.getItem("refresh");
+      this.user_id = localStorage.getItem("id");
       this.isAuthenticated = !!this.accessToken;
     },
     login(user) {
@@ -32,6 +34,14 @@ export const useAuthStore = defineStore("auth", {
           localStorage.setItem("username", this.username);
           localStorage.setItem("access", this.accessToken);
           localStorage.setItem("refresh", this.refreshToken);
+          AuthService.getUserByToken().then((res) => {
+            const user = res.data;
+            this.user_id = user.id;
+            this.username = user.nickname;
+            localStorage.setItem("username", this.username);
+            localStorage.setItem("id", user.id);
+
+          });
         })
         .catch((error) => {
           console.log("error", error);
@@ -54,10 +64,9 @@ export const useAuthStore = defineStore("auth", {
     async signUp(user){
       // Create User:
       await AuthService.signUp(user);
-      this.login({
-            username: user.username,
-            password: user.password,
-      });
+    },
+    async changeProfilePicture(file) {
+      return AuthService.changeProfilePicture(file);
     }
   }
 });

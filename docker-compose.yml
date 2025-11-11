@@ -1,0 +1,90 @@
+services:
+  # Production backend service.
+  backend:
+    build:
+      args:
+        PORT: 80
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: django-backend
+    image: django-backend
+    ports:
+      - "80:80"
+
+  # Production backend service.
+  backend-dev:
+    build:
+      args:
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: django-backend-dev
+    develop:
+      watch:
+        - path: ./music_space
+          target: /app/music_space
+          action: sync
+        - path: ./pyproject.toml
+          target: /app/pyproject.toml
+          action: restart
+        - path: ./manage.py
+          target: /app/manage.py
+          action: sync
+    image: django-backend-dev
+    networks:
+      - no-internet
+    ports:
+      - "8000:8000"
+
+  # Production frontend service.
+  frontend:
+    build:
+      args:
+        PORT: 80
+        UID: 988
+        VITE_API_URL: https://localhost:8000
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vue-frontend
+    image: vue-frontend
+    networks:
+      - no-internet
+    ports:
+      - "5173:80"
+
+  # Production frontend service.
+  frontend-dev:
+    build:
+      args:
+        PORT: 5173
+        UID: 988
+        VITE_API_URL: https://localhost:8000
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: vue-frontend-dev
+    develop:
+      watch:
+        - path: ./src
+          target: /app/src
+          action: sync
+        - path: ./package.json
+          target: /app/package.json
+          action: restart
+        - path: ./vite.config.js
+          target: /app/vite.config.js
+          action: restart
+    image: vue-frontend-dev
+    networks:
+      - no-internet
+    ports:
+      - "5173:5173"
+
+networks:
+  no-internet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.1.0/24
+    internal: true

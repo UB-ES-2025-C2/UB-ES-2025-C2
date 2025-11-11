@@ -3,7 +3,9 @@ URL configuration for battleship project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
+
+Examples
+--------
 Function views
     1. Add an import:  from my_app import views
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
@@ -27,10 +29,14 @@ urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path(r'ht/', include('health_check.urls')),
-    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("api/v1/", include('music_space.api.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static('/uploads/', document_root=settings.BASE_DIR / 'uploads')
+    urlpatterns += static('/covers/', document_root=settings.BASE_DIR / 'covers')
+    urlpatterns += static(
+        '/profile_pics/', document_root=settings.BASE_DIR / 'profile_pics'
+    )

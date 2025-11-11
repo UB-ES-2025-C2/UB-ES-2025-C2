@@ -3,7 +3,7 @@
 title: Diagrama ER per gestionar la red social
 ---
 erDiagram
-    User{
+    User {
         string name
     }
     UserProfile {
@@ -20,10 +20,11 @@ erDiagram
         string description
         string topic
         date createdAt
+        PNG cover
     }
 
 
-    Generes{
+    Generes {
         string name
     }
 
@@ -31,18 +32,23 @@ erDiagram
         date followDate
     }
 
-
     Song {
         int songId PK
         string name
         mp4 file
         date uploadDate
         int ownerId
+        PNG cover
+    }
+
+    PlaylistSong{
+        int songId PK
+        int playlistId PK
+        int position
     }
     ActionForYouPage {
         string reasonWhyIsRecomend
     }
-
 
     Favorite {
         date createdAt
@@ -51,7 +57,6 @@ erDiagram
     Rating {
         int value
     }
-
 
     Comment {
         int anonymous_level
@@ -62,52 +67,49 @@ erDiagram
         string content
         date sentAt
     }
+    UserProfile }o--o{ Song : "Author"
     User 1 to 1 UserProfile: is
-    PlayList }o--o{ Song : "contains"
+    PlayList }o--o{ Song: "contains"
     UserProfile one or more to one or more PlayList: owner
-    UserProfile }|--|{ PlayList : watched
-
-    UserProfile ||--|| Favorite : "adds"
-    Favorite ||--o{ Song : "Favorite songs"
-    Rating ||--|| Song : "Associat"
+    UserProfile }|--|{ PlayList: watched
+    UserProfile ||--|| Favorite: "adds"
+    Favorite ||--o{ Song: "Favorite songs"
+    Rating ||--|| Song: "Associat"
     UserProfile ||--o{ Rating: "done by"
-
-    UserProfile ||--o{ Comment : "Commented"
-    Message }o--|| Follow : "Send"
-    Comment ||--|| Song : "In"
-
-    UserProfile ||--o{ Follow : "follows"
-    UserProfile ||--o{ Follow : "followed"
-
-    ActionForYouPage ||--o{ Follow : "Recomend something"
+    UserProfile ||--o{ Comment: "Commented"
     UserProfile ||--o{ Generes: "Favorite Generes"
-    Song ||--o{ Generes:"Generos"
-    Song ||--o{ UserProfile : "Author"
+    Song ||--o{ Generes: "Generos"
+
+
+    Message }o--|| Follow: "Send"
+    Comment ||--|| Song: "In"
+    UserProfile ||--o{ Follow: "follows"
+    UserProfile ||--o{ Follow: "followed"
+    ActionForYouPage ||--o{ Follow: "Recomend something"
 
 
 
 ```
-    classDef weakEntity fill:#f9f,stroke-dasharray: 5 5
-    class ActionForYouPage weakEntity
 
+classDef weakEntity fill:#f9f,stroke-dasharray: 5 5
+class ActionForYouPage weakEntity
 
-
-| Mètode | URL                                                 | Descripció                   |
-| ------ | --------------------------------------------------- | ---------------------------- |
-| GET    | `/api/v1/userprofile/`                                    |           |
-| POST   | `/api/v1/userprofile/`                                    |             |
-| GET    | `/api/v1/userprofile/{id}/`                               |         |
-| PUT    | `/api/v1/userprofile/{id}/`                               | Modificar la informació d'un Usuari    |
-| PATCH  | `/api/v1/userprofile/{id}/`                               | Modificar la informació d'un Usuari   |
-| DELETE | `/api/v1/userprofile/{id}/`                               | Eliminar un Usuari         |
-| GET    | `/api/v1/playlist/`                                    | Llistat de cançons          |
-| POST   | `/api/v1/playlist/`                                    | Crear una llista de cançons (playlist)            |
-| GET    | `/api/v1/playlist/{id}/`                               | Veure la informació d'una playlist        |
-| PUT    | `/api/v1/playlist/{id}/`                               | Modificar la informació playlist    |
-| PATCH  | `/api/v1/playlist/{id}/`                               | Modificar la informació playlist    |
-| DELETE | `/api/v1/playlist/{id}/`                               | Eliminar una partida         |
-| GET    | `/api/v1/playlist/{id}/songs/`                       | Llistat de jugadors en una partida    |
-| POST   | `/api/v1/playlist/{id}/songs/`                       | Afegeix una canço a la playlist (codi: #{"song_id":1})      |
-| GET    | `/api/v1/playlist/{gid}/songs/{pid}/`                | Veure les dades d'un jugador de la partida     |
-| DELETE | `/api/v1/playlist/{gid}/songs/{pid}/`                | Eliminar un jugador de la partida   |
-
+| Mètode | URL                                     | Descripció                                             |
+|--------|-----------------------------------------|--------------------------------------------------------|
+| GET    | `/api/v1/userprofile/`                  |                                                        |
+| POST   | `/api/v1/userprofile/`                  |                                                        |
+| GET    | `/api/v1/userprofile/{id}/`             |                                                        |
+| PUT    | `/api/v1/userprofile/{id}/`             | Modificar la informació d'un Usuari                    |
+| PATCH  | `/api/v1/userprofile/{id}/`             | Modificar la informació d'un Usuari                    |
+| DELETE | `/api/v1/userprofile/{id}/`             | Eliminar un Usuari                                     |
+| GET    | `/api/v1/playlist/`                     | Llistat de cançons                                     |
+| POST   | `/api/v1/playlist/`                     | Crear una llista de cançons (playlist)                 |
+| GET    | `/api/v1/playlist/{id}/`                | Veure la informació d'una playlist                     |
+| PUT    | `/api/v1/playlist/{id}/`                | Modificar la informació playlist                       |
+| PATCH  | `/api/v1/playlist/{id}/`                | Modificar la informació playlist                       |
+| DELETE | `/api/v1/playlist/{id}/`                | Eliminar una partida                                   |
+| GET    | `/api/v1/playlist/{id}/songs/`          | Llistat de jugadors en una partida                     |
+| POST   | `/api/v1/playlist/{id}/songs/`          | Afegeix una canço a la playlist (codi: #{"song_id":1}) |
+| GET    | `/api/v1/playlist/{gid}/songs/{pid}/`   | Veure les dades d'un jugador de la partida             |
+| DELETE | `/api/v1/playlist/{gid}/songs/{pid}/`   | Eliminar un jugador de la partida                      |
+|        | userprofile/by-username/<str:username>/ |                                                        |
