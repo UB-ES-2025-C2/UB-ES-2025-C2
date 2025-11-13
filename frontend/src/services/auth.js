@@ -8,6 +8,19 @@ class AuthService {
     })
   }
 
+  signUp(user) {
+    const accessToken = this.getAccessToken();
+    return this.getAxiosInstance().post("/api/v1/user/", {
+        username: user.username,
+        email: user.email,
+        password:user.password,
+        password_conf: user.password_conf,
+      }, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+      });
+  }
   refresh(refreshToken) {
     return Promise.resolve(
       JSON.stringify({
@@ -65,7 +78,6 @@ class AuthService {
     })
     return instance
   }
-
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL
     const accessToken = this.getAccessToken()

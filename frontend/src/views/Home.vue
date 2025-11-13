@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
-import { useApiStore } from '../store/guestApi.js'
+import { useAuthStore } from '../apiStore/authStore'
+import { useApiStore } from '../apiStore/guestApi.js'
 
 const authStore = useAuthStore()
 const apiStore = useApiStore()
@@ -19,6 +19,7 @@ const buscarUsuari = async () => {
 const buscarNUsers = async () => {
   await apiStore.searchNUsers(nusers.value)
 }
+
 function viewprofile() {
   const myid = authStore.user_id
   router.push({ name: 'profile', params: { id: myid } })

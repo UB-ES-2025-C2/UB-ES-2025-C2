@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(
             validated_data['username'],
             validated_data['email'],
-            validated_data['password'],
+            validated_data['password']
         )
 
 

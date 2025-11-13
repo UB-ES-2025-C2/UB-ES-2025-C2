@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useApiStore } from "../store/guestApi.js";
+import { useApiStore } from "../apiStore/guestApi.js";
 
 const route = useRoute();
 const playlistId = route.params.id;

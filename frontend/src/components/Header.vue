@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -22,7 +22,11 @@ const menuOpen = ref(false)
 const menuRef = ref(null)
 const btnRef = ref(null)
 
-const avatarUrl = computed(() => authStore.user?.avatarUrl || '/default-avatar.png')
+const avatarUrl = computed(() => {
+  return authStore.isAuthenticated && authStore.avatarUrl
+    ? authStore.avatarUrl
+    : '/default-avatar.png';
+});
 
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)
 

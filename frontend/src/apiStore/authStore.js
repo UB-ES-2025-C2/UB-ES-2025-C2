@@ -11,6 +11,7 @@ export const useAuthStore = defineStore("auth", {
     loading: false,
     error: null,
     user_id: null,
+    avatarUrl: null,
   }),
   actions: {
     initializeAuthStore() {
@@ -18,6 +19,7 @@ export const useAuthStore = defineStore("auth", {
       this.accessToken = localStorage.getItem("access");
       this.refreshToken = localStorage.getItem("refresh");
       this.user_id = localStorage.getItem("id");
+      this.avatarUrl = localStorage.getItem("avatarUrl");
       this.isAuthenticated = !!this.accessToken;
     },
     login(user) {
@@ -30,18 +32,10 @@ export const useAuthStore = defineStore("auth", {
           this.accessToken = response.data.access;
           this.refreshToken = response.data.refresh;
           this.isAuthenticated = true;
-
-          localStorage.setItem("username", this.username);
           localStorage.setItem("access", this.accessToken);
           localStorage.setItem("refresh", this.refreshToken);
-          AuthService.getUserByToken().then((res) => {
-            const user = res.data;
-            this.user_id = user.id;
-            this.username = user.nickname;
-            localStorage.setItem("username", this.username);
-            localStorage.setItem("id", user.id);
 
-          });
+          return this.refreshUserInfo();
         })
         .catch((error) => {
           console.log("error", error);
@@ -53,20 +47,38 @@ export const useAuthStore = defineStore("auth", {
           this.loading = false;
         });
     },
+
+    refreshUserInfo() {
+      return AuthService.getUserByToken().then((res) => {
+        const user = res.data;
+        this.user_id = user.id;
+        this.username = user.nickname;
+        this.avatarUrl = user.profilePic;
+        localStorage.setItem("username", this.username);
+        localStorage.setItem("id", user.id);
+        localStorage.setItem("avatarUrl", this.avatarUrl);
+      });
+    },
+
     logout() {
       this.accessToken = null;
       this.refreshToken = null;
       this.isAuthenticated = false;
+      this.avatarUrl = null;
+      this.user_id = null;
+      this.username = null;
       localStorage.removeItem("username");
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
+      localStorage.removeItem("id");
+      localStorage.removeItem("avatarUrl");
     },
     async signUp(user){
       // Create User:
       await AuthService.signUp(user);
     },
     async changeProfilePicture(file) {
-      return AuthService.changeProfilePicture(file);
+      return AuthService.changeProfilePicture(this.user_id, file);
     }
   }
 });

@@ -34,9 +34,8 @@ urlpatterns = [
     path("api/v1/", include('music_space.api.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static('/uploads/', document_root=settings.BASE_DIR / 'uploads')
-    urlpatterns += static('/covers/', document_root=settings.BASE_DIR / 'covers')
-    urlpatterns += static(
-        '/profile_pics/', document_root=settings.BASE_DIR / 'profile_pics'
-    )
+urlpatterns += static('/songs_folder/', document_root=settings.BASE_DIR / 'songs_folder')
+urlpatterns += static('/covers/', document_root=settings.BASE_DIR / 'covers')
+urlpatterns += static(
+'/profile_pics/', document_root=settings.BASE_DIR / 'profile_pics'
+)

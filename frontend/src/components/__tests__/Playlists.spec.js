@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import Playlists from '../../views/Playlists.vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { useApiStore } from '../../store/guestApi.js'
+import { useApiStore } from '../../apiStore/guestApi.js'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock de vue-router
