@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
-import PlayerBar from './components/PlayerBar.vue' // ⬅️ nou
+import PlayerBar from './components/PlayerBar.vue'
 
 const route = useRoute()
 </script>
@@ -19,7 +19,7 @@ const route = useRoute()
       <Header />
     </header>
     <div class="app-shell with-player">
-      <!-- ⬅️ coixí per al reproductor -->
+      <!-- coixí per al reproductor -->
       <div class="app-layout">
         <aside class="sidebar-card">
           <Sidebar />

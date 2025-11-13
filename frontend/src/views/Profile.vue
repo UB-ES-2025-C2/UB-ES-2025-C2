@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useApiStore } from "../store/guestApi.js";
-import auth from "@/services/auth.js";
+import { useApiStore } from "../apiStore/guestApi.js";
+import { useAuthStore } from "@/apiStore/authStore.js";
 
 const route = useRoute();
 const user_id = route.params.id;
 const api = useApiStore();
-
+const auth = useAuthStore();
 // Mockdata de seguidors y seguint
 const mockFollowers = 123;
 const mockFollowing = 45;
@@ -40,8 +40,9 @@ function onFileSelected(event) {
   selectedFile.value = file;
   //previewImage.value = URL.createObjectURL(file);
   // Aquí pots fer el POST a la teva API per pujar la imatge
-  auth.changeProfilePicture(user_id, file).then((response) => {
+  auth.changeProfilePicture(file).then((response) => {
     if (response.status === 200) {
+      auth.refreshUserInfo();
       previewImage.value = URL.createObjectURL(file);
     }
   }).catch((error) => {

@@ -69,7 +69,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import api from "../services/api";
-import { usePlayerStore } from "@/store/playerStore";
+import { usePlayerStore } from "@/piniaStore/playerStore";
 
 const route = useRoute();
 const player = usePlayerStore();

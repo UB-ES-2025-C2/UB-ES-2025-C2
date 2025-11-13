@@ -8,7 +8,7 @@ import SongDetailById from '../views/SongDetailById.vue'
 import Playlists from '../views/Playlists.vue'
 import Profile from '../views/Profile.vue'
 
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const routes = [
   {

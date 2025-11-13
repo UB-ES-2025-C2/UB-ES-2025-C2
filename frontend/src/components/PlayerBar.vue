@@ -1,7 +1,7 @@
 <!-- /src/components/PlayerBar.vue -->
 <script setup>
 import { computed, ref } from 'vue'
-import { usePlayerStore } from '@/store/playerStore'
+import { usePlayerStore } from '@/piniaStore/playerStore'
 
 const p = usePlayerStore()
 

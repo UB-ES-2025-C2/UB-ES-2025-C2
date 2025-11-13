@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils'
 import Home from '../../views/Home.vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { useAuthStore } from '../../store/authStore.js'
-import { useApiStore } from '../../store/guestApi.js'
+import { useAuthStore } from '../../apiStore/authStore.js'
+import { useApiStore } from '../../apiStore/guestApi.js'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 describe('Home.vue', () => {

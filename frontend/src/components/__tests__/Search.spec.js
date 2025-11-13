@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import Search from '../../views/Search.vue'
 import { createPinia, setActivePinia } from 'pinia'
-import { useApiStore } from '../../store/guestApi.js'
+import { useApiStore } from '../../apiStore/guestApi.js'
 
 // MOCK de useRoute y useRouter
 const mockRoute = { query: { q: 'prueba' } }

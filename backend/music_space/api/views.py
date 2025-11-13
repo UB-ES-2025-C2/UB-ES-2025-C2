@@ -49,7 +49,10 @@ class SongViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(authors=userprofile)
         return qs
-
+    def perform_create(self, serializer):
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        song = serializer.save()
+        song.authors.add(userprofile)
 
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
@@ -68,6 +71,11 @@ class PlayListViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(owner=userprofile)
         return qs
+
+    def perform_create(self, serializer):
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        playlist = serializer.save()
+        playlist.owner.add(userprofile)
 
 
 class PlaylistSongViewSet(viewsets.ModelViewSet):
@@ -214,5 +222,5 @@ class SongNameSearchView(APIView):
 class UserProfileByTokenView(APIView):
     def get(self, request):
         profile = get_object_or_404(UserProfile, user=request.user)
-        serializer = UserProfileSerializer(profile)
+        serializer = UserProfileSerializer(profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

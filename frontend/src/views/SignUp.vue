@@ -2,7 +2,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -45,31 +45,26 @@ const authenticateUser = async () => {
     return
   }
 
-  try {
-    // IMPORTANT: signUp NO ha de guardar token ni marcar isAuthenticated
-    await authStore.signUp({
-      username: username.value,
-      email: email.value,
-      password: password.value,
-      password_conf: password_conf.value,
-    })
+  await authStore.signUp({
+    username: username.value,
+    email: email.value,
+    password: password.value,
+    password_conf: password_conf.value,
+  })
 
-    // Xarxa de seguretat per garantir que NO quedem loguejats si el backend envia token:
-    if (authStore.isAuthenticated) {
-      await (authStore.logout?.() ?? Promise.resolve())
-    }
-
-    success.value = true
-    successMessage.value = 'El teu usuari s’ha creat correctament. Ara podràs iniciar sessió.'
-
-    // Redirecció suau a la pantalla d'inici de sessió
-    setTimeout(() => {
-      router.push('/login')
-    }, 2000)
-  } catch (e) {
-    console.error('SIGNUP ERROR DEBUG:', e?.response?.status, e?.response?.data)
-    formError.value = humanizeSignupError(e)
+  // Xarxa de seguretat per garantir que NO quedem loguejats si el backend envia token:
+  if (authStore.isAuthenticated) {
+    await (authStore.logout?.() ?? Promise.resolve())
   }
+
+  success.value = true
+  successMessage.value = 'El teu usuari s’ha creat correctament. Ara podràs iniciar sessió.'
+
+  // Redirecció suau a la pantalla d'inici de sessió
+  setTimeout(() => {
+    router.push('/login')
+  }, 2000)
+
 }
 
 // Robust error normalizer for signup

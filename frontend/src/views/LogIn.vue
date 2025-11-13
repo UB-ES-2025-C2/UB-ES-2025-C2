@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -14,28 +14,21 @@ onMounted(() => {
   authStore.initializeAuthStore()
 })
 
-// ⬇️ This function now only logs in, then redirects automatically
 const authenticateUser = async () => {
   if (!username.value || !password.value) {
     alert('Please enter both username and password.')
     return
   }
 
-  try {
-    await authStore.login({
-      username: username.value,
-      password: password.value,
-    })
+  await authStore.login({
+    username: username.value,
+    password: password.value,
+  })
 
-    // If login succeeded → redirect automatically
-    if (authStore.isAuthenticated) {
-      router.push({ name: 'home' })
-    } else if (authStore.error) {
-      alert(authStore.error)
-    }
-  } catch (error) {
-    console.error('Login failed:', error)
+  if (authStore.isAuthenticated) {
+    router.push({ name: 'home' })
   }
+
 }
 
 const SignUp = () => {
@@ -46,6 +39,7 @@ const logOut = () => {
   authStore.logout()
   router.push({ name: 'logIn' })
 }
+
 </script>
 
 <template>
