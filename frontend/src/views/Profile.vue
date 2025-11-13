@@ -51,6 +51,13 @@ function onFileSelected(event) {
 
 }
 
+function editProfile() {
+  // Pots obrir un modal amb un formulari o redirigir a una pàgina d'edició
+  // Exemple amb redirecció:
+  window.location.href = `/profile/edit/${user_id}`;
+}
+
+
 onMounted(async () => {
   // Primer obtenim les cançons i playlists
   await runUserSongs(user_id);
@@ -64,7 +71,9 @@ onMounted(async () => {
       followers: followers.value.length,
       following: following.value.length,
       id_user: user_id,
-      profile_picture: found.profilePic
+      profile_picture: found.profilePic,
+      description: found.description
+
     };
   }
 });
@@ -96,7 +105,15 @@ onMounted(async () => {
         <p class="followers">
           Seguidors: {{ userData.followers }} · Seguint: {{ userData.following }}
         </p>
+        <p> {{ userData.description}}</p>
       </div>
+      <button
+        v-if="auth.user_id === user_id"
+        @click="editProfile"
+        class="edit-profile-btn"
+      >
+        Modificar perfil
+      </button>
     </div>
 
     <!-- Cançons -->
@@ -230,4 +247,21 @@ onMounted(async () => {
   font-size: 0.85rem;
   margin: 0;
 }
+
+.edit-profile-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #1db954;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.edit-profile-btn:hover {
+  background-color: #1ed760;
+}
+
 </style>
