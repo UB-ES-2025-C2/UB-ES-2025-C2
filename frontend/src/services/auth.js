@@ -69,6 +69,12 @@ class AuthService {
       }
     );
   }
+  async updateUserProfile(user_id, data) {
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${user_id}/`,
+      data
+    );
+  }
 
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL

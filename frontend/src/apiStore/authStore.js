@@ -79,6 +79,10 @@ export const useAuthStore = defineStore("auth", {
     },
     async changeProfilePicture(file) {
       return AuthService.changeProfilePicture(this.user_id, file);
+    },
+    async updateUserProfile(data) {
+      return AuthService.updateUserProfile(this.user_id, data);
     }
+
   }
 });

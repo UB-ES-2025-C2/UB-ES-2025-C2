@@ -7,6 +7,7 @@ import User from '../views/User.vue'
 import SongDetailById from '../views/SongDetailById.vue'
 import Playlists from '../views/Playlists.vue'
 import Profile from '../views/Profile.vue'
+import EditProfile from '../views/EditProfile.vue'
 
 import { useAuthStore } from '../apiStore/authStore'
 
@@ -52,6 +53,13 @@ const routes = [
     component: Profile,
     meta: { requiresAuth: true },
     props: true,
+  },
+  {
+    path: '/profile/edit/:id',
+    name: 'edit-profile',
+    component: EditProfile,
+    meta: { requiresAuth: true },
+    props: true
   },
 ]
 
