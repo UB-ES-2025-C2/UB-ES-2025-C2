@@ -49,16 +49,21 @@ class SongViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(authors=userprofile)
         return qs
+
     def perform_create(self, serializer):
         userprofile = get_object_or_404(UserProfile, user=self.request.user)
         song = serializer.save()
+        authors_data = self.request.data.get("authors", [])
         song.authors.add(userprofile)
+        if authors_data:
+            for author_id in authors_data:
+                author = get_object_or_404(UserProfile, id=author_id)
+                song.authors.add(author)
+        song.save()
 
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-
     def get_queryset(self):
         name = self.request.query_params.get("name")
         topic = self.request.query_params.get("topic")
@@ -75,8 +80,13 @@ class PlayListViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         userprofile = get_object_or_404(UserProfile, user=self.request.user)
         playlist = serializer.save()
+        owners_data = self.request.data.get("owner", [])
         playlist.owner.add(userprofile)
-
+        if owners_data:
+            for owner_id in owners_data:
+                owner =  get_object_or_404(UserProfile,id=owner_id)
+                playlist.owner.add(owner)
+        playlist.save()
 
 class PlaylistSongViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSongSerializer

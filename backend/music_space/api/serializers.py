@@ -34,17 +34,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class PlayListSerializer(serializers.ModelSerializer):
     watched = UserProfileSerializer(many=True, read_only=True)
-
+    owner = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(), many=True, required=False, allow_empty=True
+    )
     class Meta:
         model = PlayList
         fields = '__all__'
-
+        extra_kwargs = {
+            'owner': {'required': False}
+        }
 
 class SongSerializer(serializers.ModelSerializer):
+    authors = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(),
+        many=True,
+        required=False,
+        allow_empty=True
+    )
+
     class Meta:
         model = Song
         fields = '__all__'
-
 
 class PlayListSongSerializer(serializers.ModelSerializer):
     song = SongSerializer(read_only=True)
@@ -58,7 +68,6 @@ class PlayListSongSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaylistSong
         fields = ['id', 'song', 'song_id', 'position']
-
 
 class FollowersSerializer(serializers.ModelSerializer):
     follower = UserProfileSerializer(read_only=True)
