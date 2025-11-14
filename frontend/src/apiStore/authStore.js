@@ -59,7 +59,14 @@ export const useAuthStore = defineStore("auth", {
         localStorage.setItem("avatarUrl", this.avatarUrl);
       });
     },
-
+    postSong(song) {
+      const formData = new FormData();
+      formData.append("file_audio", song.file_audio);
+      formData.append("name", song.name);
+      formData.append("artist", song.artist);
+      formData.append("topic", song.topic);
+      return AuthService.postSong(formData);
+    },
     logout() {
       this.accessToken = null;
       this.refreshToken = null;

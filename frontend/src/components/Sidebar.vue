@@ -1,6 +1,6 @@
 <template>
   <aside class="sidebar">
-    
+
     <!-- Biblioteca -->
     <section class="library">
     <header class="lib-header">
@@ -20,6 +20,10 @@
         <button class="pill" @click="$emit('new-playlist')">Crear llista</button>
         </div>
     </div>
+    <button class="create-song" @click="openCreateSongModal">
+      <span class="globe" v-html="icons.globe"></span>
+      Crear Cançó
+    </button>
     </section>
 
 
@@ -35,6 +39,7 @@
 </template>
 
 <script setup>
+import router from '@/router'
 import { useRoute, RouterLink } from 'vue-router'
 const route = useRoute()
 
@@ -63,7 +68,11 @@ const footerLinks = [
   { text: 'Accessibilitat', href: '#' },
   { text: 'Cookies', href: '#' },
 ]
+function openCreateSongModal() {
+  router.push({ name: 'createSong' });
+}
 </script>
+
 
 <style scoped>
 :root{
@@ -104,7 +113,7 @@ const footerLinks = [
 /* Biblioteca */
 .library{
   margin-top: 10px; padding: 10px; background: var(--panel); border-radius: 12px;
-  display:flex; flex-direction:column; gap: 10px; 
+  display:flex; flex-direction:column; gap: 10px;
 }
 .lib-header{ display:flex; align-items:center; justify-content:space-between; }
 .lib-header .left{ display:flex; align-items:center; gap:10px; color: var(--muted); font-weight:800; }
@@ -163,5 +172,28 @@ const footerLinks = [
 /* Accents */
 .navlink.active .label{ color: var(--text); }
 .navlink.active .ico{ color: var(--accent); }
+
+.create-song{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--accent);   /* Rosa viu */
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-song:hover{
+  background: #ff3399; /* Ligerament més fosc al passar el cursor */
+  transform: translateY(-1px);
+}
+
+.create-song .globe{
+  width:18px; height:18px; color: #fff;
+}
 
 </style>

@@ -8,6 +8,7 @@ import SongDetailById from '../views/SongDetailById.vue'
 import Playlists from '../views/Playlists.vue'
 import Profile from '../views/Profile.vue'
 import EditProfile from '../views/EditProfile.vue'
+import CreateSong from '../views/CreateSong.vue'
 
 import { useAuthStore } from '../apiStore/authStore'
 
@@ -61,6 +62,12 @@ const routes = [
     meta: { requiresAuth: true },
     props: true
   },
+  {
+    path: '/createSong',
+    name: 'createSong',
+    component: CreateSong,
+    meta: { requiresAuth: true } // opcional
+  }
 ]
 
 const router = createRouter({
@@ -71,7 +78,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   authStore.initializeAuthStore() // Ensure state is up-to-date
-
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'catalog' })
   } else {

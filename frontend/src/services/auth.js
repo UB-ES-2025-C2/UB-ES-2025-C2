@@ -21,6 +21,19 @@ class AuthService {
         }
       });
   }
+  postSong(formData) {
+    const accessToken = this.getAccessToken();
+    return this.getAxiosInstance().post("/api/v1/songs/",
+      formData,
+      {
+        headers:
+        {
+          Authorization: `Bearer ${accessToken}`,
+          ...formData.getHeaders()
+        }
+      });
+  }
+
   refresh(refreshToken) {
     return Promise.resolve(
       JSON.stringify({
