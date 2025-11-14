@@ -31,6 +31,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+
 class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
     filter_backends = [filters.SearchFilter]
