@@ -89,7 +89,25 @@ export const useAuthStore = defineStore("auth", {
     },
     async updateUserProfile(data) {
       return AuthService.updateUserProfile(this.user_id, data);
+    },
+    async patchSong(songId, song) {
+
+    const formData = new FormData();
+
+    formData.append("name", song.name);
+    formData.append("artist", song.artist);
+    formData.append("topic", song.topic);
+    formData.append("authors", JSON.stringify(song.authors));
+
+    if (song.fileAudio) {
+      formData.append("file_audio", fileAudio.value);
     }
+
+    if (song.cover) {
+      formData.append("cover", cover.value);
+    }
+    return AuthService.patchSong(this.user_id, songId, formData);
+    },
 
   }
 });
