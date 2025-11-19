@@ -88,6 +88,17 @@ class AuthService {
       data
     );
   }
+  async patchSong(userId, songId, formData) {
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${userId}/songs/${songId}/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+  }
 
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
