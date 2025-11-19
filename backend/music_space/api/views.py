@@ -62,10 +62,7 @@ class SongViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         userprofile_pk = self.kwargs.get("userprofile_pk")
         if userprofile_pk:
-            id = self.request.user.id
-            print(userprofile_pk)
-            print(id)
-            print(int(userprofile_pk) != id)
+            id = request.user.userprofile.id
             if int(userprofile_pk) != id:
                 raise ValidationError("No pots modificar les cançons d'un altre usuari")
         return super().partial_update(request, *args, **kwargs)

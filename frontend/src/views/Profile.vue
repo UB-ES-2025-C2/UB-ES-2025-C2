@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useApiStore } from "../apiStore/guestApi.js";
 import { useAuthStore } from "@/apiStore/authStore.js";
 
 const route = useRoute();
+const router = useRouter();
 const user_id = route.params.id;
 const api = useApiStore();
 const auth = useAuthStore();
@@ -55,6 +56,9 @@ function editProfile() {
   // Pots obrir un modal amb un formulari o redirigir a una pàgina d'edició
   // Exemple amb redirecció:
   window.location.href = `/profile/edit/${user_id}`;
+}
+function editarSong(song) {
+  router.push({ name: 'editSong', params: { id: song.id }})
 }
 
 
@@ -120,8 +124,14 @@ onMounted(async () => {
     <div v-if="userSongs.length" class="section">
       <h2>Cançons</h2>
       <ul class="cards-list">
-        <li v-for="song in userSongs" :key="song.id" class="song-card">
-          <div class="song-image">
+        <li
+          v-for="song in userSongs"
+          :key="song.id"
+          class="song-card"
+          @click="editarSong(song)"
+        >
+
+        <div class="song-image">
             <img :src="song.cover" alt="foto de canción" />
           </div>
           <div class="song-info">
