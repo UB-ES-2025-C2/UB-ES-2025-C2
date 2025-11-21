@@ -38,4 +38,5 @@ jobs:
         working-directory: backend
         env:
           DJANGO_SETTINGS_MODULE: music_space.settings
+          SECRET_KEY: "dummy-key-for-ci-only"
         run: uv run python manage.py test
