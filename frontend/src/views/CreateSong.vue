@@ -20,6 +20,7 @@ const coverInput = ref(null)
 
 const loading = ref(false)
 const error = ref(null)
+const success = ref(null) // ← nova ref per mostrar missatge d’èxit
 
 // Funcions per obrir selector d'arxius
 function triggerAudioInput() {
@@ -65,8 +66,11 @@ async function createSong() {
     .postSong(song)
     .then((response) => {
       console.log('Cançó creada:', response.data)
-      alert('Cançó creada correctament!')
-      router.push({ name: 'home' })
+      success.value = ' Cançó pujada correctament!'
+      setTimeout(() => {
+        success.value = null
+        router.push({ name: 'home' })
+      }, 3000) // desapareix després de 3 segons
     })
     .catch((err) => {
       console.error(err)
@@ -126,6 +130,7 @@ async function createSong() {
       {{ loading ? 'Pujant...' : 'Pujar Cançó' }}
     </button>
   </div>
+  <div v-if="success" class="success">{{ success }}</div>
 </template>
 
 <style scoped>
@@ -213,5 +218,26 @@ button:disabled {
   margin-top: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+.success {
+  background-color: #1db954;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

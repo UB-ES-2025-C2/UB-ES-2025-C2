@@ -28,6 +28,8 @@ const coverInput = ref(null)
 const loading = ref(false)
 const error = ref(null)
 
+const success = ref(null) // ← nova ref per mostrar missatge d’èxit
+
 // Obrir selectors de fitxers
 function triggerAudioInput() {
   fileAudioInput.value.click()
@@ -77,8 +79,11 @@ async function updateSong() {
     .patchSong(songId, songData)
     .then((response) => {
       if (response.status === 200) {
-        alert('Cançó actualitzada correctament!')
-        router.push({ name: 'profile', params: { id: auth.user.id } })
+        success.value = ' Cançó actualitzada correctament!'
+        setTimeout(() => {
+          success.value = null
+          router.push({ name: 'profile', params: { id: auth.user_id } })
+        }, 3000)
       } else {
         error.value = 'Error en actualitzar la cançó.'
       }
@@ -146,6 +151,7 @@ async function updateSong() {
       {{ loading ? 'Desant...' : 'Desar canvis' }}
     </button>
   </div>
+  <div v-if="success" class="success">{{ success }}</div>
 </template>
 
 <style scoped>
@@ -190,7 +196,7 @@ input[type='text']::placeholder {
 
 button {
   padding: 10px 20px;
-  background-color: #1db954;
+  background-color: #ff3896;
   border: none;
   border-radius: 50px;
   color: white;
@@ -233,5 +239,26 @@ button:disabled {
   margin-top: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+.success {
+  background-color: #1db954;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
