@@ -90,7 +90,7 @@ async function updateSong() {
     })
     .catch((error) => {
       console.error('Error updating song:', error)
-      error.value = 'Error en actualitzar la cançó.'
+      error.value = 'Error en actualitzar la cançó. '
     })
     .finally(() => {
       loading.value = false
