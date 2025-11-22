@@ -107,7 +107,7 @@ async function saveProfile() {
 
       <label>
         Descripció:
-        <textarea v-model="description" rows="4"></textarea>
+        <textarea name="description" v-model="description" rows="4"></textarea>
       </label>
 
       <button @click="saveProfile" :disabled="loading">
