@@ -1,5 +1,13 @@
 # MusicSpace
 
+## LINKS
+
+Staging link:
+https://musicspace-preprod-fe-g3d8c9e4ang6c4dr.spaincentral-01.azurewebsites.net/
+
+Production link:
+https://musicspace-eje6grbyfmhygzfm.spaincentral-01.azurewebsites.net/
+
 
 ## SETUP
 
