@@ -30,6 +30,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    def partial_update(self, request, *args, **kwargs):
+        id = kwargs.get('pk')
+        id_user = request.user.userprofile.id
+        if id:
+            id = int(id)
+        if (id != id_user):
+            raise ValidationError("No pots modificar el perfil d'un altre usuari")
+        return  super().partial_update(request, *args, **kwargs)
+
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -50,6 +59,13 @@ class SongViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(authors=userprofile)
         return qs
+    def partial_update(self, request, *args, **kwargs):
+        userprofile_pk = self.kwargs.get("userprofile_pk")
+        if userprofile_pk:
+            id = request.user.userprofile.id
+            if int(userprofile_pk) != id:
+                raise ValidationError("No pots modificar les cançons d'un altre usuari")
+        return super().partial_update(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         userprofile = get_object_or_404(UserProfile, user=self.request.user)

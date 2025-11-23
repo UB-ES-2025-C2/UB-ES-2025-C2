@@ -162,5 +162,15 @@ export const useApiStore = defineStore("api", {
       } catch (error) {
         console.error("Error fetching following:", error);
       }
-    }
+    },
+    async getSongById(songId) {
+      try {
+        const res = await api.getSongById(songId);
+        this.songDetail = res.data;
+        return res.data;
+      } catch (e) {
+        console.error("Error fetching song by ID:", e);
+        throw e;
+      }
+    },
 }});

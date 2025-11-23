@@ -1,16 +1,23 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/apiStore/authStore'
+import { useApiStore } from '@/apiStore/guestApi'
 
+const apiGuest = useApiStore()
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+
+const songId = route.params.id
 
 // Camps del formulari
 const name = ref('')
 const artist = ref('')
 const topic = ref('')
-const authors = ref([]) // Array d'IDs d'autors
+const authors = ref([])
+const authorsString = ref('')
+
 const fileAudio = ref(null)
 const cover = ref(null)
 const previewCover = ref(null)
@@ -20,9 +27,10 @@ const coverInput = ref(null)
 
 const loading = ref(false)
 const error = ref(null)
+
 const success = ref(null) // ← nova ref per mostrar missatge d’èxit
 
-// Funcions per obrir selector d'arxius
+// Obrir selectors de fitxers
 function triggerAudioInput() {
   fileAudioInput.value.click()
 }
@@ -30,51 +38,59 @@ function triggerCoverInput() {
   coverInput.value.click()
 }
 
-// Funcions per seleccionar arxius
 function onAudioSelected(event) {
   fileAudio.value = event.target.files[0]
 }
 function onCoverSelected(event) {
   cover.value = event.target.files[0]
-  if (cover.value) {
-    previewCover.value = URL.createObjectURL(cover.value)
-  }
+  if (cover.value) previewCover.value = URL.createObjectURL(cover.value)
 }
 
+// Carregar la cançó
 onMounted(async () => {
-  auth.initializeAuthStore()
-})
-// Funció per enviar POST
-async function createSong() {
-  if (!fileAudio.value) {
-    error.value = "Cal pujar un fitxer d'àudio."
-    return
+  try {
+    const s = await apiGuest.getSongById(songId)
+    name.value = s.name
+    artist.value = s.artist
+    topic.value = s.topic
+    authors.value = s.authors ?? []
+    authorsString.value = authors.value.join(',')
+    previewCover.value = s.cover
+  } catch (err) {
+    console.error(err)
+    error.value = "No s'ha pogut carregar la cançó."
   }
+})
 
+// Guardar canvis
+async function updateSong() {
   loading.value = true
   error.value = null
 
-  const song = {
+  const songData = {
     name: name.value,
     artist: artist.value,
     topic: topic.value,
     authors: authors.value,
-    file_audio: fileAudio.value,
-    cover: cover.value || null,
+    fileAudio: fileAudio.value,
+    cover: cover.value,
   }
   auth
-    .postSong(song)
+    .patchSong(songId, songData)
     .then((response) => {
-      console.log('Cançó creada:', response.data)
-      success.value = ' Cançó pujada correctament!'
-      setTimeout(() => {
-        success.value = null
-        router.push({ name: 'home' })
-      }, 3000) // desapareix després de 3 segons
+      if (response.status === 200) {
+        success.value = ' Cançó actualitzada correctament!'
+        setTimeout(() => {
+          success.value = null
+          router.push({ name: 'profile', params: { id: auth.user_id } })
+        }, 3000)
+      } else {
+        error.value = 'Error en actualitzar la cançó.'
+      }
     })
-    .catch((err) => {
-      console.error(err)
-      error.value = 'Error en pujar la cançó.'
+    .catch((error) => {
+      console.error('Error updating song:', error)
+      error.value = 'Error en actualitzar la cançó. '
     })
     .finally(() => {
       loading.value = false
@@ -83,8 +99,8 @@ async function createSong() {
 </script>
 
 <template>
-  <div class="create-song-form">
-    <h1>Pujar Cançó</h1>
+  <div class="edit-song-form">
+    <h1>Editar Cançó</h1>
 
     <div v-if="error" class="error">{{ error }}</div>
 
@@ -108,26 +124,31 @@ async function createSong() {
       <input
         type="text"
         v-model="authorsString"
-        @input="authors = $event.target.value.split(',').map((a) => parseInt(a.trim()))"
+        @input="
+          authors = $event.target.value
+            .split(',')
+            .map((a) => parseInt(a.trim()))
+            .filter((n) => !isNaN(n))
+        "
       />
     </label>
 
-    <!-- Audio -->
+    <!-- Àudio opcional -->
     <div class="file-input">
-      <button type="button" @click="triggerAudioInput">Pujar àudio</button>
+      <button type="button" @click="triggerAudioInput">Canviar àudio (opcional)</button>
       <input ref="fileAudioInput" type="file" @change="onAudioSelected" style="display: none" />
       <span v-if="fileAudio">{{ fileAudio.name }}</span>
     </div>
 
-    <!-- Cover opcional -->
+    <!-- Portada -->
     <div class="file-input">
-      <button type="button" @click="triggerCoverInput">Pujar portada (opcional)</button>
+      <button type="button" @click="triggerCoverInput">Canviar portada</button>
       <input ref="coverInput" type="file" @change="onCoverSelected" style="display: none" />
-      <img v-if="previewCover" :src="previewCover" alt="Preview Cover" class="cover-preview" />
+      <img v-if="previewCover" :src="previewCover" class="cover-preview" />
     </div>
 
-    <button @click="createSong" :disabled="loading">
-      {{ loading ? 'Pujant...' : 'Pujar Cançó' }}
+    <button @click="updateSong" :disabled="loading">
+      {{ loading ? 'Desant...' : 'Desar canvis' }}
     </button>
   </div>
   <div v-if="success" class="success">{{ success }}</div>
