@@ -6,14 +6,14 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123'
 
 export const test = base.extend({
   testUser: async ({}, use) => {
-    // 1️⃣ Generar dades úniques
+    // 1️ Generar dades úniques
     const username = 'user_' + Math.random().toString(36).substring(2, 10)
     const password = '1234'
     const email = `${username}@test.com`
 
     const req = await playwrightRequest.newContext()
 
-    // 2️⃣ Crear usuari
+    // 2️ Crear usuari
     const createRes = await req.post(`${API_URL}/api/v1/user/`, {
       data: { username, email, password, password_conf: password },
     })
@@ -24,14 +24,14 @@ export const test = base.extend({
 
     console.log(`[FIXTURE] Usuari creat: ${username}`)
 
-    // 3️⃣ Recuperar ID del backend
+    // 3️ Recuperar ID del backend
     const createdUser = await createRes.json()
     const userId = createdUser.id
 
-    // 4️⃣ Donar l’usuari al test
+    // 4️ Donar l’usuari al test
     await use({ username, password, userId })
 
-    // 5️⃣ Cleanup: eliminar usuari amb admin
+    // 5️ Cleanup: eliminar usuari amb admin
     console.log(`[FIXTURE] Eliminant usuari amb admin: ${username}`)
 
     try {
