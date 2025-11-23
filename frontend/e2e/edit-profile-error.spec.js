@@ -1,42 +1,53 @@
-// tests/e2e/edit-profile-error.spec.js
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from './fixtures/testUser.js'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
-const TEST_USER = {
-  username: process.env.TEST_USER || 'usuariTest',
-  password: process.env.TEST_PASS || '1234',
-}
+test('Mostrar missatge d’error quan el backend falla al desar la descripció', async ({
+  page,
+  testUser,
+}) => {
+  const { username, password } = testUser
 
-test('Mostrar missatge d’error quan el backend falla al desar la descripció', async ({ page }) => {
-  // 1️⃣ Login
+  // 1️- Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)
-  await page.fill('input#identifier', TEST_USER.username)
-  await page.fill('input#password', TEST_USER.password)
+
+  // 2️- Escriu credencials i submit
+  await page.fill('input#identifier', username)
+  await page.fill('input#password', password)
   await page.click('button:has-text("Iniciar Sessió")')
+
+  // 3️- Espera que el login redirigeixi a Home
   await page.waitForURL(BASE_URL + '/')
 
-  // 2️⃣ Navegar fins al perfil
+  // 4️- Obre el menú d’usuari i clica "El teu perfil"
   await page.click('button[aria-label="User menu"]')
   await page.click('text=El teu perfil')
+
+  // 5️- Comprova que estem a la pàgina de perfil i extreu userId
   await expect(page).toHaveURL(/\/profile\/\d+/)
+  const currentProfileUrl = page.url()
+  const userId = currentProfileUrl.match(/\/profile\/(\d+)/)[1]
 
-  // 3️⃣ Anar a "Editar Perfil"
+  // 6️- Clica "Editar Perfil"
   await page.click('text=Editar Perfil')
-  await page.waitForURL(/\/profile\/edit\/\d+/)
+  await page.waitForURL(new RegExp(`/profile/edit/${userId}`))
 
-  // 4️⃣ Interceptar i forçar error del backend
-  await page.route('**/api/v1/userprofile/*', (route) => {
-    route.abort('failed') // simulem un error de connexió
+  // 7️- Interceptar i forçar error del backend
+  await page.route(`**/api/v1/userprofile/${userId}/`, (route) => {
+    route.abort('failed')
   })
 
-  // 5️⃣ Intentar editar descripció
+  // 8️- Omplir nova descripció
+  const novaDescripcio = 'Nova descripció fallida'
   await page.waitForSelector('textarea[name="description"]')
-  await page.fill('textarea[name="description"]', 'Nova descripció fallida')
+  await page.fill('textarea[name="description"]', novaDescripcio)
 
-  // 6️⃣ Intentar desar → backend falla
+  // 9️- Intentar desar → backend falla
   await page.click('button:has-text("Desar canvis")')
 
-  // 7️⃣ Comprovar que surt el missatge d’error
-  await expect(page.locator('text=Error al desar el perfil.')).toBeVisible()
+  // 10️- Comprovar que surt el missatge d’error al frontend
+  const errorLocator = page.locator('.error')
+  await errorLocator.waitFor({ state: 'visible', timeout: 7000 })
+  await expect(errorLocator).toContainText('Error al desar el perfil.')
 })

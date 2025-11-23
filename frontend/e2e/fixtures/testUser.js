@@ -1,18 +1,21 @@
 import { test as base, request as playwrightRequest } from '@playwright/test'
 
 const API_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000'
+const ADMIN_USER = process.env.ADMIN_USER || 'admin'
+const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123'
 
 export const test = base.extend({
   testUser: async ({}, use) => {
-    // 1️⃣ Generar un usuari únic
+    // 1️⃣ Generar dades úniques
     const username = 'user_' + Math.random().toString(36).substring(2, 10)
     const password = '1234'
+    const email = `${username}@test.com`
 
     const req = await playwrightRequest.newContext()
 
-    // 2️⃣ Crear usuari al backend
+    // 2️⃣ Crear usuari
     const createRes = await req.post(`${API_URL}/api/v1/user/`, {
-      data: { username, password },
+      data: { username, email, password, password_conf: password },
     })
 
     if (!createRes.ok()) {
@@ -21,7 +24,36 @@ export const test = base.extend({
 
     console.log(`[FIXTURE] Usuari creat: ${username}`)
 
-    // 3️⃣ Proporcionar-lo al test
-    await use({ username, password })
+    // 3️⃣ Recuperar ID del backend
+    const createdUser = await createRes.json()
+    const userId = createdUser.id
+
+    // 4️⃣ Donar l’usuari al test
+    await use({ username, password, userId })
+
+    // 5️⃣ Cleanup: eliminar usuari amb admin
+    console.log(`[FIXTURE] Eliminant usuari amb admin: ${username}`)
+
+    try {
+      // Login admin
+      const adminLoginRes = await req.post(`${API_URL}/api/token/`, {
+        data: { username: ADMIN_USER, password: ADMIN_PASS },
+      })
+
+      if (!adminLoginRes.ok()) throw new Error('No s’ha pogut fer login admin per eliminar usuari')
+
+      const accessToken = (await adminLoginRes.json()).access
+
+      // Delete usuari
+      const deleteRes = await req.delete(`${API_URL}/api/v1/userprofile/${userId}/`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+
+      if (!deleteRes.ok()) {
+        console.warn(`[AVÍS] No s'ha pogut eliminar l'usuari: ${username}`)
+      }
+    } catch (err) {
+      console.warn(`[AVÍS] Error eliminant usuari amb admin: ${username}`, err)
+    }
   },
 })
