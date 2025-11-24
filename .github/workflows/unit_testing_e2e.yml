@@ -1,4 +1,4 @@
-name: E2e unit tests
+name: E2E tests
 
 on:
   push:
@@ -20,20 +20,16 @@ jobs:
         with:
           python-version: '3.14'
 
-      # Install uv
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      # Add uv to PATH
       - name: Add uv to PATH
         run: echo "${HOME}/.cargo/bin" >> $GITHUB_PATH
 
-      # Install dependencies using uv
-      - name: Install dependencies with uv
+      - name: Install backend dependencies
         working-directory: backend
         run: uv sync --frozen
 
-      # ---------- Run end-to-end tests ----------
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -43,33 +39,49 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Install Playwright system deps and browsers
+      - name: Install Playwright and system deps
         working-directory: frontend
         run: |
-          # Install OS-level dependencies (Ubuntu) — optional but useful
           npx playwright install-deps || true
-          # Install browser binaries required by Playwright
           npx playwright install --with-deps
 
-      - name: Prepare and start Django dev server for E2E
+      # Start backend
+      - name: Start Django backend
         working-directory: backend
         env:
           DJANGO_SETTINGS_MODULE: music_space.settings
           SECRET_KEY: "dummy-key-for-ci-only"
           DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost"
         run: |
-          # Apply migrations so server is ready for tests
           uv run python manage.py migrate --noinput
-          # Start the Django server in background
-          uv run python manage.py runserver 0.0.0.0:8000 &
-          # Wait for server to accept connections (max ~30s)
+
+          # ensure an admin exists so fixtures that use ADMIN_USER/ADMIN_PASS can work
+          uv run python - <<'PY'
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin','admin@example.com','admin123')
+print("admin user ensured")
+PY
+
+          nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+          # wait for backend
           for i in {1..30}; do
             if curl -sSf http://127.0.0.1:8000/ > /dev/null 2>&1; then
-              echo "Server is up"
+              echo "Backend is up"
+              break
+            fi
+            sleep 1
+          done
+
+      # Start frontend (Vite)
+      - name: Start Vite frontend
+        working-directory: frontend
+        run: |
+          nohup npm run dev -- --host --port 5173 > vite.log 2>&1 &
+          for i in {1..30}; do
+            if curl -sSf http://127.0.0.1:5173/ > /dev/null 2>&1; then
+              echo "Frontend is up"
               break
             fi
             sleep 1
@@ -78,5 +90,10 @@ jobs:
       - name: Run E2E tests
         working-directory: frontend
         env:
-          BASE_URL: http://127.0.0.1:8000
-        run: npm run test:e2e
+          BACKEND_URL: http://127.0.0.1:8000
+          FRONTEND_URL: http://127.0.0.1:5173
+          ADMIN_USER: admin
+          ADMIN_PASS: admin123
+        run: |
+          set -o pipefail
+          npm run test:e2e || (echo "=== django.log ===" && tail -n +1 ../backend/django.log || true; echo "=== vite.log ===" && tail -n +1 vite.log || true; exit 1)
