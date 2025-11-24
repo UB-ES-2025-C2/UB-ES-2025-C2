@@ -122,8 +122,8 @@ if SUPABASE_BUCKET_NAME and SUPABASE_URL and SUPABASE_KEY_ID and SUPABASE_API_KE
     },
     }
 else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    MEDIA_URL = '/'
+    MEDIA_ROOT = BASE_DIR
 
     STORAGES = {
 
