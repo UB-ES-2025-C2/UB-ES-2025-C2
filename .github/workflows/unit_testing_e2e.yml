@@ -65,7 +65,7 @@ jobs:
           # Apply migrations so server is ready for tests
           uv run python manage.py migrate --noinput
           # Start the Django server in background
-          uv run python manage.py runserver 0.0.0.0:8000 &
+          nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
           # Wait for server to accept connections (max ~30s)
           for i in {1..30}; do
             if curl -sSf http://127.0.0.1:8000/ > /dev/null 2>&1; then
