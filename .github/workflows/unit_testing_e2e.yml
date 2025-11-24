@@ -60,6 +60,7 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: music_space.settings
           SECRET_KEY: "dummy-key-for-ci-only"
+          DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost"
         run: |
           # Apply migrations so server is ready for tests
           uv run python manage.py migrate --noinput
