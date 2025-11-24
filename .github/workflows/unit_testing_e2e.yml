@@ -56,14 +56,6 @@ jobs:
           uv run python manage.py migrate --noinput
 
           # ensure an admin exists so fixtures that use ADMIN_USER/ADMIN_PASS can work
-          uv run python - <<'PY'
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin','admin@example.com','admin123')
-print("admin user ensured")
-PY
-
           nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
           # wait for backend
           for i in {1..30}; do
