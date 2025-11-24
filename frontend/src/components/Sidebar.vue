@@ -12,17 +12,15 @@
         </button>
       </header>
 
-      <!-- ▲ NOU contenidor més clar -->
-
       <div class="library-panel">
-        <!--
-        <div class="cta">
-          <h3>Crea la teva primera llista</h3>
-          <button class="pill" @click="$emit('new-playlist')">Crear llista</button>
-        </div>
-      -->
+        <!-- contingut addicional si cal -->
       </div>
-      <button class="create-song" @click="openCreateSongModal">
+
+      <!-- Botó només visible si l'usuari està autenticat -->
+      <button
+        v-if="authStore.isAuthenticated"
+        class="create-song"
+        @click="openCreateSongModal">
         <span class="globe" v-html="icons.globe"></span>
         Pujar Cançó
       </button>
@@ -41,10 +39,11 @@
 
 <script setup>
 import router from '@/router'
-import { useRoute, RouterLink } from 'vue-router'
-const route = useRoute()
+import { useAuthStore } from '../apiStore/authStore'
 
-/* SVGs inline (sense dependències) */
+const authStore = useAuthStore()
+
+/* SVGs inline */
 const icons = {
   home: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9.75 12 3l9 6.75V21a.75.75 0 0 1-.75.75h-5.25V14.25h-6V21.75H3.75A.75.75 0 0 1 3 21V9.75z"/></svg>`,
   search: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"/></svg>`,
@@ -52,12 +51,6 @@ const icons = {
   plus: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>`,
   globe: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm-1 17.93A8.001 8.001 0 0 1 4.07 13H7c.55 0 1 .45 1 1v3c0 .74 1 1 1 1h2v1.93Zm0-3.93H9s-1 0-1-1v-2c0-.55-.45-1-1-1H4.07A8.001 8.001 0 0 1 11 4.07V7c0 .55.45 1 1 1h2s1 0 1 1v1c0 .55-.45 1-1 1h-2c-.55 0-1 .45-1 1v3Zm3 3.58V17c0-.55.45-1 1-1h2c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1V9c0-.55-.45-1-1-1h-1V4.07A8.001 8.001 0 0 1 19.93 11H19c-.55 0-1 .45-1 1v3c0 .55-.45 1-1 1h-1c-.55 0-1 .45-1 1v1.58Z"/></svg>`,
 }
-
-/* Links de dalt (Home / Cercar) */
-const topLinks = [
-  { to: '/', label: 'Inici', svg: icons.home },
-  { to: '/buscar', label: 'Cercar', svg: icons.search },
-]
 
 /* Links del footer */
 const footerLinks = [
@@ -69,10 +62,12 @@ const footerLinks = [
   { text: 'Accessibilitat', href: '#' },
   { text: 'Cookies', href: '#' },
 ]
+
 function openCreateSongModal() {
   router.push({ name: 'createSong' })
 }
 </script>
+
 
 <style scoped>
 :root {
@@ -294,3 +289,4 @@ function openCreateSongModal() {
   color: #fff;
 }
 </style>
+
