@@ -79,7 +79,7 @@ async function updateSong() {
     .patchSong(songId, songData)
     .then((response) => {
       if (response.status === 200) {
-        success.value = ' Cançó actualitzada correctament!'
+        success.value = 'Cançó actualitzada correctament!'
         setTimeout(() => {
           success.value = null
           router.push({ name: 'profile', params: { id: auth.user_id } })
