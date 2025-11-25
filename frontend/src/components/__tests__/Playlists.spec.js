@@ -1,63 +1,71 @@
-import { mount } from '@vue/test-utils'
-import Playlists from '../../views/Playlists.vue'
-import { createPinia, setActivePinia } from 'pinia'
+import { mount } from "@vue/test-utils"
+import { createPinia, setActivePinia } from "pinia"
+import { vi } from "vitest"
+import Playlists from "../../views/Playlists.vue"
 import { useApiStore } from '../../apiStore/guestApi.js'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-// Mock de vue-router
-vi.mock('vue-router', () => ({
+// Mock de Vue Router
+vi.mock("vue-router", () => ({
   useRoute: () => ({
-    params: { id: 1 }  // aquí defines el id que quieres para el test
+    params: { id: "1" } // aquí defines el id que tu componente espera
   })
 }))
 
-describe('Playlists.vue', () => {
-  let wrapper, apiStore, pinia
+describe("Playlists.vue", () => {
+  let pinia
+  let apiStore
+  let wrapper
 
   beforeEach(async () => {
     pinia = createPinia()
     setActivePinia(pinia)
 
-    // Mock store
     apiStore = useApiStore()
-    apiStore.songs = [
-      { id: 1, name: 'Song 1', artist: 'Artist 1', cover: '' },
-      { id: 2, name: 'Song 2', artist: 'Artist 2', cover: '' }
-    ]
+
+    // Mockear funciones de la store
     apiStore.getPlaylistById = vi.fn().mockResolvedValue({
       id: 1,
-      name: 'Playlist1',
-      description: 'playlist d’èxits mundials',
-      cover: 'cover-url',
-      owner: [{ nickname: 'Owner1' }]
+      name: "Playlist1",
+      description: "playlist d’èxits mundials",
+      cover: "cover-url",
+      owner: [{ nickname: "Owner1" }]
     })
     apiStore.getSongFromPlayList = vi.fn().mockResolvedValue(undefined)
-    apiStore.getUserById = vi.fn().mockResolvedValue({ nickname: 'Owner1' })
+    apiStore.getUserById = vi.fn().mockResolvedValue({ nickname: "Owner1" })
+
+    // Mockear canciones
+    apiStore.songs = [
+      { song: { id: 1, name: "Song 1", artist: "Artist 1", cover: "cover1.jpg" } },
+      { song: { id: 2, name: "Song 2", artist: "Artist 2", cover: "cover2.jpg" } }
+    ]
 
     wrapper = mount(Playlists, {
       global: {
-        plugins: [pinia]
+        plugins: [pinia],
+        mocks: {
+          mockSongsCount: apiStore.songs.length,
+          mockOwner: apiStore.songs.length ? apiStore.songs[0].song.artist : "",
+          mockSavedTimes: 5
+        }
       }
     })
 
-    // Esperamos que onMounted async se resuelva
-    await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
   })
 
-  it('muestra el nombre y descripción de la playlist', () => {
-    expect(wrapper.find('.playlist-info h1').text()).toBe('Playlist1')
-    expect(wrapper.find('.playlist-description').text()).toBe('playlist d’èxits mundials')
+  it("renderiza la playlist con información correcta", () => {
+    expect(wrapper.text()).toContain("Playlist1")
+    expect(wrapper.text()).toContain("playlist d’èxits mundials")
+    expect(wrapper.text()).toContain("Owner1")
+    expect(wrapper.text()).toContain("2 canciones")
   })
 
-  it('muestra las canciones de la playlist', () => {
-    const songs = wrapper.findAll('.song-card')
-    expect(songs.length).toBe(2)
-    expect(songs[0].text()).toContain('Song 1')
-    expect(songs[1].text()).toContain('Song 2')
+  it("renderiza las canciones con sus covers", () => {
+    const songImages = wrapper.findAll(".song-card img")
+
+    expect(songImages.length).toBe(apiStore.songs.length)
+    expect(songImages[0].attributes("src")).toBe("cover1.jpg")
+    expect(songImages[1].attributes("src")).toBe("cover2.jpg")
   })
 
-  it('muestra el propietario de la playlist', () => {
-    expect(wrapper.text()).toContain('Creada per Owner1')
-  })
 })

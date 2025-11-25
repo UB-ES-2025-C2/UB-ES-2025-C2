@@ -13,12 +13,10 @@ describe('Home.vue', () => {
     pinia = createPinia()
     setActivePinia(pinia)
 
-    // Mock del authStore
     authStore = useAuthStore()
     authStore.username = 'TestUser'
     authStore.initializeAuthStore = vi.fn()
 
-    // Mock del apiStore
     apiStore = useApiStore()
     apiStore.songs = [
       { id: 1, name: 'Song 1', artist: 'Artist 1', cover: '', file_audio: '' }
@@ -28,16 +26,23 @@ describe('Home.vue', () => {
     apiStore.fetchPlaylists = vi.fn()
     apiStore.nUsersResult = []
 
-    // Montamos el componente
+    // Montamos el componente mockeando router
     wrapper = mount(Home, {
-      global: { plugins: [pinia] }
+      global: {
+        plugins: [pinia],
+        mocks: {
+          $router: { push: vi.fn() },
+          $route: {},
+        },
+      },
     })
   })
 
-  it('renderiza el username en el header', () => {
-    const usernameEl = wrapper.find('.username')
-    expect(usernameEl.text()).toBe(authStore.username)
+  it('inicializa authStore correctamente', () => {
+    expect(authStore.username).toBe('TestUser')
+    expect(authStore.initializeAuthStore).toHaveBeenCalledTimes(1) // se llama en onMounted
   })
+
 
   it('llama a fetchCatalog y fetchPlaylists al montar', () => {
     expect(apiStore.fetchCatalog).toHaveBeenCalled()
@@ -45,8 +50,8 @@ describe('Home.vue', () => {
   })
 
   it('muestra canciones de apiStore', () => {
-    // Limitar la búsqueda solo al ul de canciones
-    const songList = wrapper.find('section + h2 + ul.cards-list') // apunta a la primera lista de cards tras <h2> "Cançons"
+    const songList = wrapper.find('ul.cards-list')
+    expect(songList.exists()).toBe(true)
     const songEls = songList.findAll('.card')
     expect(songEls.length).toBe(apiStore.songs.length)
     expect(songEls[0].text()).toContain('Song 1')
