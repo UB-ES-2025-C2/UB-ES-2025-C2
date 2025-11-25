@@ -74,6 +74,8 @@ jobs:
          uv run python manage.py makemigrations api --noinput
          # Apply migrations so server is ready for tests
          uv run python manage.py migrate --noinput
+         # Apply migrations api is ready for tests
+         uv run python manage.py migrate api --noinput
          uv run python manage.py createsuperuser --noinput
          # Start the Django server in background
          nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
@@ -89,9 +91,9 @@ jobs:
       - name: Serve frontend build
         working-directory: frontend
         run: |
-         npx serve -s dist -l 4173 &
+         npx serve -s dist -l 5173 &
          for i in {1..30}; do
-            if curl -sSf http://localhost:4173/ > /dev/null 2>&1; then
+            if curl -sSf http://localhost:5173/ > /dev/null 2>&1; then
                 echo "Frontend server is up"
                 break
             fi
@@ -101,6 +103,8 @@ jobs:
       - name: Run E2E tests
         working-directory: frontend
         env:
-          BASE_URL: http://localhost:4173
-          VITE_API_URL: http://127.0.0.1:8000
+            BACKEND_URL: http://127.0.0.1:8000
+            FRONTEND_URL: http://127.0.0.1:5173
+            ADMIN_USER: admin
+            ADMIN_PASS: admin123
         run: npm run test:e2e
