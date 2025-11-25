@@ -6,7 +6,6 @@ from rest_framework import status
 
 class UserTestCase(TestCase):
     def setUp(self):
-        # Crear un usuari de prova per a tests
         self.user = User.objects.create_user(
             username="testuser",
             password="StrongPass123!"

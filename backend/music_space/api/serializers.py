@@ -10,15 +10,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', "password", "password_conf"]
+        fields = ['username', 'email', 'password', 'password_conf']
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_conf']:
+            raise serializers.ValidationError("Passwords don't match")
+        return attrs
 
     def create(self, validated_data):
-        if validated_data['password'] != validated_data['password_conf']:
-            raise serializers.ValidationError("Passwords don't match")
-
+        validated_data.pop('password_conf')
         if User.objects.filter(username=validated_data['username']).exists():
             raise serializers.ValidationError("Username already taken")
-
         return User.objects.create_user(
             validated_data['username'],
             validated_data['email'],

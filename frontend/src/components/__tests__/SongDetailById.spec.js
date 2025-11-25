@@ -1,17 +1,16 @@
 import { mount, flushPromises } from "@vue/test-utils";
 import SongDetailById from "../../views/SongDetailById.vue";
+import { setActivePinia, createPinia, defineStore } from "pinia";
 import { vi } from "vitest";
 
-// Mock de Vue Router
+// Mock router
 vi.mock("vue-router", () => ({
   useRoute: () => ({ params: { id: "123" } }),
 }));
 
-// Mock de la API
+// Mock API
 vi.mock("../../services/api", () => ({
-  default: {
-    getSongById: vi.fn(),
-  },
+  default: { getSongById: vi.fn() },
 }));
 
 describe("SongDetailById.vue", () => {
@@ -24,10 +23,32 @@ describe("SongDetailById.vue", () => {
     topic: "Pop",
   };
 
+  let toggleSpy, playSongSpy;
+
+  // Creamos un store fake con spies
+  const usePlayerStore = defineStore("player", {
+    state: () => ({
+      current: null,
+      isPlaying: false,
+      duration: 125,
+    }),
+    actions: {
+      playSong: () => playSongSpy(),
+      toggle: () => toggleSpy(),
+    },
+  });
+
   beforeAll(() => {
-    // Mock de play y pause globalmente para JSDOM
-    HTMLMediaElement.prototype.play = vi.fn();
-    HTMLMediaElement.prototype.pause = vi.fn();
+    // Mock global del audio
+    global.HTMLMediaElement.prototype.play = vi.fn();
+    global.HTMLMediaElement.prototype.pause = vi.fn();
+    global.HTMLMediaElement.prototype.load = vi.fn();
+  });
+
+  beforeEach(() => {
+    toggleSpy = vi.fn();
+    playSongSpy = vi.fn();
+    setActivePinia(createPinia());
   });
 
   it("muestra loading mientras carga", () => {
@@ -41,6 +62,7 @@ describe("SongDetailById.vue", () => {
 
     const wrapper = mount(SongDetailById);
     await flushPromises();
+
     expect(wrapper.text()).toContain("⚠️ Error de test");
   });
 
@@ -56,36 +78,33 @@ describe("SongDetailById.vue", () => {
     expect(wrapper.find("img.cover").attributes("src")).toBe(mockSong.cover);
   });
 
-  it("togglePlay cambia isPlaying y llama a play/pause", async () => {
+  it("togglePlay llama a playSong o toggle según la canción", async () => {
     const { default: api } = await import("../../services/api");
     api.getSongById.mockResolvedValue({ data: mockSong });
 
-    const wrapper = mount(SongDetailById);
-    await flushPromises();
+    const playerStore = usePlayerStore();
 
-    const audio = wrapper.find("audio").element;
-
-    // Estado inicial
-    let paused = true;
-    HTMLMediaElement.prototype.play = vi.fn(() => (paused = false));
-    HTMLMediaElement.prototype.pause = vi.fn(() => (paused = true));
-
-    // Simulamos que el audio está pausado inicialmente
-    Object.defineProperty(audio, "paused", {
-      get: () => paused,
+    const wrapper = mount(SongDetailById, {
+      global: {
+        provide: {
+          playerStore,
+        },
+      },
     });
 
-    // Reproducir
-    wrapper.vm.togglePlay();
-    expect(wrapper.vm.isPlaying).toBe(true);
-    expect(audio.play).toHaveBeenCalled();
+    await flushPromises();
 
-    // Pausar
+    // Primer toggle → no es la canción actual → playSong
     wrapper.vm.togglePlay();
-    expect(wrapper.vm.isPlaying).toBe(false);
-    expect(audio.pause).toHaveBeenCalled();
+    expect(playSongSpy).toHaveBeenCalledWith(mockSong);
+
+    // Simulamos que es la canción actual
+    wrapper.vm.player.current = mockSong;
+
+    // Segundo toggle → ya es la canción actual → toggle
+    wrapper.vm.togglePlay();
+    expect(toggleSpy).toHaveBeenCalled();
   });
-
 
   it("formatTime funciona correctamente", async () => {
     const { default: api } = await import("../../services/api");

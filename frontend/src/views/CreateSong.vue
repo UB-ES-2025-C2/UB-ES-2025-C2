@@ -66,7 +66,7 @@ async function createSong() {
     .postSong(song)
     .then((response) => {
       console.log('Cançó creada:', response.data)
-      success.value = ' Cançó pujada correctament!'
+      success.value = 'Cançó pujada correctament!'
       setTimeout(() => {
         success.value = null
         router.push({ name: 'home' })

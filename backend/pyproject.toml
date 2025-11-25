@@ -63,6 +63,9 @@ build-backend = "uv_build"
 [tool.ruff]
 extend = "./ruff.toml"
 
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "music_space.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
 
 # UV configuration.
 [tool.uv]
