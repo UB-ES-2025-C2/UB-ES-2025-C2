@@ -64,7 +64,6 @@ const authenticateUser = async () => {
   setTimeout(() => {
     router.push('/login')
   }, 2000)
-
 }
 
 // Robust error normalizer for signup
@@ -192,7 +191,11 @@ const goBackToLogin = () => router.push('/login')
     <main class="login-card" role="main" aria-labelledby="signup-title">
       <!-- Logo -->
       <div class="logo-wrap">
-        <img src="../assets/logo_musicSpace.png" alt="MusicSpace logo" class="logo" />
+        <img
+          src="https://rqlzfndxwaxpiqycxfrg.storage.supabase.co/storage/v1/object/public/archivosmusicspace/logo_musicSpace.png"
+          alt="MusicSpace logo"
+          class="logo"
+        />
       </div>
 
       <h1 id="signup-title" class="title">Registra't i gaudeix de totes les funcionalitats</h1>
