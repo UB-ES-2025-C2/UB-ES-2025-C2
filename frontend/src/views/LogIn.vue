@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -14,27 +14,19 @@ onMounted(() => {
   authStore.initializeAuthStore()
 })
 
-// ⬇️ This function now only logs in, then redirects automatically
 const authenticateUser = async () => {
   if (!username.value || !password.value) {
     alert('Please enter both username and password.')
     return
   }
 
-  try {
-    await authStore.login({
-      username: username.value,
-      password: password.value,
-    })
+  await authStore.login({
+    username: username.value,
+    password: password.value,
+  })
 
-    // If login succeeded → redirect automatically
-    if (authStore.isAuthenticated) {
-      router.push({ name: 'home' })
-    } else if (authStore.error) {
-      alert(authStore.error)
-    }
-  } catch (error) {
-    console.error('Login failed:', error)
+  if (authStore.isAuthenticated) {
+    router.push({ name: 'home' })
   }
 }
 
@@ -53,7 +45,11 @@ const logOut = () => {
     <main class="login-card" role="main" aria-labelledby="login-title">
       <!-- Inside your <template> -->
       <div class="logo-wrap">
-        <img src="../assets/logo_musicSpace.png" alt="MusicSpace logo" class="logo" />
+        <img
+          src="https://rqlzfndxwaxpiqycxfrg.storage.supabase.co/storage/v1/object/public/archivosmusicspace/logo_musicSpace.png"
+          alt="MusicSpace logo"
+          class="logo"
+        />
       </div>
 
       <h1 id="login-title" class="title">Inicia sessió a<br />MusicSpace</h1>

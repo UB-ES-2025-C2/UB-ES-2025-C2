@@ -1,22 +1,34 @@
-FROM node:25
-VITE_API_URL: https://localhost:8000
-PORT: 5173
-UID: 988
+# Use the official Node image for the development stage.
+FROM node:25-alpine AS development
+ARG PORT="5173"
+ARG UID="988"
+ARG VITE_API_URL="https://localhost:8000"
 
+# Create the app directory.
+RUN mkdir /app
+
+# Set the working directory inside the container.
 WORKDIR /app
 
-# Copiar dependencias e instalarlas
+# Copy the package.json files to the container.
 COPY package*.json ./
+
+# Install dependencies.
 RUN npm install
 
-# Copiar el resto del código
+# Copy the rest of the project.
 COPY . .
+
+# Set environment variables.
+# Set the Vite API's URL.
+ENV VITE_API_URL=$VITE_API_URL
+# Enable polling mode for Docker's hot-reloading.
+ENV CHOKIDAR_USEPOLLING=true
+# Set the port for Vite.
+ENV VITE_PORT=${PORT}
 
 # Exponer el puerto (Vite usa 5173 por defecto)
 EXPOSE 5173
 
-# Habilitar modo polling para hot-reload dentro de Docker
-ENV CHOKIDAR_USEPOLLING=true
-
 # Comando por defecto: correr el servidor de desarrollo
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["sh", "-c", "npm run dev -- --port $VITE_PORT"]

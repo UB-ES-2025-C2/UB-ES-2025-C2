@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
-import { useApiStore } from '../store/guestApi.js'
+import { useAuthStore } from '../apiStore/authStore'
+import { useApiStore } from '../apiStore/guestApi.js'
 
 const authStore = useAuthStore()
 const apiStore = useApiStore()
@@ -19,6 +19,7 @@ const buscarUsuari = async () => {
 const buscarNUsers = async () => {
   await apiStore.searchNUsers(nusers.value)
 }
+
 function viewprofile() {
   const myid = authStore.user_id
   router.push({ name: 'profile', params: { id: myid } })
@@ -95,9 +96,7 @@ const headerUsername = computed(() => {
         <strong>{{ song.name }}</strong>
         <p>{{ song.artist }}</p>
       </div>
-
-      <!-- Reproductor de audio -->
-      <audio :src="song.file_audio" controls class="song-audio"></audio>
+      <!-- SENSE barra de reproducció -->
     </li>
   </ul>
 
@@ -138,6 +137,14 @@ const headerUsername = computed(() => {
   border-radius: 12px;
   color: white;
   gap: 8px;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .card-image img {
@@ -158,21 +165,14 @@ const headerUsername = computed(() => {
   font-size: 0.9rem;
 }
 
-.song-audio {
-  width: 100%;
-  border-radius: 4px;
-}
-
 .home-header {
   margin-bottom: 20px;
 }
-
 .made-for {
   font-size: 0.9rem;
   color: #aaa;
   margin: 0;
 }
-
 .username {
   font-size: 2rem;
   font-weight: bold;

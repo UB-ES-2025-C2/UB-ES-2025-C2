@@ -17,11 +17,11 @@ ENV DJANGO_DEBUG="True"
 ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend"
 
 # Copy UV from the UV image.
-COPY --from=ghcr.io/astral-sh/uv:latest --chown=backend:backend /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:latest --chown=${UID}:${UID} /uv /uvx /bin/
 
 # Create the app directory.
 RUN mkdir /app
-RUN chown -R backend:backend /app
+RUN chown -R ${UID}:${UID} /app
 
 # Set the working directory inside the container.
 WORKDIR /app
@@ -40,4 +40,4 @@ EXPOSE ${PORT}
 # USER backend:backend -> Failed canonicalization of Python.
 
 # Run Django’s development server.
-CMD ["uv", "run", "--no-cache", "--dev", "--no-group", "prod", "music-space", "runserver", "0.0.0.0:${PORT}"]
+CMD ["sh", "-c", "uv run --no-cache --dev --no-group prod music-space runserver 0.0.0.0:$PORT"]

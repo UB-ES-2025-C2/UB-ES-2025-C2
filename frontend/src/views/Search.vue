@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useApiStore } from "../store/guestApi.js";
+import { useApiStore } from "../apiStore/guestApi.js";
 
 const route = useRoute();
 const router = useRouter();

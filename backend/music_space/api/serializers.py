@@ -10,19 +10,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', "password", "password_conf"]
+        fields = ['username', 'email', 'password', 'password_conf']
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_conf']:
+            raise serializers.ValidationError("Passwords don't match")
+        return attrs
 
     def create(self, validated_data):
-        if validated_data['password'] != validated_data['password_conf']:
-            raise serializers.ValidationError("Passwords don't match")
-
+        validated_data.pop('password_conf')
         if User.objects.filter(username=validated_data['username']).exists():
             raise serializers.ValidationError("Username already taken")
-
         return User.objects.create_user(
             validated_data['username'],
             validated_data['email'],
-            validated_data['password'],
+            validated_data['password']
         )
 
 
@@ -34,17 +36,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class PlayListSerializer(serializers.ModelSerializer):
     watched = UserProfileSerializer(many=True, read_only=True)
-
+    owner = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(), many=True, required=False, allow_empty=True
+    )
     class Meta:
         model = PlayList
         fields = '__all__'
-
+        extra_kwargs = {
+            'owner': {'required': False}
+        }
 
 class SongSerializer(serializers.ModelSerializer):
+    authors = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfile.objects.all(),
+        many=True,
+        required=False,
+        allow_empty=True
+    )
+
     class Meta:
         model = Song
         fields = '__all__'
-
 
 class PlayListSongSerializer(serializers.ModelSerializer):
     song = SongSerializer(read_only=True)
@@ -58,7 +70,6 @@ class PlayListSongSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaylistSong
         fields = ['id', 'song', 'song_id', 'position']
-
 
 class FollowersSerializer(serializers.ModelSerializer):
     follower = UserProfileSerializer(read_only=True)

@@ -8,6 +8,32 @@ class AuthService {
     })
   }
 
+  signUp(user) {
+    const accessToken = this.getAccessToken();
+    return this.getAxiosInstance().post("/api/v1/user/", {
+        username: user.username,
+        email: user.email,
+        password:user.password,
+        password_conf: user.password_conf,
+      }, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+      });
+  }
+  postSong(formData) {
+    const accessToken = this.getAccessToken();
+    return this.getAxiosInstance().post("/api/v1/songs/",
+      formData,
+      {
+        headers:
+        {
+          Authorization: `Bearer ${accessToken}`,
+          ...formData.getHeaders()
+        }
+      });
+  }
+
   refresh(refreshToken) {
     return Promise.resolve(
       JSON.stringify({
@@ -56,6 +82,23 @@ class AuthService {
       }
     );
   }
+  async updateUserProfile(user_id, data) {
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${user_id}/`,
+      data
+    );
+  }
+  async patchSong(userId, songId, formData) {
+    return this.getAxiosInstance().patch(
+      `/api/v1/userprofile/${userId}/songs/${songId}/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+  }
 
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
@@ -65,7 +108,6 @@ class AuthService {
     })
     return instance
   }
-
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL
     const accessToken = this.getAccessToken()

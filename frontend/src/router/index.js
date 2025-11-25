@@ -7,8 +7,11 @@ import User from '../views/User.vue'
 import SongDetailById from '../views/SongDetailById.vue'
 import Playlists from '../views/Playlists.vue'
 import Profile from '../views/Profile.vue'
+import EditProfile from '../views/EditProfile.vue'
+import CreateSong from '../views/CreateSong.vue'
+import editarSong from '../views/EditSong.vue'
 
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const routes = [
   {
@@ -53,6 +56,26 @@ const routes = [
     meta: { requiresAuth: true },
     props: true,
   },
+  {
+    path: '/profile/edit/:id',
+    name: 'edit-profile',
+    component: EditProfile,
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/createSong',
+    name: 'createSong',
+    component: CreateSong,
+    meta: { requiresAuth: true } // opcional
+  },
+  {
+    path: '/editSong/:id',
+    name: 'editSong',
+    component: editarSong,
+    meta: { requiresAuth: true },
+    props: true
+  }
 ]
 
 const router = createRouter({
@@ -63,7 +86,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   authStore.initializeAuthStore() // Ensure state is up-to-date
-
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'catalog' })
   } else {

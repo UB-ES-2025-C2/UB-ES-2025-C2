@@ -10,7 +10,7 @@ class Song(models.Model):
     name = models.CharField(max_length=50)
     artist = models.CharField(max_length=1000)
     topic = models.CharField(max_length=50)
-    file_audio = models.FileField(upload_to='uploads/')
+    file_audio = models.FileField(upload_to='songs_folder/')
     cover = models.ImageField(upload_to='covers/', default='covers/default.png')
     authors = models.ManyToManyField('UserProfile', related_name='songs')
     objects = models.Manager()

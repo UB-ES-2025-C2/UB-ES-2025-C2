@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../apiStore/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -22,7 +22,11 @@ const menuOpen = ref(false)
 const menuRef = ref(null)
 const btnRef = ref(null)
 
-const avatarUrl = computed(() => authStore.user?.avatarUrl || '/default-avatar.png')
+const avatarUrl = computed(() => {
+  return authStore.isAuthenticated && authStore.avatarUrl
+    ? authStore.avatarUrl
+    : '/default-avatar.png'
+})
 
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)
 
@@ -41,8 +45,24 @@ const goHome = () => router.push({ name: 'home' })
 const goLogin = () => router.push({ name: 'logIn' })
 const goSignUp = () => router.push({ name: 'sign_up' })
 const goProfile = () => {
-  const id = authStore.user?.id ?? authStore.user?.username
-  if (id != null) router.push({ name: 'profile', params: { id } })
+  // si no hi ha sessió, porta a login
+  if (!authStore?.isAuthenticated) {
+    router.push({ name: 'logIn' })
+    menuOpen.value = false
+    return
+  }
+
+  // el teu store a vegades usa user_id; fem un fallback robust
+  const id = authStore.user_id ?? authStore.user?.id ?? authStore.user?.username
+
+  if (id == null) {
+    // si per algun motiu no tenim id, com a darrer recurs: home
+    router.push({ name: 'home' })
+  } else {
+    // la teva ruta és /profile/:id i props: true
+    router.push({ name: 'profile', params: { id: String(id) } })
+  }
+
   menuOpen.value = false
 }
 
@@ -69,7 +89,11 @@ const cancelLogout = () => {
   <header class="header">
     <!-- Left block -->
     <div class="header-left">
-      <img src="../assets/logo_musicSpace.png" alt="Logo" class="logo" />
+      <img
+        src="https://rqlzfndxwaxpiqycxfrg.storage.supabase.co/storage/v1/object/public/archivosmusicspace/logo_musicSpace.png"
+        alt="Logo"
+        class="logo"
+      />
 
       <!-- Home icon -->
       <button class="home-btn" @click="goHome" aria-label="Go home">
@@ -362,5 +386,4 @@ const cancelLogout = () => {
 .btn-confirm:hover {
   background: #ff5aa8;
 }
-
 </style>

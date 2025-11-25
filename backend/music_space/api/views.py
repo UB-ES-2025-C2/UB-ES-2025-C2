@@ -30,6 +30,16 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    def partial_update(self, request, *args, **kwargs):
+        id = kwargs.get('pk')
+        id_user = request.user.userprofile.id
+        if id:
+            id = int(id)
+        if (id != id_user):
+            raise ValidationError("No pots modificar el perfil d'un altre usuari")
+        return  super().partial_update(request, *args, **kwargs)
+
+
 
 class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
@@ -49,13 +59,28 @@ class SongViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(authors=userprofile)
         return qs
+    def partial_update(self, request, *args, **kwargs):
+        userprofile_pk = self.kwargs.get("userprofile_pk")
+        if userprofile_pk:
+            id = request.user.userprofile.id
+            if int(userprofile_pk) != id:
+                raise ValidationError("No pots modificar les cançons d'un altre usuari")
+        return super().partial_update(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        song = serializer.save()
+        authors_data = self.request.data.get("authors", [])
+        song.authors.add(userprofile)
+        if authors_data:
+            for author_id in authors_data:
+                author = get_object_or_404(UserProfile, id=author_id)
+                song.authors.add(author)
+        song.save()
 
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-
     def get_queryset(self):
         name = self.request.query_params.get("name")
         topic = self.request.query_params.get("topic")
@@ -69,6 +94,16 @@ class PlayListViewSet(viewsets.ModelViewSet):
             qs = qs.filter(owner=userprofile)
         return qs
 
+    def perform_create(self, serializer):
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        playlist = serializer.save()
+        owners_data = self.request.data.get("owner", [])
+        playlist.owner.add(userprofile)
+        if owners_data:
+            for owner_id in owners_data:
+                owner =  get_object_or_404(UserProfile,id=owner_id)
+                playlist.owner.add(owner)
+        playlist.save()
 
 class PlaylistSongViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSongSerializer
@@ -214,5 +249,5 @@ class SongNameSearchView(APIView):
 class UserProfileByTokenView(APIView):
     def get(self, request):
         profile = get_object_or_404(UserProfile, user=request.user)
-        serializer = UserProfileSerializer(profile)
+        serializer = UserProfileSerializer(profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

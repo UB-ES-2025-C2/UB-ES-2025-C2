@@ -1,0 +1,107 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [ "staging", "prod" ]
+  pull_request:
+    branches: [ "staging", "prod" ]
+  workflow_dispatch:
+
+jobs:
+  test_e2e:
+    runs-on: ubuntu-latest
+
+    env:
+        SECRET_KEY: "dummy-key-for-ci"
+        DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost"
+        DJANGO_DEBUG: "1"
+        DJANGO_CONFIG_MODULE: "music_space.settings"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Add uv to PATH
+        run: echo "${HOME}/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen
+
+
+      # ---------- Run end-to-end tests ----------
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend for preview (CI)
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://127.0.0.1:8000
+        run: npm run build
+
+      - name: Install Playwright system deps and browsers
+        working-directory: frontend
+        run: |
+          # Install OS-level dependencies (Ubuntu)
+          npx playwright install-deps || true
+          npx playwright install --with-deps
+
+      # Start backend
+      - name: Start Django backend
+        working-directory: backend
+        run: |
+         export DJANGO_SUPERUSER_USERNAME=admin
+         export DJANGO_SUPERUSER_EMAIL=admin@example.com
+         export DJANGO_SUPERUSER_PASSWORD=admin123
+         # Create and apply database migrations
+         uv run python manage.py makemigrations api --noinput
+         # Apply migrations so server is ready for tests
+         uv run python manage.py migrate --noinput
+         # Apply migrations api is ready for tests
+         uv run python manage.py migrate api --noinput
+         uv run python manage.py createsuperuser --noinput
+         # Start the Django server in background
+         nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+         # Wait for server to accept connections (max ~30s)
+         for i in {1..30}; do
+             if curl -sSf http://127.0.0.1:8000/ > /dev/null 2>&1; then
+             echo "Server is up"
+             break
+             fi
+             sleep 1
+         done
+
+      - name: Serve frontend build
+        working-directory: frontend
+        run: |
+         npx serve -s dist -l 5173 &
+         for i in {1..30}; do
+            if curl -sSf http://localhost:5173/ > /dev/null 2>&1; then
+                echo "Frontend server is up"
+                break
+            fi
+            sleep 1
+         done
+
+      - name: Run E2E tests
+        working-directory: frontend
+        env:
+            BACKEND_URL: http://127.0.0.1:8000
+            FRONTEND_URL: http://127.0.0.1:5173
+            ADMIN_USER: admin
+            ADMIN_PASS: admin123
+        run: npm run test:e2e

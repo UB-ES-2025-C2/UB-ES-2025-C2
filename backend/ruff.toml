@@ -10,8 +10,8 @@ respect-gitignore = true
 # Custom: No need to respect gitignore.
 show-fixes = true
 # Custom: Better to show all fixed violations.
-target-version = "py313"
-# Custom: Target Python 3.13.
+target-version = "py314"
+# Custom: Target Python 3.14.
 unsafe-fixes = false
 # Default: No unsafe fixes should be used.
 

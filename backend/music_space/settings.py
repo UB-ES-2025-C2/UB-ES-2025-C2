@@ -11,16 +11,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import dj_database_url
 
 from datetime import timedelta
 from pathlib import Path
-
 from dotenv import load_dotenv
+load_dotenv()
+
+from storages.backends.s3boto3 import S3Boto3Storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR.parent / ".env")  # Carrega les variables del .env
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +29,7 @@ load_dotenv(BASE_DIR.parent / ".env")  # Carrega les variables del .env
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=0))
+DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="0"))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'health_check',
     'health_check.db',
     'music_space.api',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -84,20 +86,75 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'music_space.wsgi.application'
 
+# File storage settings
+
+# Configuración de almacenamiento en Supabase
+SUPABASE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME')
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY_ID = os.getenv('SUPABASE_KEY_ID')
+SUPABASE_API_KEY = os.getenv('SUPABASE_API_KEY')
+
+
+# Configuración común para todas las instancias
+if SUPABASE_BUCKET_NAME and SUPABASE_URL and SUPABASE_KEY_ID and SUPABASE_API_KEY:
+    # Configuración para Supabase
+    AWS_ACCESS_KEY_ID = SUPABASE_KEY_ID
+    AWS_SECRET_ACCESS_KEY = SUPABASE_API_KEY
+    AWS_STORAGE_BUCKET_NAME = SUPABASE_BUCKET_NAME
+    AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_URL}/storage/v1/s3'
+    AWS_S3_REGION_NAME = 'eu-north-1'
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_CUSTOM_DOMAIN = f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+
+    STORAGES = {
+
+    # Media file (image) management
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    }
+else:
+    MEDIA_URL = '/'
+    MEDIA_ROOT = BASE_DIR
+
+    STORAGES = {
+
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    }
+
+
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-        "TEST": {
-            "NAME": BASE_DIR / "test_db.sqlite3",
-        },
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
     }
-}
-
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+            "TEST": {"NAME": BASE_DIR / "test_db.sqlite3"},
+        }
+    }
 
 
 # Password validation
