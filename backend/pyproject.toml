@@ -38,7 +38,7 @@ dev = [
     { include-group = "docs" },
     { include-group = "lint-format" },
     { include-group = "test" },
-    "pytest>=8.4.2",
+    "coverage>=7.12.0",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.11.1",
 ]
