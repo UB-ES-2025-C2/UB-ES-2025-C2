@@ -1,0 +1,42 @@
+name: Backend unit tests
+
+on:
+  push:
+    branches: [ "staging", "prod" ]
+  pull_request:
+    branches: [ "staging", "prod" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      # Install uv
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      # Add uv to PATH
+      - name: Add uv to PATH
+        run: echo "${HOME}/.cargo/bin" >> $GITHUB_PATH
+
+      # Install dependencies using uv
+      - name: Install dependencies with uv
+        working-directory: backend
+        run: uv sync --frozen
+
+      # Run Ruff checks using uv run (virtualenv managed by uv)
+      - name: Run Ruff check
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: music_space.settings
+          SECRET_KEY: "dummy-key-for-ci-only"
+        run: uv run ruff check
