@@ -28,7 +28,6 @@ const authenticateUser = async () => {
   if (authStore.isAuthenticated) {
     router.push({ name: 'home' })
   }
-
 }
 
 const SignUp = () => {
@@ -39,7 +38,6 @@ const logOut = () => {
   authStore.logout()
   router.push({ name: 'logIn' })
 }
-
 </script>
 
 <template>
@@ -47,7 +45,11 @@ const logOut = () => {
     <main class="login-card" role="main" aria-labelledby="login-title">
       <!-- Inside your <template> -->
       <div class="logo-wrap">
-        <img src="../assets/logo_musicSpace.png" alt="MusicSpace logo" class="logo" />
+        <img
+          src="https://rqlzfndxwaxpiqycxfrg.storage.supabase.co/storage/v1/object/public/archivosmusicspace/logo_musicSpace.png"
+          alt="MusicSpace logo"
+          class="logo"
+        />
       </div>
 
       <h1 id="login-title" class="title">Inicia sessió a<br />MusicSpace</h1>

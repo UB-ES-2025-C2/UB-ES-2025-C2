@@ -25,8 +25,8 @@ const btnRef = ref(null)
 const avatarUrl = computed(() => {
   return authStore.isAuthenticated && authStore.avatarUrl
     ? authStore.avatarUrl
-    : '/default-avatar.png';
-});
+    : '/default-avatar.png'
+})
 
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)
 
@@ -89,7 +89,11 @@ const cancelLogout = () => {
   <header class="header">
     <!-- Left block -->
     <div class="header-left">
-      <img src="../assets/logo_musicSpace.png" alt="Logo" class="logo" />
+      <img
+        src="https://rqlzfndxwaxpiqycxfrg.storage.supabase.co/storage/v1/object/public/archivosmusicspace/logo_musicSpace.png"
+        alt="Logo"
+        class="logo"
+      />
 
       <!-- Home icon -->
       <button class="home-btn" @click="goHome" aria-label="Go home">
