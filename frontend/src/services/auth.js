@@ -100,18 +100,22 @@ class AuthService {
     );
   }
   async postPlaylist(playlistData) {
-  return this.getAxiosInstance().post(
-    '/api/v1/playlist/',
-    playlistData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    return this.getAxiosInstance().post(
+      '/api/v1/playlist/',
+      playlistData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       }
-    }
-  );
-}
-
-
+    );
+  }
+  async postPlayListSong(playlistId, song){
+   return this.getAxiosInstance().post(
+      `/api/v1/playlist/${playlistId}/songs/`,
+      song,
+    );
+  } 
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
 

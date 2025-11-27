@@ -123,6 +123,9 @@ export const useAuthStore = defineStore("auth", {
         formData.append("cover", playlist.cover);
       } // cover
       return AuthService.postPlaylist(formData);
+    },
+    async postPlayListSong(playlistId, song){
+      return AuthService.postPlayListSong(playlistId, song);
     }
   }
 });
