@@ -172,5 +172,5 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching song by ID:", e);
         throw e;
       }
-    },
+    }
 }});
