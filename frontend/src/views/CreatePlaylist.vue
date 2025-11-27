@@ -13,7 +13,7 @@ const topic = ref('')
 const owner = ref([]) // array d'IDs d'usuaris propietaris
 const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
-const previewCover = ref(null)
+const previewCover = ref(null) // preview
 
 const coverInput = ref(null)
 
