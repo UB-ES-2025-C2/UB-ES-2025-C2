@@ -117,11 +117,12 @@ export const useAuthStore = defineStore("auth", {
       const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
 
       owners.forEach(id => {
-        formData.append("owner", id); 
+        formData.append("owner", id); // crea "owner": "1", "owner": "2", ...
       });
+
       if (playlist.cover) {
         formData.append("cover", playlist.cover);
-      } // cover
+      }
       return AuthService.postPlaylist(formData);
     }
   }
