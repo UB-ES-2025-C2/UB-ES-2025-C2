@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
 
-const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const API_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000'
+const BASE_URL =  process.env.FRONTEND_URL|| 'http://localhost:5173'
+const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, request }) => {
   // 1️⃣ Login amb usuari hardcodejat
