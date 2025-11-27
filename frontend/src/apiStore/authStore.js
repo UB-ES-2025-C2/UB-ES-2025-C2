@@ -122,7 +122,7 @@ export const useAuthStore = defineStore("auth", {
 
       if (playlist.cover) {
         formData.append("cover", playlist.cover);
-      }
+      } // cover
       return AuthService.postPlaylist(formData);
     }
   }
