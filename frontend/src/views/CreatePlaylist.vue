@@ -15,9 +15,9 @@ const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
 const previewCover = ref(null)
 
-const coverInput = ref(null) // new
+const coverInput = ref(null) 
 
-const loading = ref(false)
+const loading = ref(false) // loading
 const error = ref(null)
 const success = ref(null) // per missatge d’èxit
 
