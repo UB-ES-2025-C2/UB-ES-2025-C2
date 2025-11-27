@@ -6,9 +6,9 @@ const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, request }) => {
   // 1️⃣ Login amb usuari hardcodejat
-  const username = 'testuser'
-  const password = '1234'
-
+  const username = 'admin'
+  const password = 'admin'
+  
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', username)
   await page.fill('input#password', password)
