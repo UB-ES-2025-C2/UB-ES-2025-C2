@@ -97,7 +97,7 @@ class FollowingSerializer(serializers.ModelSerializer):
         fields = ['id', 'followed', 'followed_id', 'date_added']
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserProfileSerializer(read_only=True)   # Mostra el user
+    user = UserProfileSerializer(read_only=True)
     song = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
