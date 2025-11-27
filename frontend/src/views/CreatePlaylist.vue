@@ -15,7 +15,7 @@ const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
 const previewCover = ref(null)
 
-const coverInput = ref(null)
+const coverInput = ref(null) // new
 
 const loading = ref(false)
 const error = ref(null)
