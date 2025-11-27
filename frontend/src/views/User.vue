@@ -10,7 +10,6 @@ const api = useApiStore();
 // Mockdata de seguidors y seguint
 const mockFollowers = 123;
 const mockFollowing = 45;
-
 /*
 // Mockdata de cançons
 const mockSongs = [
