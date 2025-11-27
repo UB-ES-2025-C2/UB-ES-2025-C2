@@ -38,6 +38,7 @@
           </div>
         </div>
       </header>
+      
       <!-- TRACK ROW (una sola cançó) -->
       <div class="list-header">
         <span>#</span>
