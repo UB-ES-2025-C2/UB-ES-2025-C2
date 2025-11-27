@@ -98,8 +98,6 @@ class AuthService {
         }
       }
     );
-
-    
   }
   async postPlaylist(playlistData) {
     return this.getAxiosInstance().post(
