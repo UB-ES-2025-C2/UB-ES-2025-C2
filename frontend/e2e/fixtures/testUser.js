@@ -2,7 +2,7 @@ import { test as base, request as playwrightRequest } from '@playwright/test'
 
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 const ADMIN_USER = process.env.ADMIN_USER || 'admin'
-const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123'
+const ADMIN_PASS = process.env.ADMIN_PASS || 'admin'
 
 export const test = base.extend({
   testUser: async ({}, use) => {
