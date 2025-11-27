@@ -116,6 +116,9 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         playlist_pk = self.kwargs.get("playlist_pk")
         playlist = get_object_or_404(PlayList, pk=playlist_pk)
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        if userprofile not in playlist.owner.all():
+            raise ValidationError("No ets el propietari d'aquesta playlist.")
         song = serializer.validated_data['song']
         if PlaylistSong.objects.filter(playlist=playlist, song=song).exists():
             raise ValidationError("Aquesta cançó ja existeix a la playlist.")
@@ -170,6 +173,20 @@ class FollowingViewSet(viewsets.ModelViewSet):
             raise ValidationError({"detail": "Ja segueixes aquest usuari."})
 
         serializer.save(follower=follower, followed=followed)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        song_pk = self.kwargs.get("song_pk")
+        return Comment.objects.filter(song__id=song_pk)
+
+    def perform_create(self, serializer):
+        song_pk = self.kwargs.get("song_pk")
+        song = get_object_or_404(Song, pk=song_pk)
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        serializer.save(song=song, user=userprofile)
 
 
 class UserProfileByUsernameView(APIView):
