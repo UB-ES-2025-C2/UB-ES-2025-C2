@@ -71,7 +71,7 @@ onMounted(async () => {
         <p class="followers">
           Seguidors: {{ userData.followers }} · Seguint: {{ userData.following }}
         </p>
-        <p>{{ userData.description }}</p>
+        <p class="description">{{ userData.description }}</p>
       </div>
     </div>
 
