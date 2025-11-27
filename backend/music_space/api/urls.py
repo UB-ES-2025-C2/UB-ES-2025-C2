@@ -21,6 +21,9 @@ userprofilerute.register(r'playlist', PlayListViewSet, basename='playlist-user')
 userprofilerute.register(r'followers', FollowersViewSet, basename='followers-user')
 userprofilerute.register(r'following', FollowingViewSet, basename='following-user')
 
+SongRut = NestedSimpleRouter(router, r'songs', lookup='song')
+SongRut.register(r'comments', CommentViewSet, basename='comment-song')
+
 
 urlpatterns = [
     path(
@@ -31,6 +34,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
     path("", include(userprofilerute.urls)),
+    path("", include(SongRut.urls)),
     # Ruta personalizada para buscar el usuario por su nombre de usuario
     path(
         "userprofile/by-username/<str:username>/",
