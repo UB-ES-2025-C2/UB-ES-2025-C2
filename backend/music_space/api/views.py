@@ -128,7 +128,7 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         playlist = instance.playlist
         userprofile = get_object_or_404(UserProfile, user=self.request.user)
-        if userprofile not in playlist.owner.all():
+        if userprofile not in playlist.owner.all(): # usem token per comprovar propietari
             raise ValidationError("No ets el propietari d'aquesta playlist.")
         position_deleted = instance.position
         instance.delete()
