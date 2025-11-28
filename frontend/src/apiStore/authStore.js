@@ -126,6 +126,9 @@ export const useAuthStore = defineStore("auth", {
     },
     async postPlayListSong(playlistId, song){
       return AuthService.postPlayListSong(playlistId, song);
+    },
+    async deletePlayListSong(playlistId, songId){
+      return AuthService.deletePlayListSong(playlistId, songId)
     }
   }
 });
