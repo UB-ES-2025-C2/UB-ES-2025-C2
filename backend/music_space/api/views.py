@@ -124,7 +124,7 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
             raise ValidationError("Aquesta cançó ja existeix a la playlist.")
         pos = playlist.songs.count() + 1 #augmentem en 1 la posició
         serializer.save(playlist=playlist, song=song, position=pos)
-
+    # add conflict
     def perform_destroy(self, instance):
         playlist = instance.playlist
         userprofile = get_object_or_404(UserProfile, user=self.request.user)
