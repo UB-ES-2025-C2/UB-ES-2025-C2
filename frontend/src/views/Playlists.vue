@@ -70,7 +70,7 @@ onMounted(() => {
     <!-- Canciones -->
     <div class="playlist-songs">
       <ul>
-        <li v-for="song in api.songs" :key="song.id" class="song-card">
+        <li v-for="song in api.songsFromPlaylist" :key="song.id" class="song-card">
           <div class="song-image">
             <img :src="song.song.cover" alt="cover canción" />
           </div>
