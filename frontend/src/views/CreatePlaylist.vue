@@ -10,12 +10,11 @@ const auth = useAuthStore()
 const name = ref('')
 const description = ref('')
 const topic = ref('')
-const owner = ref([]) // array d'IDs d'usuaris propietaris
 const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
 const previewCover = ref(null) // preview
 
-const coverInput = ref(null) 
+const coverInput = ref(null)
 
 const loading = ref(false) // loading
 const error = ref(null)
@@ -40,7 +39,7 @@ onMounted(async () => {
 
 async function createPlaylist() {
   if (!name.value || !topic.value) {
-    error.value = "El nom i el tema són obligatoris."
+    error.value = 'El nom i el tema són obligatoris.'
     return
   }
 
@@ -52,11 +51,12 @@ async function createPlaylist() {
     name: name.value,
     description: description.value,
     topic: topic.value,
-    owner: owner.value,
-    cover: cover.value || null
+    owner: [auth.user_id],
+    cover: cover.value || null,
   }
 
-  auth.postPlaylist(playlist)
+  auth
+    .postPlaylist(playlist)
     .then((response) => {
       console.log('Playlist creada:', response.data)
       success.value = 'Playlist creada correctament!'
@@ -92,11 +92,6 @@ async function createPlaylist() {
     <label>
       Tema:
       <input type="text" v-model="topic" />
-    </label>
-
-    <label>
-      Owners (IDs separats per coma):
-      <input type="text" @input="owner.value = $event.target.value.split(',').map(a => parseInt(a.trim()))" />
     </label>
 
     <!-- Cover opcional -->
@@ -152,6 +147,7 @@ button {
   font-weight: bold;
   margin-top: 15px;
 }
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
