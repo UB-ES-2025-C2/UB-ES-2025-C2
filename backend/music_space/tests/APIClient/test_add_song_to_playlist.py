@@ -53,6 +53,5 @@ class PlaylistSongAPITestCase(APITestCase):
         playlist_song = PlaylistSong.objects.get(playlist=self.playlist, song=self.song2)
         self.assertEqual(playlist_song.position, 2)  # perform_create posa count() + 1
 
-        # Comprovar que song_id no apareix en resposta (write_only)
         self.assertNotIn('song_id', response.data)
         self.assertIn('song', response.data)
