@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import CreatePlaylist from '../../views/CreatePlayList.vue'
+import CreatePlaylist from '../../views/CreatePlaylist.vue'
 
 // Mock del store d'Auth
 const mockAuthStore = {
   initializeAuthStore: vi.fn(),
   postPlaylist: vi.fn(),
-  user_id: 1, // afegim id d'usuari logat
+  user_id: 1,
 }
 
 // Mock de useRouter
@@ -15,57 +15,57 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
+// Mock del AuthStore
 vi.mock('../../apiStore/authStore', () => ({
   useAuthStore: () => mockAuthStore,
 }))
 
-// Mock de alert
+// Mock alert
 globalThis.alert = vi.fn()
 
 describe('CreatePlaylist.vue', () => {
   let wrapper
 
   beforeEach(async () => {
-    // Netegem els mocks abans de muntar
     mockAuthStore.initializeAuthStore = vi.fn()
     mockAuthStore.postPlaylist = vi.fn()
     pushMock.mockClear()
     globalThis.alert.mockClear()
 
-    // Muntem el component
-    wrapper = mount(CreatePlaylist, {})
+    wrapper = mount(CreatePlaylist)
     await flushPromises()
   })
 
-  it('crida a initializeAuthStore al muntar', () => {
+  it('crida initializeAuthStore al muntar', () => {
     expect(mockAuthStore.initializeAuthStore).toHaveBeenCalled()
   })
 
-  it('actualitza previewCover al seleccionar portada', async () => {
-    const file = new File(['dummy content'], 'cover.png', { type: 'image/png' })
-    const event = { target: { files: [file] } }
-
+  it('actualitza previewCover en seleccionar portada', async () => {
+    const file = new File(['dummy'], 'cover.png', { type: 'image/png' })
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mocked-url')
 
-    await wrapper.vm.onCoverSelected(event)
+    await wrapper.vm.onCoverSelected({ target: { files: [file] } })
+
     expect(wrapper.vm.cover).toBe(file)
     expect(wrapper.vm.previewCover).toBe('blob:mocked-url')
   })
 
-  it('mostra error si nom o tema estan buits', async () => {
+  it('mostra error si nom i tema estan buits', async () => {
     wrapper.vm.name = ''
     wrapper.vm.topic = ''
+
     await wrapper.vm.createPlaylist()
+
     expect(wrapper.vm.error).toBe('El nom i el tema són obligatoris.')
   })
 
-  it('crida a postPlaylist y redirigeix al crear playlist correctament', async () => {
-    const playlist = { data: 'ok' }
-    mockAuthStore.postPlaylist.mockResolvedValue(playlist)
-    wrapper.vm.name = 'Test Playlist'
+  it('crida postPlaylist i redirigeix correctament', async () => {
+    mockAuthStore.postPlaylist.mockResolvedValue({ data: 'ok' })
+
+    wrapper.vm.name = 'Test'
     wrapper.vm.topic = 'Pop'
     wrapper.vm.description = 'Desc'
-    wrapper.vm.cover = new File(['cover'], 'cover.png', { type: 'image/png' })
+    wrapper.vm.cover = new File(['x'], 'cover.png', { type: 'image/png' })
 
     await wrapper.vm.createPlaylist()
     await flushPromises()
@@ -73,13 +73,13 @@ describe('CreatePlaylist.vue', () => {
     expect(mockAuthStore.postPlaylist).toHaveBeenCalled()
     expect(pushMock).toHaveBeenCalledWith({ name: 'home' })
     expect(wrapper.vm.error).toBeNull()
-    expect(global.alert).toHaveBeenCalledWith('Playlist creada correctament!')
+    expect(globalThis.alert).toHaveBeenCalledWith('Playlist creada correctament!')
   })
 
-  it('mostra error si postPlaylist falla', async () => {
-    const error = new Error('fail')
-    mockAuthStore.postPlaylist.mockRejectedValue(error)
-    wrapper.vm.name = 'Test Playlist'
+  it('mostra error quan postPlaylist falla', async () => {
+    mockAuthStore.postPlaylist.mockRejectedValue(new Error('fail'))
+
+    wrapper.vm.name = 'Test'
     wrapper.vm.topic = 'Pop'
 
     await wrapper.vm.createPlaylist()

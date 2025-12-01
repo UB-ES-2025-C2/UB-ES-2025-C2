@@ -59,10 +59,14 @@ async function createPlaylist() {
     .postPlaylist(playlist)
     .then((response) => {
       console.log('Playlist creada:', response.data)
+
+      alert('Playlist creada correctament!')
+
       success.value = 'Playlist creada correctament!'
-      success.value = null
+
       router.push({ name: 'home' })
     })
+
     .catch((err) => {
       console.error(err)
       error.value = 'Error en crear la playlist.'
