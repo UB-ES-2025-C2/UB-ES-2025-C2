@@ -132,7 +132,6 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
             raise ValidationError("No ets el propietari d'aquesta playlist.")
         position_deleted = instance.position
         instance.delete()
-        # Reordenar posicions restants
         remaining = PlaylistSong.objects.filter(playlist=playlist, position__gt=position_deleted)
         for ps in remaining:
             ps.position -= 1
