@@ -81,13 +81,19 @@ describe('EditProfile.vue', () => {
     wrapper.vm.nickname = userMock.nickname
     wrapper.vm.description = userMock.description
 
+    vi.useFakeTimers() //activar timers falsos
+
     await wrapper.vm.saveProfile()
+
+    vi.advanceTimersByTime(1200)
 
     expect(mockAuthStore.updateUserProfile).toHaveBeenCalledWith({
       nickname: userMock.nickname,
       description: userMock.description
     })
     expect(pushMock).toHaveBeenCalledWith({ name: 'profile', params: { id: '123' } })
+
+    vi.useRealTimers() //restaurar timers reals
   })
 
   it('shows error if getUserById fails', async () => {
