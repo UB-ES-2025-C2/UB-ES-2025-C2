@@ -23,8 +23,8 @@ customTest(
 
     // 2️⃣ Preparar fitxers
 
-    const audioPath = path.resolve('./e2e/files/sample.mp3')
-    const coverPath = path.resolve('./e2e/files/cover.png')
+    const audioPath = path.resolve('./files/sample.mp3')
+    const coverPath = path.resolve('./files/cover.png')
 
     // 3️⃣ Enviar petició POST amb multipart/form-data
     const songRes = await request.post(`${API_URL}/api/v1/songs/`, {

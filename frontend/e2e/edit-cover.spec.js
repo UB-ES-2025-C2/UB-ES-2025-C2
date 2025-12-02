@@ -1,14 +1,14 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
 
-const BASE_URL =  process.env.FRONTEND_URL|| 'http://localhost:5173'
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, request }) => {
   // 1️⃣ Login amb usuari hardcodejat
   const username = 'admin'
   const password = 'admin'
-  
+
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', username)
   await page.fill('input#password', password)
@@ -33,7 +33,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.waitForSelector('button:has-text("Canviar portada")')
 
   // 5️⃣ Selecciona una imatge vàlida
-  const coverFile = './files/default.png' // assegura't que existeix aquest fitxer
+  const coverFile = './files/cover.png' // assegura't que existeix aquest fitxer
   const coverInput = page.locator('input[type="file"]').nth(1) // segon input
   await coverInput.setInputFiles(coverFile)
 
@@ -42,6 +42,9 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
 
   // 7️⃣ Comprova que apareix missatge d’èxit
   const successMsg = page.locator('.success')
+  await page.waitForSelector('.success', { timeout: 5000 })
+  await expect(page.locator('.success')).toContainText('Cançó actualitzada correctament!')
+
   await expect(successMsg).toContainText('Cançó actualitzada correctament!')
 
   // 8️⃣ Espera que la redirecció al perfil es completi amb el userId
@@ -51,7 +54,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.click('.song-card:first-child')
   await page.waitForSelector('.cover-preview')
   const previewSrc = await page.locator('.cover-preview').getAttribute('src')
-  expect(previewSrc).toMatch(/default_.*\.png$/)
+  expect(previewSrc).toMatch(/cover_.*\.png$/)
 
   // 🔟 Opcional: comprovar backend
   const loginRes = await request.post(`${API_URL}/api/token/`, {
@@ -68,5 +71,5 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.waitForSelector('.cover-preview')
   const previewSrcAfter = await page.locator('.cover-preview').getAttribute('src')
   //comprovar que és una imatge
-  expect(previewSrcAfter).toMatch(/default_.*\.png$/)
+  expect(previewSrcAfter).toMatch(/cover_.*\.png$/)
 })
