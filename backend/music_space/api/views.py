@@ -125,6 +125,19 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
         pos = playlist.songs.count() + 1 #augmentem en 1 la posició
         serializer.save(playlist=playlist, song=song, position=pos)
 
+    def perform_destroy(self, instance):
+        playlist = instance.playlist
+        userprofile = get_object_or_404(UserProfile, user=self.request.user)
+        if userprofile not in playlist.owner.all(): # usem token per comprovar propietari
+            raise ValidationError("No ets el propietari d'aquesta playlist.")
+        position_deleted = instance.position
+        instance.delete()
+        # Reordenar posicions restants
+        remaining = PlaylistSong.objects.filter(playlist=playlist, position__gt=position_deleted)
+        for ps in remaining:
+            ps.position -= 1
+            ps.save()
+
 
 class FollowersViewSet(viewsets.ModelViewSet):
     serializer_class = FollowersSerializer
