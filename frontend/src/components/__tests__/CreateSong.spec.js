@@ -32,6 +32,7 @@ describe('CreateSong.vue', () => {
     mockAuthStore.postSong = vi.fn()
     pushMock.mockClear()
     global.alert.mockClear()
+    global.console.error = vi.fn() // Silenciar errors, que no son errors reals, en tests
 
     // Muntem el component i afegim authorsString per evitar warnings
     wrapper = mount(CreateSong, {

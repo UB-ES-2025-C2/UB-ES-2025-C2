@@ -2,26 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import EditProfile from '../../views/EditProfile.vue'
 
-// ==============================
-// MOCK GLOBAL DE URL.createObjectURL
-// ==============================
 global.URL.createObjectURL = vi.fn(() => 'blob:mocked-url')
+global.console.error = vi.fn() // Silenciar errors, que no son errors reals, en tests
 
-// ==============================
-// MOCK DEL STORE DE API Y AUTH
-// ==============================
 const mockApiStore = {
   getUserById: vi.fn(),
 }
+
 const mockAuthStore = {
   changeProfilePicture: vi.fn(),
   refreshUserInfo: vi.fn(),
   updateUserProfile: vi.fn(),
 }
 
-// ==============================
-// MOCK DE VUE ROUTER
-// ==============================
 const pushMock = vi.fn()
 
 vi.mock('../../apiStore/guestApi', () => ({
@@ -37,9 +30,7 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
-// ==============================
-// TESTS
-// ==============================
+// tests
 describe('EditProfile.vue', () => {
   let wrapper
   const userMock = {

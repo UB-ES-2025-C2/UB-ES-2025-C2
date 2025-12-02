@@ -16,12 +16,13 @@ describe('Header.vue', () => {
     // Creamos store de autenticación
     store = useAuthStore()
 
+    const Dummy = { template: '<div></div>' } // Component dummy per rutas
     // Configuramos router simulado
     router = createRouter({
       history: createWebHistory(),
       routes: [
-        { path: '/', name: 'home' },
-        { path: '/login', name: 'login' },
+        { path: '/', name: 'home', component: Dummy },
+        { path: '/login', name: 'login', component: Dummy },
       ],
     })
   })
