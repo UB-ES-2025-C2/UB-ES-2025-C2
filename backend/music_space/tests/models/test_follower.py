@@ -1,7 +1,10 @@
 import pytest
+
 from django.contrib.auth.models import User
 from django.test import TestCase
-from music_space.api.models import UserProfile, Follow
+
+from music_space.api.models import Follow, UserProfile
+
 
 @pytest.mark.django_db
 class FollowTestCase(TestCase):
@@ -14,6 +17,7 @@ class FollowTestCase(TestCase):
         self.p2 = UserProfile.objects.get(user=self.u2)
         self.p2.nickname = "B"
         self.p2.save()
+
     def test_follow_relationship(self):
         Follow.objects.create(follower=self.p1, followed=self.p2)
         self.assertTrue(Follow.objects.filter(follower=self.p1, followed=self.p2).exists())

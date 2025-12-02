@@ -1,6 +1,7 @@
-import pytest
 from django.test import TestCase
+
 from music_space.api.serializers import UserSerializer
+
 
 class TestUserSerializer(TestCase):
     def test_create_user_success(self):

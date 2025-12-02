@@ -1,14 +1,9 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, permissions, status, viewsets
-from rest_framework.authentication import BasicAuthentication, \
-    SessionAuthentication
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.exceptions import ValidationError, MethodNotAllowed
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import MethodNotAllowed, ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import Token
 
 from .serializers import *  # noqa: F403
 
@@ -21,15 +16,18 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email']
     authentication_classes = []
+
     def get_permissions(self):
         if self.request.method == 'POST':
             return [permissions.AllowAny()]
         raise MethodNotAllowed(self.request.method)
 
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def partial_update(self, request, *args, **kwargs):
         id = kwargs.get('pk')
         id_user = request.user.userprofile.id
@@ -37,8 +35,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             id = int(id)
         if (id != id_user):
             raise ValidationError("No pots modificar el perfil d'un altre usuari")
-        return  super().partial_update(request, *args, **kwargs)
-
+        return super().partial_update(request, *args, **kwargs)
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -59,6 +56,7 @@ class SongViewSet(viewsets.ModelViewSet):
             userprofile = get_object_or_404(UserProfile, id=userprofile_pk)
             qs = qs.filter(authors=userprofile)
         return qs
+
     def partial_update(self, request, *args, **kwargs):
         userprofile_pk = self.kwargs.get("userprofile_pk")
         if userprofile_pk:
@@ -78,9 +76,11 @@ class SongViewSet(viewsets.ModelViewSet):
                 song.authors.add(author)
         song.save()
 
+
 class PlayListViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_queryset(self):
         name = self.request.query_params.get("name")
         topic = self.request.query_params.get("topic")
@@ -101,9 +101,10 @@ class PlayListViewSet(viewsets.ModelViewSet):
         playlist.owner.add(userprofile)
         if owners_data:
             for owner_id in owners_data:
-                owner =  get_object_or_404(UserProfile,id=owner_id)
+                owner = get_object_or_404(UserProfile, id=owner_id)
                 playlist.owner.add(owner)
         playlist.save()
+
 
 class PlaylistSongViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSongSerializer
@@ -122,13 +123,13 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
         song = serializer.validated_data['song']
         if PlaylistSong.objects.filter(playlist=playlist, song=song).exists():
             raise ValidationError("Aquesta cançó ja existeix a la playlist.")
-        pos = playlist.songs.count() + 1 #augmentem en 1 la posició
+        pos = playlist.songs.count() + 1  # augmentem en 1 la posició
         serializer.save(playlist=playlist, song=song, position=pos)
 
     def perform_destroy(self, instance):
         playlist = instance.playlist
         userprofile = get_object_or_404(UserProfile, user=self.request.user)
-        if userprofile not in playlist.owner.all(): # usem token per comprovar propietari
+        if userprofile not in playlist.owner.all():  # usem token per comprovar propietari
             raise ValidationError("No ets el propietari d'aquesta playlist.")
         position_deleted = instance.position
         instance.delete()
@@ -187,6 +188,7 @@ class FollowingViewSet(viewsets.ModelViewSet):
 
         serializer.save(follower=follower, followed=followed)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -204,6 +206,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class UserProfileByUsernameView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, username):
         try:
             # Obtener el perfil asociado al usuario
@@ -221,6 +224,7 @@ class UserProfileByUsernameView(APIView):
 
 class UsernameSearchView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         query = request.query_params.get('q', '')
 
@@ -243,6 +247,7 @@ class UsernameSearchView(APIView):
 
 class SongByNameView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, name):
         try:
             # Obtener la canción por título
@@ -260,6 +265,7 @@ class SongByNameView(APIView):
 
 class SongNameSearchView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request):
         query = request.query_params.get('q', '')
 
@@ -275,6 +281,7 @@ class SongNameSearchView(APIView):
         names = [{'name': song.name} for song in songs]
 
         return Response(names, status=status.HTTP_200_OK)
+
 
 class UserProfileByTokenView(APIView):
     def get(self, request):

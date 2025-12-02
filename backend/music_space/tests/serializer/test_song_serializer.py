@@ -1,19 +1,20 @@
 import shutil
 import tempfile
+
 from io import BytesIO
-from PIL import Image
 
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from PIL import Image
 
 from music_space.api.models import UserProfile
 from music_space.api.serializers import SongSerializer
 
-
 TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
 
 @pytest.mark.django_db
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)

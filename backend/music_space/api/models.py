@@ -6,6 +6,7 @@ from django.db import models
 
 from .manager import *  # noqa: F403
 
+
 class Song(models.Model):
     name = models.CharField(max_length=50)
     artist = models.CharField(max_length=1000)
@@ -63,6 +64,7 @@ class PlaylistSong(models.Model):
                                on_delete=models.CASCADE,
                                related_name="songs")
 
+
 class Comment(models.Model):
     song = models.ForeignKey(
         Song,
@@ -77,4 +79,3 @@ class Comment(models.Model):
     content = models.CharField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
     annonymus_level = models.IntegerField(default=0)
-

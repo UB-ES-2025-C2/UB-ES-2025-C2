@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 
 from music_space.api.models import Song, User, UserProfile
 
+
 class SongAPITestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password123')

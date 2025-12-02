@@ -1,7 +1,11 @@
 import pytest
+
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from music_space.api.models import UserProfile
+
+
 @pytest.mark.django_db
 class UserTestCase(TestCase):
 

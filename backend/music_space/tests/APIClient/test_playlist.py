@@ -1,9 +1,9 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient, APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from music_space.api.models import User, UserProfile, PlayList
+from music_space.api.models import PlayList, User, UserProfile
 
 
 class PlaylistAPITestCase(APITestCase):
