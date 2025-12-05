@@ -20,10 +20,21 @@ const isCurrentSong = (song) => {
 
 function togglePlay(song) {
   if (!song) return
+
   if (isCurrentSong(song)) {
     player.toggle() // Pause/Play si és la mateixa cançó
   } else {
-    player.playSong(song) // Reproduir nova cançó
+    // Comprova si la cançó ja està a la cua
+    const idx = player.queue.findIndex((s) => s.id === song.id)
+    if (idx !== -1) {
+      // Cançó dins la cua: només canviem l'índex i reproduïm
+      player.index = idx
+      player.loadCurrent()
+      player.playSong()
+    } else {
+      // Cançó fora de la cua: la reproduïm com a cua d'1 element
+      player.playSong(song)
+    }
   }
 }
 
@@ -44,8 +55,12 @@ onMounted(() => {
 function playPlaylist() {
   const trackList = songs.value.map((item) => item.song)
   if (!trackList.length) return
-  player.setQueue(trackList) // Assignem la cua al reproductor
-  player.playSong(trackList[0]) // Reproduim la primera cançó
+
+  // Assignem tota la cua
+  player.setQueue(trackList, 0)
+
+  // Només inicia la reproducció de la primera cançó
+  player.playSong() // sense passar cançó => no sobreescriu la cua
 }
 </script>
 
@@ -134,7 +149,7 @@ function playPlaylist() {
   border: none;
   background: #ff3896; /* verd Spotify */
   color: white;
-  font-weight: 900; 
+  font-weight: 900;
   cursor: pointer;
   transition: transform 0.2s;
 }
