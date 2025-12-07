@@ -65,6 +65,9 @@ export const useAuthStore = defineStore("auth", {
       formData.append("name", song.name);
       formData.append("artist", song.artist);
       formData.append("topic", song.topic);
+      if (song.cover) {
+        formData.append("cover", song.cover);
+      }
       return AuthService.postSong(formData);
     },
     logout() {
@@ -117,7 +120,7 @@ export const useAuthStore = defineStore("auth", {
       const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
 
       owners.forEach(id => {
-        formData.append("owner", id); 
+        formData.append("owner", id);
       });
       if (playlist.cover) {
         formData.append("cover", playlist.cover);

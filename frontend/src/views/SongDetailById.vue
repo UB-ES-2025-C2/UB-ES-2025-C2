@@ -164,8 +164,8 @@ async function addSongToPlaylist() {
 onMounted(async () => {
   try {
     song.value = await apiStore.getSongById(route.params.id);
-
-    playlists.value = await apiStore.getAllPlaylists();
+    const id = Number(auth.user_id);
+    playlists.value = await apiStore.getPlaylistFromUser(id);
 
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";

@@ -14,6 +14,7 @@ const playlist = ref(null)
 const songs = ref([])
 const selectedSongId = ref('')
 const isAddingSong = ref(false)
+const allSongs = ref([])
 
 const availableSongs = computed(() => {
   if (!api.songs || songs.value.length === 0) return api.songs || []

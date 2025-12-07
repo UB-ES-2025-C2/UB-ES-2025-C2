@@ -15,7 +15,7 @@ const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
 const previewCover = ref(null) // preview
 
-const coverInput = ref(null) 
+const coverInput = ref(null)
 
 const loading = ref(false) // loading
 const error = ref(null)
@@ -75,7 +75,7 @@ async function createPlaylist() {
 
 <template>
   <div class="create-playlist-form">
-    <h1>Crear Playlist</h1>
+    <h1  style="text-align:center">Crear Playlist</h1>
 
     <div v-if="error" class="error">{{ error }}</div>
 
