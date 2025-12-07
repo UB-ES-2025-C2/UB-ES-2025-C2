@@ -1,3 +1,5 @@
+"""Tests for the SongSerializer in the music_space application."""
+
 import shutil
 import tempfile
 
@@ -19,16 +21,22 @@ TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 @pytest.mark.django_db
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class TestSongSerializer(TestCase):
+    """Tests for the SongSerializer."""
+
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
+        """Clean up temporary media root after tests."""
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="artist", password="pass")
+    def setUp(self) -> None:
+        """Set up a user and profile for testing."""
+        self.user = User.objects.create_user(username="artist", password="pass")  # noqa: S106
         self.profile = UserProfile.objects.get(user=self.user)
 
-    def test_create_song(self):
+    def test_create_song(self) -> None:
+        """Test creating a song with the SongSerializer."""
+        songname = "TestSong"
         audio_file = SimpleUploadedFile(
             "test.mp3",
             b'123',
@@ -39,12 +47,10 @@ class TestSongSerializer(TestCase):
         image.save(image_io, format='PNG')
         image_io.seek(0)
         cover_file = SimpleUploadedFile(
-            'test.png',
-            image_io.read(),
-            content_type='image/png'
+            'test.png', image_io.read(), content_type='image/png'
         )
         data = {
-            "name": "TestSong",
+            "name": songname,
             "artist": "ArtistName",
             "topic": "Rock",
             "authors": [self.profile.id],
@@ -54,7 +60,7 @@ class TestSongSerializer(TestCase):
         serializer = SongSerializer(data=data)
         assert serializer.is_valid(), serializer.errors
         song = serializer.save()
-        assert song.name == "TestSong"
+        assert song.name == songname
         assert self.profile in song.authors.all()
         audio_file.close()
         cover_file.close()

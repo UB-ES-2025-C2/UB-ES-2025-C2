@@ -1,3 +1,5 @@
+"""Tests for UserProfileSerializer."""
+
 import pytest
 
 from django.contrib.auth.models import User
@@ -9,12 +11,16 @@ from music_space.api.serializers import UserProfileSerializer
 
 @pytest.mark.django_db
 class TestUserProfileSerializer(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
+    """Tests for UserProfileSerializer."""
+
+    def setUp(self) -> None:
+        """Set up test data."""
+        self.user = User.objects.create_user(username="testuser", password="testpass")  # noqa: S106
         self.profile = UserProfile.objects.get(user=self.user)
 
-    def test_userprofile_serialization(self):
+    def test_userprofile_serialization(self) -> None:
+        """Test serialization of UserProfile."""
         serializer = UserProfileSerializer(self.profile)
         data = serializer.data
-        self.assertEqual(data["nickname"], self.user.username)
-        self.assertEqual(data["user"], self.user.id)
+        assert data["nickname"] == self.user.username
+        assert data["user"] == self.user.id
