@@ -173,5 +173,14 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching song by ID:", e);
         throw e;
       }
+    },
+    async getAllPlaylists() {
+      try {
+        const response = await api.getAllPlaylists();
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
     }
 }});

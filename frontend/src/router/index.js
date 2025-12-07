@@ -69,7 +69,7 @@ const routes = [
     path: '/createSong',
     name: 'createSong',
     component: CreateSong,
-    meta: { requiresAuth: true } 
+    meta: { requiresAuth: true }
   },
   {
     path: '/editSong/:id',
@@ -82,13 +82,13 @@ const routes = [
     path: '/createPlayList',
     name: 'createPlayList',
     component: CreatePlayList,
-    meta: { requiresAuth: true } 
+    meta: { requiresAuth: true }
   },
   {
     path: '/addSongPlayList/:id',
     name: 'addSongPlayList',
     component: addSongPlayList,
-    meta: { requiresAuth: true } 
+    meta: { requiresAuth: true }
   }
 ]
 
