@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
+import path from 'path'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
@@ -33,7 +34,10 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.waitForSelector('button:has-text("Canviar portada")')
 
   // 5️⃣ Selecciona una imatge vàlida
-  const coverFile = './files/cover.png' // assegura't que existeix aquest fitxer
+  const coverFile = path.resolve(
+    'C:/Users/Lenovo/OneDrive/Documentos/Info/3r/GiVD/p3-globe-gl-vis-b02/UB-ES-2025-C2/UB-ES-2025-C2/frontend/e2e/files/default.png',
+  )
+
   const coverInput = page.locator('input[type="file"]').nth(1) // segon input
   await coverInput.setInputFiles(coverFile)
 
@@ -54,7 +58,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.click('.song-card:first-child')
   await page.waitForSelector('.cover-preview')
   const previewSrc = await page.locator('.cover-preview').getAttribute('src')
-  expect(previewSrc).toMatch(/cover_.*\.png$/)
+  expect(previewSrc).toMatch(/default_.*\.png$/)
 
   // 🔟 Opcional: comprovar backend
   const loginRes = await request.post(`${API_URL}/api/token/`, {
@@ -71,5 +75,5 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.waitForSelector('.cover-preview')
   const previewSrcAfter = await page.locator('.cover-preview').getAttribute('src')
   //comprovar que és una imatge
-  expect(previewSrcAfter).toMatch(/cover_.*\.png$/)
+  expect(previewSrcAfter).toMatch(/default_.*\.png$/)
 })
