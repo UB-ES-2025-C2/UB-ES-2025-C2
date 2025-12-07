@@ -152,13 +152,7 @@ onMounted(async () => {
   try {
     song.value = await apiStore.getSongById(route.params.id);
 
-    if (!auth.user_id) {
-      await auth.initializeAuthStore?.();
-    }
-
-    if (auth.user_id) {
-      playlists.value = await apiStore.getUserPlaylists(auth.user_id);
-    }
+    playlists.value = await apiStore.getAllPlaylists();
 
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";
