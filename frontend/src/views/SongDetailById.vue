@@ -138,12 +138,25 @@ function togglePlay() {
 // Afegir cançó a playlist
 async function addSongToPlaylist() {
   if (!selectedPlaylistId.value) return;
-  const payload = { song_id: song.value.id };
-  const added = await auth.postPlayListSong(selectedPlaylistId.value, payload);
-  if (added) {
-    alert("Cançó afegida a la playlist!");
-    selectedPlaylistId.value = "";
-    showPlaylistDropdown.value = false;
+
+  try {
+    const response = await auth.postPlayListSong(selectedPlaylistId.value, song.value);
+    if (response.status === 201 || response.status === 200) {
+      alert("Cançó afegida a la playlist!");
+      selectedPlaylistId.value = "";
+      showPlaylistDropdown.value = false;
+    } else {
+      alert("No s'ha pogut afegir la cançó");
+    }
+  } catch (err) {
+    console.error(err);
+    //mirem si la cançó està a la playlist
+    const msg = err?.response?.data?.[0] || "";
+    if (msg.includes("playlist")) {
+      alert("Aquesta cançó ja està a la playlist");
+    } else {
+      alert("Error afegint la cançó");
+    }
   }
 }
 
