@@ -33,12 +33,32 @@
               <span v-if="!(isCurrentSong && player.isPlaying)">▶</span>
               <span v-else>⏸</span>
             </button>
-            <button class="btn ghost" title="Afegir a playlist">＋</button>
+
+            <!-- Botón añadir a playlist -->
+            <div class="add-dropdown">
+              <button class="btn ghost" title="Afegir a playlist" @click="showPlaylistDropdown = !showPlaylistDropdown">
+                ＋
+              </button>
+
+              <div v-if="showPlaylistDropdown" class="playlist-dropdown">
+                <select v-model="selectedPlaylistId">
+                  <option value="" disabled>Selecciona una playlist</option>
+                  <option v-for="pl in playlists"
+                    :key="pl.id"
+                    :value="pl.id"
+                  >
+                    {{ pl.name }}
+                  </option>
+                </select>
+                <button @click="addSongToPlaylist" :disabled="!selectedPlaylistId">Afegir</button>
+              </div>
+            </div>
+
             <button class="btn ghost" title="Més opcions">⋯</button>
           </div>
         </div>
       </header>
-      
+
       <!-- TRACK ROW (una sola cançó) -->
       <div class="list-header">
         <span>#</span>
@@ -70,14 +90,24 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import api from "../services/api";
 import { usePlayerStore } from "@/piniaStore/playerStore";
+import { useAuthStore } from "@/apiStore/authStore.js";
+import { useApiStore } from "../apiStore/guestApi.js";
 
 const route = useRoute();
 const player = usePlayerStore();
+
+const apiStore = useApiStore();
+const auth = useAuthStore();
 
 const song = ref(null);
 const loading = ref(true);
 const error = ref("");
 
+const showPlaylistDropdown = ref(false);
+const selectedPlaylistId = ref("");
+const playlists = ref([]);
+
+// Hero styles
 const heroStyle = computed(() => ({ background: "linear-gradient(#1f415b, #102735)" }));
 const bgStyle = computed(() =>
   song.value?.cover ? { backgroundImage: `url('${song.value.cover}')` } : {}
@@ -105,10 +135,33 @@ function togglePlay() {
   }
 }
 
+// Afegir cançó a playlist
+async function addSongToPlaylist() {
+  if (!selectedPlaylistId.value) return;
+  const payload = { song_id: song.value.id };
+  const added = await auth.postPlayListSong(selectedPlaylistId.value, payload);
+  if (added) {
+    alert("Cançó afegida a la playlist!");
+    selectedPlaylistId.value = "";
+    showPlaylistDropdown.value = false;
+  }
+}
+
+// Carrega de dades
 onMounted(async () => {
   try {
-    const { data } = await api.getSongById(route.params.id);
-    song.value = data;
+    //const { data } = await apiStore.getSongById(route.params.id);
+    //song.value = data;
+    song.value = await apiStore.getSongById(route.params.id);
+
+    // Cargar playlists disponibles del store/API
+    //playlists.value = await apiStore.getUserPlaylists(auth.user_id);
+
+    if (auth.user_id) {
+      playlists.value = await apiStore.getUserPlaylists(auth.user_id);
+    }
+
+
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";
   } finally {
@@ -176,6 +229,36 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+add-dropdown {
+  position: relative;
+}
+.playlist-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: #121212;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.playlist-dropdown select {
+  padding: 6px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+.playlist-dropdown button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #ff2d8d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 .btn {
   border: none;
