@@ -39,19 +39,19 @@
               <button class="btn ghost" title="Afegir a playlist" @click="showPlaylistDropdown = !showPlaylistDropdown">
                 ＋
               </button>
+                <div v-if="showPlaylistDropdown" class="playlist-dropdown">
+                  <select v-model="selectedPlaylistId">
+                    <option value="" disabled>Selecciona una playlist</option>
+                    <option v-for="pl in playlists"
+                      :key="pl.id"
+                      :value="pl.id"
+                    >
+                      {{ pl.name }}
+                    </option>
+                  </select>
+                  <button @click="addSongToPlaylist" :disabled="!selectedPlaylistId">Afegir</button>
+                </div>
 
-              <div v-if="showPlaylistDropdown" class="playlist-dropdown">
-                <select v-model="selectedPlaylistId">
-                  <option value="" disabled>Selecciona una playlist</option>
-                  <option v-for="pl in playlists"
-                    :key="pl.id"
-                    :value="pl.id"
-                  >
-                    {{ pl.name }}
-                  </option>
-                </select>
-                <button @click="addSongToPlaylist" :disabled="!selectedPlaylistId">Afegir</button>
-              </div>
             </div>
 
             <button class="btn ghost" title="Més opcions">⋯</button>
@@ -88,7 +88,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import api from "../services/api";
+//import api from "../services/api";
 import { usePlayerStore } from "@/piniaStore/playerStore";
 import { useAuthStore } from "@/apiStore/authStore.js";
 import { useApiStore } from "../apiStore/guestApi.js";
@@ -147,20 +147,18 @@ async function addSongToPlaylist() {
   }
 }
 
-// Carrega de dades
+// Carrega de dades per cançó
 onMounted(async () => {
   try {
-    //const { data } = await apiStore.getSongById(route.params.id);
-    //song.value = data;
     song.value = await apiStore.getSongById(route.params.id);
 
-    // Cargar playlists disponibles del store/API
-    //playlists.value = await apiStore.getUserPlaylists(auth.user_id);
+    if (!auth.user_id) {
+      await auth.initializeAuthStore?.();
+    }
 
     if (auth.user_id) {
       playlists.value = await apiStore.getUserPlaylists(auth.user_id);
     }
-
 
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";
@@ -168,6 +166,8 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+
 </script>
 
 <style scoped>
@@ -186,7 +186,7 @@ onMounted(async () => {
   gap: 24px;
   padding: 28px;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   margin: 16px;
 }
 .hero-bg {
@@ -230,20 +230,24 @@ onMounted(async () => {
   align-items: center;
   gap: 12px;
 }
-add-dropdown {
+.add-dropdown {
   position: relative;
 }
 .playlist-dropdown {
   position: absolute;
-  top: 40px;
+  top: 100%;
   left: 0;
+  margin-top: 8px;
   background: #121212;
   border: 1px solid #444;
-  padding: 10px;
+  min-width: 280px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 16px;
   border-radius: 8px;
   display: flex;
   gap: 8px;
-  z-index: 10;
+  z-index: 9999;
 }
 .playlist-dropdown select {
   padding: 6px;
