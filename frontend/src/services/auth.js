@@ -174,11 +174,18 @@ class AuthService {
       }
     );
   }
-  async postPlayListSong(playlistId, song) {
-    console.log('Token que se usará:', this.getAccessToken());
+  async postPlayListSong(playlistId, songOrPayload) {
+    let payload;
+    if (songOrPayload.song_id) {
+      // ya viene con song_id (desde Playlist.vue)
+      payload = songOrPayload;
+    } else {
+      // viene un objeto canción (desde Song.vue)
+      payload = { song_id: songOrPayload.id };
+    }
     return this.getAxiosInstance().post(
       `/api/v1/playlist/${playlistId}/songs/`,
-      { song_id: song.id },
+      payload,
       { headers: { 'Content-Type': 'application/json' } }
     );
   }
