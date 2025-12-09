@@ -1,150 +1,314 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { useApiStore } from "../apiStore/guestApi.js";
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useApiStore } from '../apiStore/guestApi.js'
+import { usePlayerStore } from '@/piniaStore/playerStore'
 
-const route = useRoute();
-const playlistId = route.params.id;
-const api = useApiStore();
-const mockOwner = ref("");
-// Mock data para otros campos
-const mockSavedTimes = 123;
+const player = usePlayerStore()
+const route = useRoute()
+const api = useApiStore()
 
-/*const mockSongs = ref([
-  { id: 1, name: "Canción 1", artist: "Artista A", cover: "https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg" },
-  { id: 2, name: "Canción 2", artist: "Artista B", cover: "https://www.udiscovermusica.com/wp-content/uploads/sites/7/2022/09/Pink-Floyd-Dark-Side-Of-The-Moon-1536x1536-1-1024x1024.jpeg" },
-  { id: 3, name: "Canción 3", artist: "Artista C", cover: "https://marketplace.canva.com/EAGL6BH8Rhg/1/0/1600w/canva-portada-%C3%A1lbum-m%C3%BAsica-moderno-qMT-zlb07JY.jpg" },
-]);*/
+const playlist = ref(null)
+const songs = ref([])
+const loading = ref(true)
+const error = ref('')
 
-// Mock playlists para simular búsqueda por id
-const mockPlaylists = [
-  {
-    id: 1,
-    name: "Playlist1",
-    description: "playlist d'èxits mundials",
-    topic: "Èxits mundials",
-    cover: "http://127.0.0.1:8000/covers/default.png",
-  },
-  {
-    id: 2,
-    name: "Playlist2",
-    description: "playlist d'èxits indie",
-    topic: "Indie",
-    cover: "http://127.0.0.1:8000/covers/default.png",
-  },
-];
+// Computed per saber quina cançó s'està reproduint
+const isCurrentSong = (song) => {
+  return player.current && song && player.current.id === song.id
+}
 
-const playlistData = ref(null);
-async function  loadPlaylistData(playlistId) {
-  playlistData.value = await api.getPlaylistById(playlistId);
-  await api.getSongFromPlayList(playlistId);
-  const ownerPromises = playlistData.value.owner.map(id => api.getUserById(id));
-  const ownersData = await Promise.all(ownerPromises);
+function togglePlay(song) {
+  if (!song) return
 
-  // Crear un string amb els noms separats per comes
-  mockOwner.value = ownersData.map(user => user.nickname).join(', ');
-  console.log("Owners loaded:", mockOwner.value);
+  if (isCurrentSong(song)) {
+    player.toggle() // Pause/Play si és la mateixa cançó
+  } else {
+    // Comprova si la cançó ja està a la cua
+    const idx = player.queue.findIndex((s) => s.id === song.id)
+    if (idx !== -1) {
+      // Cançó dins la cua: només canviem l'índex i reproduïm
+      player.index = idx
+      player.loadCurrent()
+      player.playSong()
+    } else {
+      // Cançó fora de la cua: la reproduïm com a cua d'1 element
+      player.playSong(song)
+    }
+  }
+}
+
+async function loadPlaylist() {
+  try {
+    playlist.value = await api.getPlaylistById(route.params.id)
+    songs.value = await api.getSongFromPlayList(route.params.id)
+  } catch (e) {
+    error.value = e?.response?.data?.detail || e?.message || 'Error desconegut'
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
-  loadPlaylistData(playlistId);
-  //playlistData.value = api.getPlaylistById(playlistId);
-});
+  loadPlaylist()
+})
+function playPlaylist() {
+  const trackList = songs.value.map((item) => item.song)
+  if (!trackList.length) return
+
+  // Assignem tota la cua
+  player.setQueue(trackList, 0)
+
+  // Només inicia la reproducció de la primera cançó
+  player.playSong() // sense passar cançó => no sobreescriu la cua
+}
 </script>
 
 <template>
-  <section v-if="playlistData" class="playlist-page">
-    <!-- Header tipo Spotify -->
-    <div class="playlist-header">
-      <div class="playlist-cover">
-        <img :src="playlistData.cover" alt="cover playlist" />
-      </div>
-      <div class="playlist-info">
-        <h1>{{ playlistData.name }}</h1>
-        <p class="playlist-description">{{ playlistData.description }}</p>
-        <p></p>
-        <p>Creada per {{ mockOwner }} • Guardada {{ mockSavedTimes }} veces • {{ mockSongsCount }} canciones</p>
+  <div v-if="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Carregant playlist...</p>
+  </div>
+
+  <div v-else-if="error" class="error-state">
+    <p>⚠️ {{ error }}</p>
+  </div>
+
+  <div v-else class="playlist-view">
+    <!-- Hero -->
+    <div class="playlist-hero">
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <div class="cover-wrapper">
+          <img :src="playlist.cover" alt="Cover playlist" class="playlist-cover" />
+        </div>
+        <div class="playlist-info">
+          <span class="playlist-label">PLAYLIST</span>
+          <h1 class="playlist-title">{{ playlist.name }}</h1>
+          <p class="playlist-description">{{ playlist.description }}</p>
+          <div class="playlist-meta">
+            <span class="owner">{{ playlist.owner }}</span>
+            <span class="separator">•</span>
+            <span class="song-count">{{ songs.length }} cançons</span>
+          </div>
+
+          <!-- Botó Play de tota la playlist -->
+          <button class="btn-playlist-play" @click="playPlaylist">▶</button>
+        </div>
       </div>
     </div>
 
-    <!-- Canciones -->
-    <div class="playlist-songs">
-      <ul>
-        <li v-for="song in api.songs" :key="song.id" class="song-card">
-          <div class="song-image">
-            <img :src="song.song.cover" alt="cover canción" />
-          </div>
-          <div class="song-info">
-            <strong>{{ song.song.name }}</strong>
-            <p>{{ song.song.artist }}</p>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </section>
+    <!-- Llista de cançons -->
+    <div class="songs-section">
+      <div class="songs-header">
+        <span class="col-number">#</span>
+        <span class="col-title">Títol</span>
+        <span class="col-artist">Artista</span>
+        <span class="col-topic">Gènere</span>
+        <span class="col-actions">Reproduir</span>
+      </div>
 
-  <p v-else>Playlist no encontrada</p>
+      <div class="songs-list">
+        <div v-for="(songItem, index) in songs" :key="songItem.id" class="song-row">
+          <span class="col-number">{{ index + 1 }}</span>
+
+          <div class="col-title">
+            <img
+              v-if="songItem.song.cover"
+              :src="songItem.song.cover"
+              alt="Cover"
+              class="song-thumbnail"
+            />
+            <div v-else class="song-thumbnail-placeholder"></div>
+            <div class="song-info">
+              <strong class="song-name">{{ songItem.song.name }}</strong>
+            </div>
+          </div>
+
+          <span class="col-artist">{{ songItem.song.artist }}</span>
+          <span class="col-topic">{{ songItem.song.topic }}</span>
+
+          <div class="col-actions">
+            <button @click="togglePlay(songItem.song)" class="btn-play">
+              <span v-if="!(isCurrentSong(songItem.song) && player.isPlaying)">▶</span>
+              <span v-else>⏸</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.playlist-page {
-  padding: 20px 40px;
+/* Botó Play de tota la playlist */
+.btn-playlist-play {
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #ff3896; /* verd Spotify */
   color: white;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-playlist-play:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+playlist-view {
   background-color: #121212;
+  color: white;
   min-height: 100vh;
 }
 
-/* Header estilo Spotify */
-.playlist-header {
+/* Hero Section */
+.playlist-hero {
+  position: relative;
+  padding: 40px 40px 30px;
+  background: linear-gradient(180deg, #1e3a5f 0%, #121212 100%);
+  overflow: hidden;
+}
+
+.hero-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: linear-gradient(180deg, rgba(255, 45, 141, 0.3) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
   display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 30px;
+  align-items: flex-end;
+  z-index: 1;
+}
+.cover-wrapper {
+  flex-shrink: 0;
 }
 
-.playlist-cover img {
-  width: 200px;
-  height: 200px;
-  object-fit: cover; /* cuadrado, no redondo */
+.playlist-cover {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
   border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.playlist-info h1 {
-  font-size: 2rem;
-  margin: 0 0 10px 0;
+.playlist-info {
+  flex: 1;
+  padding-bottom: 10px;
 }
 
-.playlist-info p {
-  margin: 5px 0;
-  color: #aaa;
+.playlist-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
 }
 
-/* Canciones */
-.playlist-songs ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
+.playlist-title {
+  margin: 8px 0 12px;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.1;
 }
 
-.song-card {
+.playlist-description {
+  margin: 8px 0;
+  color: #b3b3b3;
+  font-size: 0.95rem;
+}
+
+.playlist-meta {
   display: flex;
   align-items: center;
-  gap: 15px;
-  background: #1e1e1e;
-  border-radius: 12px;
-  padding: 10px 15px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: #b3b3b3;
 }
 
-.song-image img {
+.separator {
+  color: #535353;
+}
+
+.owner {
+  font-weight: 600;
+  color: #fff;
+}
+.songs-section {
+  padding: 20px 40px 40px;
+}
+.songs-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 200px 150px 80px;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #282828;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #b3b3b3;
+  text-transform: uppercase;
+}
+.song-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 200px 150px 80px;
+  gap: 16px;
+  padding: 12px 16px;
+  align-items: center;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+.song-row:hover {
+  background-color: #1a1a1a;
+}
+.song-thumbnail {
   width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 4px;
 }
-
-.song-info p {
-  color: #aaa;
-  font-size: 0.9rem;
-  margin: 0;
+.song-info {
+  min-width: 0;
+}
+.song-name {
+  color: #fff;
+}
+.btn-play {
+  background: #ff3896;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.loading-state,
+.error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  color: #fff;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #282828;
+  border-top-color: #ff3896;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 12px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

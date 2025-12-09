@@ -1,13 +1,13 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
 
-const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const API_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000'
+const BASE_URL =  process.env.FRONTEND_URL|| 'http://localhost:5173'
+const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, request }) => {
   // 1️⃣ Login amb usuari hardcodejat
-  const username = 'testuser'
-  const password = '1234'
+  const username = 'admin'
+  const password = 'admin'
 
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', username)
@@ -64,7 +64,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   expect(songsRes.ok()).toBeTruthy()
-  const songs = await songsRes.json()
+  const _songs = await songsRes.json()
   await page.waitForSelector('.cover-preview')
   const previewSrcAfter = await page.locator('.cover-preview').getAttribute('src')
   //comprovar que és una imatge

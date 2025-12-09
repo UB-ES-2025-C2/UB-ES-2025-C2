@@ -71,7 +71,7 @@ onMounted(async () => {
         <p class="followers">
           Seguidors: {{ userData.followers }} · Seguint: {{ userData.following }}
         </p>
-        <p>{{ userData.description }}</p>
+        <p class="description">{{ userData.description }}</p>
       </div>
     </div>
 
@@ -95,7 +95,12 @@ onMounted(async () => {
     <div v-if="userPlaylists.length" class="section">
       <h2>Playlists</h2>
       <ul class="cards-list">
-        <li v-for="playlist in userPlaylists" :key="playlist.id" class="playlist-card">
+        <li
+          v-for="playlist in userPlaylists"
+          :key="playlist.id"
+          class="playlist-card"
+          @click="router.push({ name: 'addSongPlayList', params: { id: playlist.id } })"
+        >
           <div class="playlist-image">
             <img :src="playlist.cover" alt="foto de playlist" />
           </div>

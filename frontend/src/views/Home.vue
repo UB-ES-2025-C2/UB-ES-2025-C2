@@ -28,33 +28,9 @@ function goToSongDetail(songId) {
   router.push({ name: 'song-by-id', params: { id: Number(songId) } })
 }
 
-/*mock data para playlists de prueba*/
-const mockPlaylists = ref([
-  {
-    id: 1,
-    name: 'Playlist 1',
-    description: "Playlist d'èxits mundials",
-    topic: 'Èxits mundials',
-    cover:
-      'https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg',
-  },
-  {
-    id: 2,
-    name: 'Playlist 2',
-    description: 'Playlist de pop',
-    topic: 'Pop',
-    cover:
-      'https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg',
-  },
-  {
-    id: 3,
-    name: 'Playlist3',
-    description: 'Playlist de rock',
-    topic: 'Rock',
-    cover:
-      'https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg',
-  },
-])
+function goToPlaylist(playlistId) {
+  router.push({ name: 'playlist', params: { id: playlistId } })
+}
 
 /* Agrupamos las playlists por topic */
 const playlistsByTopic = computed(() => {
@@ -105,7 +81,12 @@ const headerUsername = computed(() => {
   <div v-for="(pls, topic) in playlistsByTopic" :key="topic" class="topic-section">
     <h3>{{ topic }}</h3>
     <ul class="cards-list">
-      <li v-for="playlist in pls" :key="playlist.id" class="card">
+      <li
+        v-for="playlist in pls"
+        :key="playlist.id"
+        class="card"
+        @click="goToPlaylist(playlist.id)"
+      >
         <div class="card-image">
           <img :src="playlist.cover" alt="Foto de playlist" />
         </div>
@@ -116,6 +97,7 @@ const headerUsername = computed(() => {
       </li>
     </ul>
   </div>
+
 </template>
 
 <style scoped>

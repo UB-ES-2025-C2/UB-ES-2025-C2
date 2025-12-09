@@ -10,6 +10,7 @@ export const useApiStore = defineStore("api", {
     songResults: [],
     playlistResults: [],
     songDetail: null,
+    songsFromPlaylist:[]
   }),
   actions: {
     async fetchCatalog() {
@@ -131,7 +132,7 @@ export const useApiStore = defineStore("api", {
   async getSongFromPlayList(playlistId) {
     try {
       const res = await api.getSongsByPlaylistId(playlistId);
-      this.songs = res.data;
+      this.songsFromPlaylist = res.data;
       return res.data;
     } catch (e) {
       console.error("Error fetching songs from playlist:", e);
@@ -172,5 +173,5 @@ export const useApiStore = defineStore("api", {
         console.error("Error fetching song by ID:", e);
         throw e;
       }
-    },
+    }
 }});
