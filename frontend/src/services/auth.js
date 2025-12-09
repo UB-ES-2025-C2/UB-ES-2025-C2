@@ -137,7 +137,7 @@ class AuthService {
     })
     return instance
   }
-
+  // action merge
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL
     const accessToken = this.getAccessToken()
