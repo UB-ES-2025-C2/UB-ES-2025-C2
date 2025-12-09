@@ -128,9 +128,6 @@ export const useAuthStore = defineStore("auth", {
       } // cover
       return AuthService.postPlaylist(formData);
     },
-    async postPlayListSong(playlistId, song){
-      return AuthService.postPlayListSong(playlistId, song);
-    },
     async deletePlayListSong(playlistId, songId){
       return AuthService.deletePlayListSong(playlistId, songId)
 
