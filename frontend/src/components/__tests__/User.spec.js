@@ -84,8 +84,8 @@ describe("User.vue", () => {
     mockApiStore.nUsersResult = [];
 
     // Mockear funciones que se llaman con foundUser.id
-    const runUserSongs = vi.fn().mockResolvedValue([]);
-    const runUserPlaylists = vi.fn().mockResolvedValue([]);
+    const _runUserSongs = vi.fn().mockResolvedValue([]);
+    const _runUserPlaylists = vi.fn().mockResolvedValue([]);
 
     const wrapper = mount(User, {
       global: { plugins: [createPinia()] },

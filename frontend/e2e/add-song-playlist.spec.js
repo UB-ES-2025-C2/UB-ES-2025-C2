@@ -22,7 +22,7 @@ test('Afegir una cançó a la playlist i comprovar backend', async ({ page, requ
   // Captura l'ID de l'usuari de la URL
   await page.waitForURL(/\/profile\/\d+/)
   const profileUrl = page.url()
-  const userId = profileUrl.match(/\/profile\/(\d+)/)[1]
+  const _userId = profileUrl.match(/\/profile\/(\d+)/)[1]
 
   // Accedir a la primera playlist
   await page.waitForSelector('.playlist-card')

@@ -8,7 +8,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   // 1️⃣ Login amb usuari hardcodejat
   const username = 'admin'
   const password = 'admin'
-  
+
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', username)
   await page.fill('input#password', password)
@@ -64,7 +64,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   expect(songsRes.ok()).toBeTruthy()
-  const songs = await songsRes.json()
+  const _songs = await songsRes.json()
   await page.waitForSelector('.cover-preview')
   const previewSrcAfter = await page.locator('.cover-preview').getAttribute('src')
   //comprovar que és una imatge
