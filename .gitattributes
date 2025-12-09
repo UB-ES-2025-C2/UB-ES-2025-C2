@@ -1,2 +1,18 @@
+# Images
+*.ico binary
+*.png binary
+*.bmp binary
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.webp binary
+
+# Audio
+*.mp3 binary
+*.ogg binary
+*.wav binary
+
 # Auto detect text files and perform LF normalization
 * text eol=lf whitespace=tab-in-indent,trailing-space,tabwidth=4
