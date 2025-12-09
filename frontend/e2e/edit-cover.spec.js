@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
+import path from 'path'
 
-const BASE_URL =  process.env.FRONTEND_URL|| 'http://localhost:5173'
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, request }) => {
@@ -33,7 +34,10 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   await page.waitForSelector('button:has-text("Canviar portada")')
 
   // 5️⃣ Selecciona una imatge vàlida
-  const coverFile = './files/default.png' // assegura't que existeix aquest fitxer
+  const coverFile = path.resolve(
+    'C:/Users/Lenovo/OneDrive/Documentos/Info/3r/GiVD/p3-globe-gl-vis-b02/UB-ES-2025-C2/UB-ES-2025-C2/frontend/e2e/files/default.png',
+  )
+
   const coverInput = page.locator('input[type="file"]').nth(1) // segon input
   await coverInput.setInputFiles(coverFile)
 
@@ -42,6 +46,9 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
 
   // 7️⃣ Comprova que apareix missatge d’èxit
   const successMsg = page.locator('.success')
+  await page.waitForSelector('.success', { timeout: 5000 })
+  await expect(page.locator('.success')).toContainText('Cançó actualitzada correctament!')
+
   await expect(successMsg).toContainText('Cançó actualitzada correctament!')
 
   // 8️⃣ Espera que la redirecció al perfil es completi amb el userId
