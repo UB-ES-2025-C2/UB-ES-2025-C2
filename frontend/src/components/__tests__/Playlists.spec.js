@@ -32,7 +32,7 @@ vi.mock('../../apiStore/guestApi.js', () => ({
 describe('Playlists.vue', () => {
   let pinia
   let wrapper
-
+  let apiStore
   beforeEach(async () => {
     pinia = createPinia()
     setActivePinia(pinia)
