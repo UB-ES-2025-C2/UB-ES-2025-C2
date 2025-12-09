@@ -1,7 +1,14 @@
+"""Tests for the documentation endpoint."""
+
 from django.test import TestCase
+
+HTTP_OK = 200
 
 
 class DocumentationTestCase(TestCase):
-    def test_get(self):
+    """Test the /docs/ endpoint."""
+
+    def test_get(self) -> None:
+        """Test GET /docs/."""
         response = self.client.get("/docs/")
-        self.assertEqual(response.status_code, 200)
+        assert response.status_code == HTTP_OK

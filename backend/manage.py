@@ -6,12 +6,13 @@ import sys
 
 
 def main() -> None:
-    """Run administrative tasks.
+    """
+    Run administrative tasks.
 
     Raises
     ------
     ImportError
-        If `execute_from_command_line` couldn't be imported from `django.core.management`.
+        If Django is not installed or cannot be imported.
     """
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'music_space.settings')
     try:
