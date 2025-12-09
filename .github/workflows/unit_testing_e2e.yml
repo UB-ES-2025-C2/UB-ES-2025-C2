@@ -63,6 +63,14 @@ jobs:
       # Start backend
       - name: Start Django backend
         working-directory: backend
+        env:
+            DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+            DJANGO_ALLOWED_HOSTS: "*"
+            SECRET_KEY: ${{ secrets.E2E_SECRET_KEY }}
+            SUPABASE_API_KEY: ${{ secrets.E2E_SUPABASE_KEY }}
+            SUPABASE_BUCKET_NAME: "archivosmusicspace"
+            SUPABASE_KEY_ID: ${{ secrets.E2E_SUPABASE_ID }}
+            SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
         run: |
          export DJANGO_SUPERUSER_USERNAME=admin
          export DJANGO_SUPERUSER_EMAIL=admin@example.com
@@ -103,5 +111,5 @@ jobs:
             VITE_API_URL: http://127.0.0.1:8000
             FRONTEND_URL: http://127.0.0.1:5173
             ADMIN_USER: admin
-            ADMIN_PASS: admin123
+            ADMIN_PASS: admin
         run: npm run test:e2e
