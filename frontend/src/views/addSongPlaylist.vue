@@ -162,6 +162,7 @@ onMounted(async () => {
 
 <style scoped>
 .playlist-view {
+  padding: 20px 40px;
   background-color: #121212;
   color: white;
   min-height: 100vh;
