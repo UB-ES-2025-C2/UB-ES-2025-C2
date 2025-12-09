@@ -116,7 +116,7 @@ class AuthService {
         }
       }
     );
-  }
+  } 
   async postPlayListSong(playlistId, song) {
     return this.getAxiosInstance().post(
       `/api/v1/playlist/${playlistId}/songs/`,
