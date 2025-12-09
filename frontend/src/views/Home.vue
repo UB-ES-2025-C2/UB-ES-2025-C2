@@ -29,9 +29,8 @@ function goToSongDetail(songId) {
 }
 
 function goToPlaylist(playlistId) {
-  router.push({ name: 'playlist', params: { id: Number(playlistId) } })
+  router.push({ name: 'playlist', params: { id: playlistId } })
 }
-
 
 /* Agrupamos las playlists por topic */
 const playlistsByTopic = computed(() => {
