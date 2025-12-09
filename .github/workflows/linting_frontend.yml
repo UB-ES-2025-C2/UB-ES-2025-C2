@@ -1,4 +1,4 @@
-name: Frontend unit tests
+name: Frontend linting
 
 on:
   push:
