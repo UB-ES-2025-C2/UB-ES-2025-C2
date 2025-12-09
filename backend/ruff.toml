@@ -60,6 +60,8 @@ select = ["ALL"]
 "*/api/migrations/*" = ["ALL"]
 # Allow glob imports in tests/__init__.py files.
 "*/tests/__init__.py" = ["F403"]
+# Allow glob imports in tests/__init__.py files.
+"**/test*.py" = ["S101"]
 # Removes the false positive as main.py imports the main function.
 "main.py" = ["PLW0406"]
 
