@@ -96,3 +96,11 @@ class FollowingSerializer(serializers.ModelSerializer):
         model = Follow
         fields = ['id', 'followed', 'followed_id', 'date_added']
 
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer(read_only=True)
+    song = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'song', 'user', 'content', 'created_at']
+        read_only_fields = ['created_at', 'song', 'user']
