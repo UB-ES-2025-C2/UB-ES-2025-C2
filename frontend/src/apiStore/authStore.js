@@ -115,10 +115,10 @@ export const useAuthStore = defineStore("auth", {
       formData.append("description", playlist.description);
       formData.append("topic", playlist.topic);
       const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
-
       owners.forEach(id => {
         formData.append("owner", id); 
       });
+
       if (playlist.cover) {
         formData.append("cover", playlist.cover);
       } // cover
@@ -129,6 +129,7 @@ export const useAuthStore = defineStore("auth", {
     },
     async deletePlayListSong(playlistId, songId){
       return AuthService.deletePlayListSong(playlistId, songId)
+
     }
   }
 });

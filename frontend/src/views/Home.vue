@@ -97,6 +97,7 @@ const headerUsername = computed(() => {
       </li>
     </ul>
   </div>
+
 </template>
 
 <style scoped>

@@ -47,6 +47,11 @@ ignore = [
     # The quoting style requires using both double and single quotes for inline strings.
     "T201",
     # This is a Notebook focused project.
+    "F405",
+    "F403",
+    # In django for models and views we use import *
+    "RUF012",
+    # Not using ClassVar
 ]
 preview = true
 # Custom: Linting preview is allowed.
@@ -64,6 +69,8 @@ select = ["ALL"]
 "**/test*.py" = ["S101"]
 # Removes the false positive as main.py imports the main function.
 "main.py" = ["PLW0406"]
+# Ignore asserts on tests
+"*/tests/*" = ["S101"]
 
 
 # Flake8 Annotations Lints (ANN) configuration.
