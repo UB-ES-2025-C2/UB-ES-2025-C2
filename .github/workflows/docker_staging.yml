@@ -37,7 +37,7 @@ jobs:
             APP=frontend
             PORT=80
             UID=988
-            VITE_API_URL=${{ ub-es-2025-c2-be-preprod }}
+            VITE_API_URL=${{ secrets.STAGING_API_URL }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:${{ steps.extract_branch.outputs.branch }}
             ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:latest
