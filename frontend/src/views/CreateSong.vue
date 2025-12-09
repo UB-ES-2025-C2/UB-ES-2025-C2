@@ -80,6 +80,7 @@ async function createSong() {
       loading.value = false
     })
 }
+
 </script>
 
 <template>

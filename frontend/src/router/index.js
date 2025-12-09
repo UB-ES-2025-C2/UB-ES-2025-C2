@@ -10,7 +10,9 @@ import Profile from '../views/Profile.vue'
 import EditProfile from '../views/EditProfile.vue'
 import CreateSong from '../views/CreateSong.vue'
 import editarSong from '../views/EditSong.vue'
-import CreatePlayList from '../Views/CreatePlayList.vue'
+
+import CreatePlayList from '../views/CreatePlayList.vue'
+import addSongPlayList from '../views/addSongPlayList.vue'
 
 import { useAuthStore } from '../apiStore/authStore'
 
@@ -83,6 +85,12 @@ const routes = [
     component: CreatePlayList,
     meta: { requiresAuth: true } 
   },
+  {
+    path: '/addSongPlayList/:id',
+    name: 'addSongPlayList',
+    component: addSongPlayList,
+    meta: { requiresAuth: true } 
+  }
 ]
 
 const router = createRouter({
