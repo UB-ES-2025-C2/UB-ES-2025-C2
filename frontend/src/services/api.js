@@ -12,7 +12,7 @@ export default {
     return axiosInstance.get(`/api/v1/userprofile/${user_id}/playlist/`);
   },
   getplayListByAnythingh(name, topic, exact_name){
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/playlist/?name=${encodeURIComponent(name)}&topic=${encodeURIComponent(topic)}&exact_name=${exact_name}`
     );
@@ -23,13 +23,13 @@ export default {
     );
   },
   getUser(name) {
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/userprofile/by-username/${encodeURIComponent(name)}`,
     );
   },
   searchNUsers(name) {
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/search/user/?q=${encodeURIComponent(name)}`
     );
@@ -45,19 +45,19 @@ export default {
     );
   },
   searchsongByAnyThingh(name, topic, artist, exact) {
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/songs/?name=${encodeURIComponent(name)}&topic=${encodeURIComponent(topic)}&artist=${encodeURIComponent(artist)}&exact_name=${exact}`
     );
   },
   searchsongByName(name) {
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/search/song/?q=${encodeURIComponent(name)}`
     );
   },
   searchsongByTopic(topic) {
-    const token = localStorage.getItem("access");
+    const _token = localStorage.getItem("access");
     return axiosInstance.get(
       `/api/v1/search/song/?topic=${encodeURIComponent(topic)}`
     );
@@ -101,5 +101,7 @@ export default {
       }
     );
   },
-
+  getAllPlaylists() {
+    return axiosInstance.get("/api/v1/playlist/");
+  },
 };

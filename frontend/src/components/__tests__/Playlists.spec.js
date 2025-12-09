@@ -9,16 +9,40 @@ vi.mock("vue-router", () => ({
   useRoute: () => ({ params: { id: "1" } })
 }))
 
-describe("Playlists.vue", () => {
-  let pinia
-  let apiStore
-  let wrapper
+// Mock router
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ params: { id: '1' } }),
+}))
 
-  beforeEach(async () => {
-    pinia = createPinia()
-    setActivePinia(pinia)
+// Mock API store
+vi.mock('../../apiStore/guestApi.js', () => ({
+  useApiStore: () => ({
+    getPlaylistById: vi.fn(() =>
+      Promise.resolve({
+        id: 1,
+        name: 'Playlist1',
+        description: 'playlist d’èxits mundials',
+        owner: 'Owner1',
+        cover: 'cover_playlist.jpg',
+      }),
+    ),
+    getSongFromPlayList: vi.fn(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          song: { id: 1, name: 'Song1', artist: 'Artist1', cover: 'cover1.jpg', topic: 'Pop' },
+        },
+        {
+          id: 2,
+          song: { id: 2, name: 'Song2', artist: 'Artist2', cover: 'cover2.jpg', topic: 'Rock' },
+        },
+      ]),
+    ),
+  }),
+}))
 
-    apiStore = useApiStore()
+describe('Playlists.vue', () => {
+  let playerStore, playSongSpy, toggleSpy, setQueueSpy
 
     apiStore.getPlaylistById = vi.fn().mockResolvedValue({
       id: 1,

@@ -4,7 +4,9 @@ import { useRoute } from 'vue-router'
 import { useApiStore } from '../apiStore/guestApi.js'
 import { useAuthStore } from '@/apiStore/authStore.js'
 import { Trash2, Plus, Music } from 'lucide-vue-next'
+import { usePlayerStore } from '@/piniaStore/playerStore'
 
+const player = usePlayerStore()
 const route = useRoute()
 const playlistId = route.params.id
 const api = useApiStore()
@@ -17,15 +19,15 @@ const isAddingSong = ref(false)
 
 const availableSongs = computed(() => {
   if (!api.songs || songs.value.length === 0) return api.songs || []
-  
-  const playlistSongIds = songs.value.map(s => s.song.id)
-  return api.songs.filter(song => !playlistSongIds.includes(song.id))
+
+  const playlistSongIds = songs.value.map((s) => s.song.id)
+  return api.songs.filter((song) => !playlistSongIds.includes(song.id))
 })
 
 async function loadPlaylist() {
   playlist.value = await api.getPlaylistById(playlistId)
   songs.value = await api.getSongFromPlayList(playlistId)
-  await api.fetchCatalog();
+  await api.fetchCatalog()
 }
 
 async function addSong() {
@@ -42,10 +44,26 @@ async function addSong() {
 
 async function removeSong(songId) {
   if (!confirm('Estàs segur que vols eliminar aquesta cançó de la playlist?')) return
-  
+
   const deleted = await auth.deletePlayListSong(playlistId, songId)
+
   if (deleted) {
     songs.value = await api.getSongFromPlayList(playlistId)
+  }
+}
+
+// Comprova si la cançó que es mostra és la que està reproduint el reproductor global
+function isCurrentSong(song) {
+  return !!(player.current && song && player.current.id === song.id)
+}
+
+// Crida el reproductor global per play/pause
+function togglePlay(song) {
+  if (!song) return
+  if (isCurrentSong(song)) {
+    player.toggle() // pausa/reprodueix si és la mateixa
+  } else {
+    player.playSong(song) // reproduir nova cançó
   }
 }
 
@@ -57,12 +75,12 @@ onMounted(async () => {
 
 <template>
   <div v-if="playlist" class="playlist-view">
-    <!-- Hero Header amb gradient -->
+    <!-- Hero -->
     <div class="playlist-hero">
       <div class="hero-gradient"></div>
       <div class="hero-content">
         <div class="cover-wrapper">
-          <img :src="playlist.cover" alt="Cover playlist" class="playlist-cover"/>
+          <img :src="playlist.cover" alt="Cover playlist" class="playlist-cover" />
         </div>
         <div class="playlist-info">
           <span class="playlist-label">PLAYLIST</span>
@@ -77,24 +95,24 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Barra d'accions -->
+    <!-- Accions -->
     <div class="actions-bar">
       <div class="add-song-container">
-        <select 
-          v-model="selectedSongId" 
+        <select
+          v-model="selectedSongId"
           class="song-select"
         >
           <option value="" disabled>Selecciona una cançó</option>
-          <option 
-            v-for="song in availableSongs" 
-            :key="song.id" 
+          <option
+            v-for="song in availableSongs"
+            :key="song.id"
             :value="song.id"
           >
             {{ song.name }} - {{ song.artist }}
           </option>
         </select>
-        <button 
-          @click="addSong" 
+        <button
+          @click="addSong"
           :disabled="isAddingSong || !selectedSongId"
           class="btn-add"
         >
@@ -104,7 +122,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Llista de cançons estil taula -->
+    <!-- Llista de cançons -->
     <div class="songs-section">
       <div class="songs-header">
         <span class="col-number">#</span>
@@ -115,15 +133,15 @@ onMounted(async () => {
       </div>
 
       <div class="songs-list">
-        <div 
-          v-for="(song, index) in songs" 
-          :key="song.id" 
+        <div
+          v-for="(song, index) in songs"
+          :key="song.id"
           class="song-row"
         >
           <span class="col-number">{{ index + 1 }}</span>
-          
+
           <div class="col-title">
-            <img 
+            <img
               v-if="song.song.cover"
               :src="song.song.cover"
               alt="Cover"
@@ -134,16 +152,19 @@ onMounted(async () => {
             </div>
             <div class="song-info">
               <strong class="song-name">{{ song.song.name }}</strong>
-              <audio :src="song.song.file_audio" controls class="audio-player"></audio>
+              <button @click="togglePlay(song.song)" class="btn-play">
+                <span v-if="!isCurrentSong(song.song)">▶</span>
+                <span v-else>⏸</span>
+              </button>
             </div>
           </div>
 
           <span class="col-artist">{{ song.song.artist }}</span>
           <span class="col-topic">{{ song.song.topic }}</span>
-          
+
           <div class="col-actions">
-            <button 
-              @click="removeSong(song.id)" 
+            <button
+              @click="removeSong(song.id)"
               class="btn-delete"
               title="Eliminar cançó"
             >
@@ -154,7 +175,7 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  
+
   <div v-else class="loading-state">
     <div class="spinner"></div>
     <p>Carregant playlist...</p>
@@ -163,6 +184,7 @@ onMounted(async () => {
 
 <style scoped>
 .playlist-view {
+  padding: 20px 40px;
   background-color: #121212;
   color: white;
   min-height: 100vh;
@@ -192,6 +214,26 @@ onMounted(async () => {
   gap: 30px;
   align-items: flex-end;
   z-index: 1;
+}
+.btn-play {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s;
+  color: white;
+  background: linear-gradient(135deg, #ff3896, #ff3896);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-play:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .cover-wrapper {
@@ -413,7 +455,7 @@ onMounted(async () => {
 }
 
 .col-topic {
-  color: #ff2d8d;
+  color: #b3b3b3;
   font-size: 0.85rem;
   font-style: italic;
   white-space: nowrap;
@@ -467,7 +509,9 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */
