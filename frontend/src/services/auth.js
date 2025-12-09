@@ -160,6 +160,7 @@ class AuthService {
             return axios.request(error.config)
           } catch (err) {
             this.logout()
+            console.log(err)
           }
         }
         return Promise.reject(error)

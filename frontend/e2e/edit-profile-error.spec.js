@@ -5,7 +5,6 @@ const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
 test('Mostrar missatge d’error quan el backend falla al desar la descripció', async ({
   page,
-  request,
 }) => {
   // 1️⃣ Login amb usuari hardcodejat
   const username = 'admin'

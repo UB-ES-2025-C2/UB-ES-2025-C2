@@ -31,7 +31,6 @@ vi.mock('../../apiStore/guestApi.js', () => ({
 
 describe('Playlists.vue', () => {
   let pinia
-  let apiStore
   let wrapper
 
   beforeEach(async () => {
@@ -42,7 +41,7 @@ describe('Playlists.vue', () => {
     await new Promise(r => setTimeout(r, 0))
     await wrapper.vm.$nextTick()
   })
-  
+
   it("renderiza la secció playlist-hero amb informació correcta", () => {
     const hero = wrapper.find(".playlist-hero")
     expect(hero.exists()).toBe(true)
