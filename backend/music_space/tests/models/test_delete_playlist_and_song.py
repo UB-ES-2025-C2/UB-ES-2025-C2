@@ -1,3 +1,5 @@
+"""Tests for deleting playlists and songs from playlists in the models."""
+
 import pytest
 
 from django.contrib.auth.models import User
