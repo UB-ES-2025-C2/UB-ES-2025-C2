@@ -8,32 +8,25 @@ const auth = useAuthStore()
 
 // Camps del formulari
 const name = ref('')
-const artist = ref('')
+const description = ref('')
 const topic = ref('')
-const authors = ref([]) // Array d'IDs d'autors
-const fileAudio = ref(null)
+const owner = ref([]) // array d'IDs d'usuaris propietaris
+const watched = ref([]) // array d'IDs d'usuaris que han vist la playlist
 const cover = ref(null)
-const previewCover = ref(null)
+const previewCover = ref(null) // preview
 
-const fileAudioInput = ref(null)
-const coverInput = ref(null)
+const coverInput = ref(null) 
 
-const loading = ref(false)
+const loading = ref(false) // loading
 const error = ref(null)
-const success = ref(null) // ← nova ref per mostrar missatge d’èxit
+const success = ref(null) // per missatge d’èxit
 
-// Funcions per obrir selector d'arxius
-function triggerAudioInput() {
-  fileAudioInput.value.click()
-}
+// Funcions per obrir selector de fitxer
 function triggerCoverInput() {
   coverInput.value.click()
 }
 
-// Funcions per seleccionar arxius
-function onAudioSelected(event) {
-  fileAudio.value = event.target.files[0]
-}
+// Funció per seleccionar fitxer
 function onCoverSelected(event) {
   cover.value = event.target.files[0]
   if (cover.value) {
@@ -44,48 +37,45 @@ function onCoverSelected(event) {
 onMounted(async () => {
   auth.initializeAuthStore()
 })
-// Funció per enviar POST
-async function createSong() {
-  if (!fileAudio.value) {
-    error.value = "Cal pujar un fitxer d'àudio."
+
+async function createPlaylist() {
+  if (!name.value || !topic.value) {
+    error.value = "El nom i el tema són obligatoris."
     return
   }
 
   loading.value = true
   error.value = null
 
-  const song = {
+  // Creem objecte playlist similar a la cançó
+  const playlist = {
     name: name.value,
-    artist: artist.value,
+    description: description.value,
     topic: topic.value,
-    authors: authors.value,
-    file_audio: fileAudio.value,
-    cover: cover.value || null,
+    owner: owner.value,
+    cover: cover.value || null
   }
-  auth
-    .postSong(song)
+
+  auth.postPlaylist(playlist)
     .then((response) => {
-      console.log('Cançó creada:', response.data)
-      success.value = 'Cançó pujada correctament!'
-      setTimeout(() => {
-        success.value = null
-        router.push({ name: 'home' })
-      }, 3000) // desapareix després de 3 segons
+      console.log('Playlist creada:', response.data)
+      success.value = 'Playlist creada correctament!'
+      success.value = null
+      router.push({ name: 'home' })
     })
     .catch((err) => {
       console.error(err)
-      error.value = 'Error en pujar la cançó.'
+      error.value = 'Error en crear la playlist.'
     })
     .finally(() => {
       loading.value = false
     })
 }
-
 </script>
 
 <template>
-  <div class="create-song-form">
-    <h1>Pujar Cançó</h1>
+  <div class="create-playlist-form">
+    <h1>Crear Playlist</h1>
 
     <div v-if="error" class="error">{{ error }}</div>
 
@@ -95,8 +85,8 @@ async function createSong() {
     </label>
 
     <label>
-      Artista:
-      <input type="text" v-model="artist" />
+      Descripció:
+      <input type="text" v-model="description" />
     </label>
 
     <label>
@@ -105,20 +95,9 @@ async function createSong() {
     </label>
 
     <label>
-      Autors (IDs separats per coma):
-      <input
-        type="text"
-        v-model="authorsString"
-        @input="authors = $event.target.value.split(',').map((a) => parseInt(a.trim()))"
-      />
+      Owners (IDs separats per coma):
+      <input type="text" @input="owner.value = $event.target.value.split(',').map(a => parseInt(a.trim()))" />
     </label>
-
-    <!-- Audio -->
-    <div class="file-input">
-      <button type="button" @click="triggerAudioInput">Pujar àudio</button>
-      <input ref="fileAudioInput" type="file" @change="onAudioSelected" style="display: none" />
-      <span v-if="fileAudio">{{ fileAudio.name }}</span>
-    </div>
 
     <!-- Cover opcional -->
     <div class="file-input">
@@ -127,15 +106,17 @@ async function createSong() {
       <img v-if="previewCover" :src="previewCover" alt="Preview Cover" class="cover-preview" />
     </div>
 
-    <button @click="createSong" :disabled="loading">
-      {{ loading ? 'Pujant...' : 'Pujar Cançó' }}
+    <button @click="createPlaylist" :disabled="loading">
+      {{ loading ? 'Creant...' : 'Crear Playlist' }}
     </button>
   </div>
+
   <div v-if="success" class="success">{{ success }}</div>
 </template>
 
 <style scoped>
-.create-song-form {
+/* Pots reutilitzar els estils de create-song-form adaptant-los si cal */
+.create-playlist-form {
   padding: 30px;
   color: white;
   background-color: #121212;
@@ -145,20 +126,12 @@ async function createSong() {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   font-family: 'Arial', sans-serif;
 }
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
 label {
   display: block;
   margin-bottom: 15px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
 }
-
 input[type='text'] {
   width: 100%;
   padding: 10px;
@@ -169,11 +142,6 @@ input[type='text'] {
   color: #fff;
   font-size: 14px;
 }
-
-input[type='text']::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
 button {
   padding: 10px 20px;
   background-color: #ff3896;
@@ -183,42 +151,25 @@ button {
   cursor: pointer;
   font-weight: bold;
   margin-top: 15px;
-  transition: background-color 0.2s;
 }
-
-button:hover:not(:disabled) {
-  background-color: #ff3896;
-}
-
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-.error {
-  color: #ff4d4f;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
 .file-input {
   margin-bottom: 15px;
 }
-
-.file-name {
-  display: block;
-  margin-top: 6px;
-  color: #b3b3b3;
-  font-size: 13px;
-}
-
 .cover-preview {
   width: 120px;
   height: 120px;
   object-fit: cover;
   margin-top: 10px;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+.error {
+  color: #ff4d4f;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 .success {
   background-color: #1db954;
@@ -228,17 +179,5 @@ button:disabled {
   text-align: center;
   font-weight: bold;
   margin-bottom: 15px;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

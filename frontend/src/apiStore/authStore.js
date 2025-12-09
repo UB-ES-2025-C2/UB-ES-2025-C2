@@ -109,6 +109,24 @@ export const useAuthStore = defineStore("auth", {
       }
       return AuthService.patchSong(this.user_id, songId, formData);
     },
+    async postPlaylist(playlist) {
+      const formData = new FormData();
+      formData.append("name", playlist.name);
+      formData.append("description", playlist.description);
+      formData.append("topic", playlist.topic);
+      const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
 
+      owners.forEach(id => {
+        formData.append("owner", id); 
+      });
+
+      if (playlist.cover) {
+        formData.append("cover", playlist.cover);
+      } // cover
+      return AuthService.postPlaylist(formData);
+    },
+    async postPlayListSong(playlistId, song){
+      return AuthService.postPlayListSong(playlistId, song);
+    }
   }
 });
