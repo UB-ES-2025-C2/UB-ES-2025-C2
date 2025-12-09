@@ -33,7 +33,27 @@
               <span v-if="!(isCurrentSong && player.isPlaying)">▶</span>
               <span v-else>⏸</span>
             </button>
-            <button class="btn ghost" title="Afegir a playlist">＋</button>
+
+            <!-- Botón añadir a playlist -->
+            <div class="add-dropdown">
+              <button class="btn ghost" title="Afegir a playlist" @click="showPlaylistDropdown = !showPlaylistDropdown">
+                ＋
+              </button>
+                <div v-if="showPlaylistDropdown" class="playlist-dropdown">
+                  <select v-model="selectedPlaylistId">
+                    <option value="" disabled>Selecciona una playlist</option>
+                    <option v-for="pl in playlists"
+                      :key="pl.id"
+                      :value="pl.id"
+                    >
+                      {{ pl.name }}
+                    </option>
+                  </select>
+                  <button @click="addSongToPlaylist" :disabled="!selectedPlaylistId">Afegir</button>
+                </div>
+
+            </div>
+
             <button class="btn ghost" title="Més opcions">⋯</button>
           </div>
         </div>
@@ -68,16 +88,26 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import api from "../services/api";
+//import api from "../services/api";
 import { usePlayerStore } from "@/piniaStore/playerStore";
+import { useAuthStore } from "@/apiStore/authStore.js";
+import { useApiStore } from "../apiStore/guestApi.js";
 
 const route = useRoute();
 const player = usePlayerStore();
+
+const apiStore = useApiStore();
+const auth = useAuthStore();
 
 const song = ref(null);
 const loading = ref(true);
 const error = ref("");
 
+const showPlaylistDropdown = ref(false);
+const selectedPlaylistId = ref("");
+const playlists = ref([]);
+
+// Hero styles
 const heroStyle = computed(() => ({ background: "linear-gradient(#1f415b, #102735)" }));
 const bgStyle = computed(() =>
   song.value?.cover ? { backgroundImage: `url('${song.value.cover}')` } : {}
@@ -105,16 +135,46 @@ function togglePlay() {
   }
 }
 
+// Afegir cançó a playlist
+async function addSongToPlaylist() {
+  if (!selectedPlaylistId.value) return;
+
+  try {
+    const response = await auth.postPlayListSong(selectedPlaylistId.value, song.value);
+    if (response.status === 201 || response.status === 200) {
+      alert("Cançó afegida a la playlist!");
+      selectedPlaylistId.value = "";
+      showPlaylistDropdown.value = false;
+    } else {
+      alert("No s'ha pogut afegir la cançó");
+    }
+  } catch (err) {
+    console.error(err);
+    //mirem si la cançó està a la playlist
+    const msg = err?.response?.data?.[0] || "";
+    if (msg.includes("playlist")) {
+      alert("Aquesta cançó ja està a la playlist");
+    } else {
+      alert("Error afegint la cançó");
+    }
+  }
+}
+
+// Carrega de dades per cançó
 onMounted(async () => {
   try {
-    const { data } = await api.getSongById(route.params.id);
-    song.value = data;
+    song.value = await apiStore.getSongById(route.params.id);
+
+    playlists.value = await apiStore.getAllPlaylists();
+
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";
   } finally {
     loading.value = false;
   }
 });
+
+
 </script>
 
 <style scoped>
@@ -133,7 +193,7 @@ onMounted(async () => {
   gap: 24px;
   padding: 28px;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   margin: 16px;
 }
 .hero-bg {
@@ -176,6 +236,40 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+.add-dropdown {
+  position: relative;
+}
+.playlist-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #121212;
+  border: 1px solid #444;
+  min-width: 280px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 9999;
+}
+.playlist-dropdown select {
+  padding: 6px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+.playlist-dropdown button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #ff2d8d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 .btn {
   border: none;
