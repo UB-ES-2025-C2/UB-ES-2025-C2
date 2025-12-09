@@ -4,7 +4,7 @@ import path from 'path'
 import { test as customTest } from './fixtures/testUser.js'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const API_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000'
+const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 customTest(
   'Flux complet: pujada de cançó amb usuari aleatori (via API)',
@@ -22,8 +22,9 @@ customTest(
     console.log('✅ Token obtingut')
 
     // 2️⃣ Preparar fitxers
-    const audioPath = path.resolve('./files/sample.mp3')
-    const coverPath = path.resolve('./files/cover.jpg')
+
+    const audioPath = path.resolve('./e2e/files/sample.mp3')
+    const coverPath = path.resolve('./e2e/files/cover.png')
 
     // 3️⃣ Enviar petició POST amb multipart/form-data
     const songRes = await request.post(`${API_URL}/api/v1/songs/`, {
@@ -40,8 +41,8 @@ customTest(
           buffer: fs.readFileSync(audioPath),
         },
         file_cover: {
-          name: 'cover.jpg',
-          mimeType: 'image/jpeg',
+          name: 'cover.png',
+          mimeType: 'image/png',
           buffer: fs.readFileSync(coverPath),
         },
       },

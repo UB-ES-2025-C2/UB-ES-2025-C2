@@ -62,3 +62,19 @@ class PlaylistSong(models.Model):
     playlist = models.ForeignKey(PlayList,
                                on_delete=models.CASCADE,
                                related_name="songs")
+
+class Comment(models.Model):
+    song = models.ForeignKey(
+        Song,
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+    user = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+    content = models.CharField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    annonymus_level = models.IntegerField(default=0)
+
