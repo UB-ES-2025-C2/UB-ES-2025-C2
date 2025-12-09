@@ -15,6 +15,7 @@ const mockApiStore = {
   getFollowing: vi.fn().mockResolvedValue(Array(45).fill({})),
   getUserSongs: vi.fn(),
   getUserPlaylists: vi.fn(),
+  getUserById: vi.fn(), 
 };
 
 // Mock del módulo Pinia store
@@ -77,28 +78,25 @@ describe("User.vue", () => {
   });
 
   it("muestra mensaje si el usuario no existe", async () => {
-    // Evitar error de mounted hook
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    // Mock de usuario inexistente: devolvemos un objeto temporal con id null
+    mockApiStore.nUsersResult = [{ id: null, username: "fakeuser" }];
 
-    // Usuario inexistente
-    mockApiStore.nUsersResult = [];
+    // Mockeamos las funciones para que no fallen con id null
+    mockApiStore.getFollowers.mockResolvedValue([]);
+    mockApiStore.getFollowing.mockResolvedValue([]);
+    mockApiStore.getUserSongs.mockResolvedValue([]);
+    mockApiStore.getUserPlaylists.mockResolvedValue([]);
+    mockApiStore.getUserById.mockResolvedValue({ id: null });
 
-    // Mockear funciones que se llaman con foundUser.id
-    const _runUserSongs = vi.fn().mockResolvedValue([]);
-    const _runUserPlaylists = vi.fn().mockResolvedValue([]);
-
-    const wrapper = mount(User, {
-      global: { plugins: [createPinia()] },
-      // Pasar estos mocks como props o provide si User los usa
-      // o usar vi.mock en User.vue para esos métodos
-    });
+    const wrapper = mount(User, { global: { plugins: [createPinia()] } });
     await flushPromises();
 
+    // Comprobamos que se muestra el mensaje de usuario no encontrado
     expect(wrapper.text()).toContain("Usuari no trobat");
 
-    // Restauramos
+    // Restauramos nUsersResult original
     mockApiStore.nUsersResult = [{ id: 1, username: "testuser" }];
-    vi.restoreAllMocks();
   });
+
 
 });

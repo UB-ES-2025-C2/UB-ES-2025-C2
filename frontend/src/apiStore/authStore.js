@@ -59,12 +59,16 @@ export const useAuthStore = defineStore("auth", {
         localStorage.setItem("avatarUrl", this.avatarUrl);
       });
     },
+
     postSong(song) {
       const formData = new FormData();
       formData.append("file_audio", song.file_audio);
       formData.append("name", song.name);
       formData.append("artist", song.artist);
       formData.append("topic", song.topic);
+      if (song.cover) {
+        formData.append("cover", song.cover);
+      }
       return AuthService.postSong(formData);
     },
     logout() {
@@ -116,7 +120,7 @@ export const useAuthStore = defineStore("auth", {
       formData.append("topic", playlist.topic);
       const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
       owners.forEach(id => {
-        formData.append("owner", id); 
+        formData.append("owner", id);
       });
 
       if (playlist.cover) {

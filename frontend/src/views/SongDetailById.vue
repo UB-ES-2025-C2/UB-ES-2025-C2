@@ -140,7 +140,8 @@ async function addSongToPlaylist() {
   if (!selectedPlaylistId.value) return;
 
   try {
-    const response = await auth.postPlayListSong(selectedPlaylistId.value, song.value);
+    const payload = { song_id: song.value.id };
+    const response = await auth.postPlayListSong(selectedPlaylistId.value, payload);
     if (response.status === 201 || response.status === 200) {
       alert("Cançó afegida a la playlist!");
       selectedPlaylistId.value = "";
@@ -164,8 +165,8 @@ async function addSongToPlaylist() {
 onMounted(async () => {
   try {
     song.value = await apiStore.getSongById(route.params.id);
-
-    playlists.value = await apiStore.getAllPlaylists();
+    const id = Number(auth.user_id);
+    playlists.value = await apiStore.getPlaylistFromUser(id);
 
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";

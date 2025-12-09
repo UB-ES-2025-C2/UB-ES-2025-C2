@@ -33,7 +33,7 @@ describe("SongDetailById.vue", () => {
       duration: 125,
     }),
     actions: {
-      playSong: () => playSongSpy(),
+      playSong: (song) => playSongSpy(song),
       toggle: () => toggleSpy(),
     },
   });
@@ -96,7 +96,8 @@ describe("SongDetailById.vue", () => {
 
     // Primer toggle → no es la canción actual → playSong
     wrapper.vm.togglePlay();
-    expect(playSongSpy).toHaveBeenCalledWith(mockSong);
+    expect(playSongSpy).toHaveBeenCalled();
+    expect(playSongSpy.mock.calls[0][0]).toMatchObject(mockSong);
 
     // Simulamos que es la canción actual
     wrapper.vm.player.current = mockSong;
@@ -105,6 +106,7 @@ describe("SongDetailById.vue", () => {
     wrapper.vm.togglePlay();
     expect(toggleSpy).toHaveBeenCalled();
   });
+
 
   it("formatTime funciona correctamente", async () => {
     const { default: api } = await import("../../services/api");
