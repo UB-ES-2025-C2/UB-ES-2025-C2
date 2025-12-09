@@ -111,5 +111,5 @@ jobs:
             VITE_API_URL: http://127.0.0.1:8000
             FRONTEND_URL: http://127.0.0.1:5173
             ADMIN_USER: admin
-            ADMIN_PASS: admin
+            ADMIN_PASS: admin123
         run: npm run test:e2e
