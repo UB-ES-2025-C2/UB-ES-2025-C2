@@ -21,11 +21,16 @@ describe('Search.vue', () => {
     setActivePinia(pinia)
 
     apiStore = useApiStore()
-    // Mock resultados
+
     apiStore.nUsersResult = [{ id: 1, username: 'user1', email: 'user1@test.com' }]
     apiStore.songResults = [{ id: 1, name: 'Canción 1', artist: 'Artista 1', cover: '' }]
     apiStore.playlistResults = [{ id: 1, name: 'Playlist 1', owner: [1], cover: '' }]
+
     apiStore.getUserById = vi.fn().mockResolvedValue({ nickname: 'Owner1' })
+
+    apiStore.searchNUsers = vi.fn().mockResolvedValue()
+    apiStore.searchsongByAnyThingh = vi.fn().mockResolvedValue()
+    apiStore.getplayListByAnythingh = vi.fn().mockResolvedValue()
 
     wrapper = mount(Search, {
       global: {
