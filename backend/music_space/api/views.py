@@ -249,10 +249,7 @@ class PlaylistSongViewSet(viewsets.ModelViewSet):
             raise ValidationError(msg)
         position_deleted = instance.position
         instance.delete()
-        # Reordenar posicions restants
-        remaining = PlaylistSong.objects.filter(
-            playlist=playlist, position__gt=position_deleted
-        )
+        remaining = PlaylistSong.objects.filter(playlist=playlist, position__gt=position_deleted)
         for ps in remaining:
             ps.position -= 1
             ps.save()
