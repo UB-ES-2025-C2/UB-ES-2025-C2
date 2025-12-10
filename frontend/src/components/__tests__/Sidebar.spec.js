@@ -72,17 +72,23 @@ describe('Sidebar.vue', () => {
     expect(router.push).toHaveBeenCalledWith({ name: 'createSong' })
   })
 
-  it('redirects to createPlayList when create playlist button is clicked', async () => {
-    const btn = wrapper.find('.create-playlist-btn')
-
+  it('redirects to createPlayList correctly based on authentication', async () => {
+    // Caso no autenticado
     authStore.isAuthenticated = false
     await wrapper.vm.$nextTick()
-    await btn.trigger('click')
+
+    let btn = wrapper.find('.create-playlist-btn')
+    expect(btn.exists()).toBe(false)
     expect(router.push).toHaveBeenCalledWith({ name: 'logIn' })
 
+    // Caso autenticado
     authStore.isAuthenticated = true
     await wrapper.vm.$nextTick()
+
+    btn = wrapper.find('.create-playlist-btn') // buscamos nuevamente
+    expect(btn.exists()).toBe(true)
     await btn.trigger('click')
     expect(router.push).toHaveBeenCalledWith({ name: 'createPlayList' })
   })
+
 })

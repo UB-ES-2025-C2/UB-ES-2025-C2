@@ -116,7 +116,8 @@ class AuthService {
         }
       }
     );
-  } 
+  }
+
   async postPlayListSong(playlistId, song) {
     return this.getAxiosInstance().post(
       `/api/v1/playlist/${playlistId}/songs/`,
@@ -124,11 +125,13 @@ class AuthService {
       { headers: { 'Content-Type': 'application/json' } }
     );
   }
+
   async deletePlayListSong(playlistId, songId){
     return this.getAxiosInstance().delete(
       `/api/v1/playlist/${playlistId}/songs/${songId}/`
     );
   }
+
   getAxiosInstanceGuest() {
     const apiUrl = import.meta.env.VITE_API_URL
 
@@ -137,7 +140,7 @@ class AuthService {
     })
     return instance
   }
-  // action merge
+
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL
     const accessToken = this.getAccessToken()

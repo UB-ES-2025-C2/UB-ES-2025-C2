@@ -55,6 +55,19 @@ async function createPlaylist() {
     cover: cover.value || null,
   }
 
+  const formData = new FormData();
+  formData.append("name", playlist.name);
+  formData.append("description", playlist.description);
+  formData.append("topic", playlist.topic);
+  const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
+  owners.forEach(id => {
+    formData.append("owner", id);
+  });
+
+  if (playlist.cover) {
+    formData.append("cover", playlist.cover);
+  } // cover
+
   auth
     .postPlaylist(playlist)
     .then((response) => {
@@ -79,7 +92,7 @@ async function createPlaylist() {
 
 <template>
   <div class="create-playlist-form">
-    <h1>Crear Playlist</h1>
+    <h1 style="text-align: center;">Crear Playlist</h1>
 
     <div v-if="error" class="error">{{ error }}</div>
 

@@ -60,15 +60,7 @@ export const useAuthStore = defineStore("auth", {
       });
     },
 
-    postSong(song) {
-      const formData = new FormData();
-      formData.append("file_audio", song.file_audio);
-      formData.append("name", song.name);
-      formData.append("artist", song.artist);
-      formData.append("topic", song.topic);
-      if (song.cover) {
-        formData.append("cover", song.cover);
-      }
+    postSong(formData) {
       return AuthService.postSong(formData);
     },
     logout() {
@@ -94,43 +86,17 @@ export const useAuthStore = defineStore("auth", {
     async updateUserProfile(data) {
       return AuthService.updateUserProfile(this.user_id, data);
     },
-    async patchSong(songId, song) {
-      const formData = new FormData();
-      formData.append("name", song.name);
-      formData.append("artist", song.artist);
-      formData.append("topic", song.topic);
-      if (Array.isArray(song.authors)) {
-        song.authors.forEach(authorId => {
-          formData.append("authors", authorId);
-        });
-      }
-      if (song.fileAudio) {
-        formData.append("file_audio", song.fileAudio);
-      }
-
-      if (song.cover) {
-        formData.append("cover", song.cover);
-      }
+    async patchSong(songId, formData) {
       return AuthService.patchSong(this.user_id, songId, formData);
     },
-    async postPlaylist(playlist) {
-      const formData = new FormData();
-      formData.append("name", playlist.name);
-      formData.append("description", playlist.description);
-      formData.append("topic", playlist.topic);
-      const owners = Array.from(playlist.owner?.value ?? playlist.owner ?? []);
-      owners.forEach(id => {
-        formData.append("owner", id);
-      });
-
-      if (playlist.cover) {
-        formData.append("cover", playlist.cover);
-      } // cover
+    async postPlaylist(formData) {
       return AuthService.postPlaylist(formData);
+    },
+    async postPlayListSong(playlistId, song) {
+      return AuthService.postPlayListSong(playlistId, song);
     },
     async deletePlayListSong(playlistId, songId){
       return AuthService.deletePlayListSong(playlistId, songId)
-
     }
   }
 });

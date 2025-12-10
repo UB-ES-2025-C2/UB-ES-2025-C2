@@ -26,6 +26,7 @@ const success = ref(null) // ← nova ref per mostrar missatge d’èxit
 function triggerAudioInput() {
   fileAudioInput.value.click()
 }
+
 function triggerCoverInput() {
   coverInput.value.click()
 }
@@ -34,6 +35,7 @@ function triggerCoverInput() {
 function onAudioSelected(event) {
   fileAudio.value = event.target.files[0]
 }
+
 function onCoverSelected(event) {
   cover.value = event.target.files[0]
   if (cover.value) {
@@ -44,6 +46,7 @@ function onCoverSelected(event) {
 onMounted(async () => {
   auth.initializeAuthStore()
 })
+
 // Funció per enviar POST
 async function createSong() {
   if (!fileAudio.value) {
@@ -62,8 +65,22 @@ async function createSong() {
     file_audio: fileAudio.value,
     cover: cover.value || null,
   }
+
+  const formData = new FormData()
+  formData.append("name", name.value);
+  formData.append("artist", artist.value);
+  formData.append("topic", topic.value);
+  authors.value.forEach(author => {
+    formData.append("authors", author);
+  });
+// Fitxers
+  formData.append("file_audio", fileAudio.value)
+  if (cover.value) {
+    formData.append("cover", cover.value)
+  }
+
   auth
-    .postSong(song)
+    .postSong(formData)
     .then((response) => {
       console.log('Cançó creada:', response.data)
       success.value = 'Cançó pujada correctament!'
