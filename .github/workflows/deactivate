@@ -1,0 +1,26 @@
+name: Deactivate PIM Role
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deactivate-role:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deactivate PIM Role
+        run: |
+          ROLE_SCHEDULE_ID="d48c5b73-e4b8-4fb8-85ab-214fbc852446"
+          SUBSCRIPTION_ID="df9c7c07-9967-4cad-a5ca-b063ccb1d396"
+          RESOURCE_GROUP="MusicSpace-PreProd"
+
+          az rest --method POST \
+            --uri "https://management.azure.com/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Authorization/roleAssignmentScheduleRequests/$ROLE_SCHEDULE_ID/deactivate?api-version=2020-10-01" \
+            --headers "Content-Type=application/json" \
+            --body "{}"
