@@ -1,11 +1,10 @@
 """signals.py"""
 
-import pathlib
 
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-
+from django.core.files.storage import default_storage
 from .models import UserProfile
 
 default_name = 'profile_pics/default.png'
@@ -28,31 +27,24 @@ def create_userprofile(
 
 
 @receiver(pre_save, sender=UserProfile)
-def delete_old_profile_pic(
-    sender: type[UserProfile],  # noqa: ARG001
-    instance: UserProfile,
-    **kwargs: dict,  # noqa: ARG001
-) -> None:
-    """Elimina l'arxiu de la imatge de perfil antiga abans de desar una nova."""
-    if instance.pk and UserProfile.objects.filter(pk=instance.pk).exists():
-        old_file = UserProfile.objects.get(pk=instance.pk).profilePic
-        new_file = instance.profilePic
-        if (
-            old_file and old_file != new_file and old_file.name != default_name
-        ) and pathlib.Path(old_file.path).exists():
-            pathlib.Path(old_file.path).unlink()
+def delete_old_profile_pic(sender, instance, **kwargs):
+    """Elimina l'arxiu antic usant default_storage (funciona local/S3)."""
+    if instance.pk:
+        try:
+            old_instance = UserProfile.objects.get(pk=instance.pk)
+            old_file = old_instance.profilePic
+            new_file = instance.profilePic
+
+            if (old_file and old_file != new_file and old_file.name != default_name
+                and old_file.name):  # Si té nom, existeix remotament
+                default_storage.delete(old_file.name)  # Funciona sempre
+        except UserProfile.DoesNotExist:
+            pass
 
 
 @receiver(post_delete, sender=UserProfile)
-def delete_profile_pic_on_delete(
-    sender: type[UserProfile],  # noqa: ARG001
-    instance: UserProfile,
-    **kwargs: dict,  # noqa: ARG001
-) -> None:
-    """Elimina l'arxiu de la imatge de perfil quan es elimina el UserProfile."""
-    if (
-        instance.profilePic
-        and instance.profilePic.name != default_name
-        and pathlib.Path(instance.profilePic.path).exists()
-    ):
-        pathlib.Path(instance.profilePic.path).unlink()
+def delete_profile_pic_on_delete(sender, instance, **kwargs):
+    """Elimina l'arxiu en post_delete usant storage API."""
+    if (instance.profilePic and instance.profilePic.name != default_name
+        and instance.profilePic.name):
+        default_storage.delete(instance.profilePic.name)
