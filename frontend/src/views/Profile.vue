@@ -25,7 +25,7 @@ async function runUserSongs(id_user) {
 }
 
 function editProfile() {
-  window.location.href = `/profile/edit/${user_id}`
+  router.push({ name: 'edit-profile', params: { id: user_id } })
 }
 
 function editarSong(song) {
