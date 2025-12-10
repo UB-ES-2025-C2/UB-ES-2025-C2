@@ -2,9 +2,10 @@
 
 
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-from django.core.files.storage import default_storage
+
 from .models import UserProfile
 
 default_name = 'profile_pics/default.png'
@@ -27,7 +28,11 @@ def create_userprofile(
 
 
 @receiver(pre_save, sender=UserProfile)
-def delete_old_profile_pic(sender, instance, **kwargs):
+def delete_old_profile_pic(
+    sender: type[UserProfile],  # noqa: ARG001
+    instance: UserProfile,
+    **kwargs: dict,  # noqa: ARG001
+    ) -> None:
     """Elimina l'arxiu antic usant default_storage (funciona local/S3)."""
     if instance.pk:
         try:
@@ -43,7 +48,11 @@ def delete_old_profile_pic(sender, instance, **kwargs):
 
 
 @receiver(post_delete, sender=UserProfile)
-def delete_profile_pic_on_delete(sender, instance, **kwargs):
+def delete_profile_pic_on_delete(
+    sender: type[UserProfile],  # noqa: ARG001
+    instance: UserProfile,
+    **kwargs: dict,  # noqa: ARG001
+    ) -> None:
     """Elimina l'arxiu en post_delete usant storage API."""
     if (instance.profilePic and instance.profilePic.name != default_name
         and instance.profilePic.name):
