@@ -408,6 +408,22 @@ services:
     ports:
       - 127.0.0.1:5173:80
 
+  frontend-staging2:
+    build:
+      args:
+        APP: frontend
+        PORT: 80
+        UID: 988
+        VITE_API_URL: https://musicspace-preprod-be-bmcfa3bgdtd0f8ge.spaincentral-01.azurewebsites.net
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-staging2
+    image: frontend-staging
+    ports:
+      - 80:80  # exposa el port 80 del container a qualsevol IP de l’host
+    networks:
+      - external_net  # assigna’l a la xarxa externa
+
   # Frontend linting service.
   frontend-lint:
     build:
@@ -587,3 +603,10 @@ networks:
       config:
         - subnet: 10.1.1.0/24
           gateway: 10.1.1.1
+
+  external_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
