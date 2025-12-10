@@ -55,7 +55,7 @@ export const useAuthStore = defineStore("auth", {
         this.username = user.nickname;
         this.avatarUrl = user.profilePic;
         localStorage.setItem("username", this.username);
-        localStorage.setItem("id", user.id);
+        localStorage.setItem("id", parseInt(user.id));
         localStorage.setItem("avatarUrl", this.avatarUrl);
       });
     },

@@ -92,7 +92,11 @@ class AuthService {
   async updateUserProfile(user_id, data) {
     return this.getAxiosInstance().patch(
       `/api/v1/userprofile/${user_id}/`,
-      data
+      data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
     );
   }
   async patchSong(userId, songId, formData) {
