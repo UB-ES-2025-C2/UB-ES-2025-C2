@@ -60,7 +60,7 @@ const routes = [
     props: true,
   },
   {
-    path: '/profile-edit/:id',
+    path: '/editprofile/:id',
     name: 'editprofile',
     component: EditProfile,
     meta: { requiresAuth: true },
