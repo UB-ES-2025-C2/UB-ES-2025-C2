@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import EditProfile from '../../views/EditProfile.vue'
 
 global.URL.createObjectURL = vi.fn(() => 'blob:mocked-url')
@@ -72,19 +73,18 @@ describe('EditProfile.vue', () => {
     wrapper.vm.nickname = userMock.nickname
     wrapper.vm.description = userMock.description
 
-    vi.useFakeTimers() //activar timers falsos
-
+    vi.useFakeTimers()
     await wrapper.vm.saveProfile()
-
     vi.advanceTimersByTime(1200)
 
-    expect(mockAuthStore.updateUserProfile).toHaveBeenCalledWith({
-      nickname: userMock.nickname,
-      description: userMock.description
-    })
-    expect(pushMock).toHaveBeenCalledWith({ name: 'profile', params: { id: '123' } })
+    // ✅ Comprova contingut del FormData
+    expect(mockAuthStore.updateUserProfile).toHaveBeenCalledTimes(1)
+    const formData = mockAuthStore.updateUserProfile.mock.calls[0][0]
+    expect(formData.get('nickname')).toBe(userMock.nickname)
+    expect(formData.get('description')).toBe(userMock.description)
 
-    vi.useRealTimers() //restaurar timers reals
+    expect(pushMock).toHaveBeenCalledWith({ name: 'profile', params: { id: '123' } })
+    vi.useRealTimers()
   })
 
   it('shows error if getUserById fails', async () => {
@@ -98,7 +98,13 @@ describe('EditProfile.vue', () => {
     mockAuthStore.updateUserProfile.mockRejectedValue(new Error('fail'))
     wrapper.vm.nickname = 'newuser'
     wrapper.vm.description = 'new description'
+
     await wrapper.vm.saveProfile()
-    expect(wrapper.find('.error').text()).toBe('Error al desar el perfil.')
+    await flushPromises()
+    await nextTick()
+
+    const errorEl = wrapper.find('.error')
+    expect(errorEl.exists()).toBe(true)
+    expect(errorEl.text()).toBe('Error al desar el perfil.')
   })
 })
