@@ -1,10 +1,10 @@
 import { expect } from '@playwright/test'
 import { test } from './fixtures/testUser.js'
-import fs from 'fs'
-import path from 'path'
+import _fs from 'fs'
+import _path from 'path'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
+const _API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 test.beforeEach(async ({ page, testUser }) => {
     const { username, password } = testUser

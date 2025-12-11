@@ -5,6 +5,7 @@ const ADMIN_USER = process.env.ADMIN_USER || 'admin'
 const ADMIN_PASS = process.env.ADMIN_PASS || 'admin'
 
 export const test = base.extend({
+  // oxlint-disable-next-line no-empty-pattern
   testUser: async ({}, use) => {
     // 1️ Generar dades úniques
     const username = 'user_' + Math.random().toString(36).substring(2, 10)
