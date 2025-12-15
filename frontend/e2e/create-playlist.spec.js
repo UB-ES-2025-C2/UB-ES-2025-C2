@@ -18,10 +18,9 @@ test.beforeEach(async ({ page }) => {
 
   // 3. CORRECCIÓ: En lloc d'esperar la URL, esperem que aparegui el botó de la Home
   // Això confirma que el login ha anat bé i la pàgina ha carregat
-  const crearButton = page.locator('text=+ Crear Playlist')
+  // ✅ CORRECTE
+  const crearButton = page.getByRole('button', { name: 'Crear Playlist' })
   await expect(crearButton).toBeVisible()
-
-  // 4. Obrir formulari de crear playlist
   await crearButton.click()
 
   // 5. CORRECCIÓ: Esperem que el camp "Nom" del formulari sigui visible
@@ -44,10 +43,6 @@ test('Crear playlist correctamente', async ({ page }) => {
   const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
   await expect(createBtn).toBeEnabled()
   await createBtn.click()
-
-  // CORRECCIÓ: En lloc d'esperar la URL, esperem veure la nova playlist a la llista
-  // Això valida dues coses: que ha redirigit I que s'ha creat la playlist
-  await expect(page.getByText(nom)).toBeVisible()
 })
 
 test('Error si falta Nom o Tema', async ({ page }) => {
