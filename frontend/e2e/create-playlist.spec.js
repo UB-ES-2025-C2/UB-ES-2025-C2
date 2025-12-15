@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test'
-import _fs from 'fs'
-import _path from 'path'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const _API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 const CREDENTIALS = {
   username: 'admin',
@@ -11,50 +8,55 @@ const CREDENTIALS = {
 }
 
 test.beforeEach(async ({ page }) => {
-  // Obre la pàgina de login
+  // 1. Obre la pàgina de login
   await page.goto(`/login`)
 
+  // 2. Omple credencials i entra
   await page.fill('input#identifier', CREDENTIALS.username)
   await page.fill('input#password', CREDENTIALS.password)
   await page.click('button:has-text("Iniciar Sessió")')
 
-  // Espera que el login redirigeixi a Home
-  await page.waitForURL(BASE_URL + '/')
+  // 3. CORRECCIÓ: En lloc d'esperar la URL, esperem que aparegui el botó de la Home
+  // Això confirma que el login ha anat bé i la pàgina ha carregat
+  const crearButton = page.locator('text=+ Crear Playlist')
+  await expect(crearButton).toBeVisible()
 
-  // Obrir formulari de crear playlist
-  await page.click('text=+ Crear Playlist')
-  await page.waitForURL(`${BASE_URL}/createPlayList`)
+  // 4. Obrir formulari de crear playlist
+  await crearButton.click()
+
+  // 5. CORRECCIÓ: Esperem que el camp "Nom" del formulari sigui visible
+  // Així sabem segur que estem a la pantalla de crear
+  await expect(page.getByLabel('Nom:')).toBeVisible()
 })
 
 test('Crear playlist correctamente', async ({ page }) => {
-  // Omplir formulari
+  // Dades del test
   const nom = 'Playlist de Test'
   const descripcio = 'Aquesta és una playlist de test'
   const tema = 'Pop'
 
+  // Omplir formulari
   await page.getByLabel('Nom:').fill(nom)
   await page.getByLabel('Descripció:').fill(descripcio)
   await page.getByLabel('Tema:').fill(tema)
 
   // Enviar formulari
-  //await page.click('button:has-text("Crear Playlist")')
   const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
   await expect(createBtn).toBeEnabled()
   await createBtn.click()
 
-  // Comprovar que retorna a la pàgina principal
-  // await page.goto(BASE_URL + '/')
-  await page.waitForURL(BASE_URL + '/')
-  //await expect(page.locator('text=Playlist de Test')).toBeVisible()
+  // CORRECCIÓ: En lloc d'esperar la URL, esperem veure la nova playlist a la llista
+  // Això valida dues coses: que ha redirigit I que s'ha creat la playlist
+  await expect(page.getByText(nom)).toBeVisible()
 })
 
 test('Error si falta Nom o Tema', async ({ page }) => {
   const descripcio = 'Descripció sense nom ni tema'
-  // Omplir formulari sense nom i tema
+
+  // Omplir només la descripció
   await page.getByLabel('Descripció:').fill(descripcio)
 
-  // Intentar enviar formulari
-  //await page.click('button:has-text("Crear Playlist")')
+  // Intentar enviar
   const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
   await expect(createBtn).toBeEnabled()
   await createBtn.click()
