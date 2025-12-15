@@ -13,18 +13,6 @@ test.beforeEach(async ({ page }) => {
   // 3. Login manual (Ruta Relativa)
   // Playwright afegirà automàticament localhost:5173, localhost:4173 o la URL d'Azure
 
-  // --- BLOC DE DEBUG ---
-  // Esperem 2 segons per donar temps a que carregui alguna cosa
-  await page.waitForTimeout(2000)
-
-  console.log('>>> Títol de la pàgina:', await page.title())
-  console.log('>>> URL actual:', page.url())
-
-  // Això ens dirà si React/Vue s'ha muntat o si està buit
-  const bodyContent = await page.innerHTML('body')
-  console.log('>>> Contingut del Body (Primers 500 caràcters):', bodyContent.substring(0, 500))
-  // ---------------------
-
   await page.goto(`/login`)
 
   await page.fill('input#identifier', CREDENTIALS.username)
