@@ -18,7 +18,6 @@ test.beforeEach(async ({ page }) => {
 
   // 3. CORRECCIÓ: En lloc d'esperar la URL, esperem que aparegui el botó de la Home
   // Això confirma que el login ha anat bé i la pàgina ha carregat
-  // ✅ CORRECTE
   const crearButton = page.getByText(/Crear Playlist/i).first()
 
   // Esperem que sigui visible i cliquem
