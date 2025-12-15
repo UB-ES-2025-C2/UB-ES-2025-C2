@@ -5,7 +5,7 @@ import _path from 'path'
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const _API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
-test.beforeEach(async ({ page, testUser }) => {
+test.beforeEach(async ({ page }) => {
   const { username, password } = testUser
   // Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)
