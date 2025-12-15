@@ -26,7 +26,6 @@ test('Eliminar una cançó d’una playlist i comprovar backend', async ({ page 
   await page.click('.playlist-card:first-child')
   await page.waitForURL(/addSongPlayList\/\d+/)
   const playlistId = Number(page.url().match(/addSongPlayList\/(\d+)/)[1])
-  console.log('🎵 Playlist ID detectat:', playlistId)
 
   // Esperar que carreguin les cançons
   await page.waitForSelector('.song-row')
@@ -42,5 +41,5 @@ test('Eliminar una cançó d’una playlist i comprovar backend', async ({ page 
   // Esperar que desaparegui la fila concreta del DOM usant data-id
   await expect(page.locator(`.song-row[data-id="${songId}"]`)).toHaveCount(0)
 
-  
+
 })
