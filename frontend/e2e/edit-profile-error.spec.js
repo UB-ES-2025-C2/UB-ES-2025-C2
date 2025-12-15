@@ -9,7 +9,7 @@ test('Mostrar missatge d’error quan el backend falla al desar la descripció',
 }) => {
   // 1️⃣ Login amb usuari hardcodejat
   const username = 'admin'
-  const password = 'admin'
+  const password = 'admin123'
 
   // 1️- Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)

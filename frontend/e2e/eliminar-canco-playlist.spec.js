@@ -8,7 +8,7 @@ const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 // S'ha de garantir que la playlist té cançons abans de córrer aquest test
 test('Eliminar una cançó d’una playlist i comprovar backend', async ({ page, request }) => {
   const username = 'admin'
-  const password = 'admin'
+  const password = 'admin123'
 
   // Login
   await page.goto(`${BASE_URL}/login`)

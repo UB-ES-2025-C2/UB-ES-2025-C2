@@ -6,7 +6,7 @@ const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 test('Buscar un usuari existent i navegar al seu perfil públic', async ({ page }) => {
   // 0️⃣ Dades de prova
   // Buscarem l'usuari 'admin' (el mateix amb el que ens loguegem) perquè sabem que existeix segur.
-  const targetUser = 'admin'
+  const targetUser = 'admin123'
 
   // 1️⃣ Login (Pas estàndard)
   await page.goto(`${BASE_URL}/login`)

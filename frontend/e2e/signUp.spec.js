@@ -6,7 +6,7 @@ test.describe('Registro de usuario', () => {
 
   const fakeUser = {
     username: 'admin',
-    password: 'admin'
+    password: 'admin123',
   }
 
   test('Falla si no rellenas todos los campos', async ({ page }) => {

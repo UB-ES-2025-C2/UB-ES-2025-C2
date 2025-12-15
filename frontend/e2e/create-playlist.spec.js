@@ -8,7 +8,7 @@ const _API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 test.beforeEach(async ({ page, request }) => {
   // Login amb usuari hardcodejat
   const username = 'admin'
-  const password = 'admin'
+  const password = 'admin123'
   // Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)
 

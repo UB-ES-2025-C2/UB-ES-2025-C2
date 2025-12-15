@@ -6,7 +6,7 @@ const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 test('Iniciar sessió, validar credencials i tancar sessió', async ({ page, request }) => {
   // Login amb usuari hardcodejat
   const username = 'admin'
-  const password = 'admin'
+  const password = 'admin123'
   // Accedir a la pàgina de login
   await page.goto(`${BASE_URL}/login`)
 

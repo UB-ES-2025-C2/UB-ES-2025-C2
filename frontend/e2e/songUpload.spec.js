@@ -11,7 +11,7 @@ customTest(
   async ({ page, request }) => {
     // 1️⃣ Login amb usuari hardcodejat
     const username = 'admin'
-    const password = 'admin'
+    const password = 'admin123'
 
     console.log('🟢 Token i usuari preparats:', username)
 
