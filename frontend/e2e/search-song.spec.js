@@ -7,6 +7,7 @@ test('Flux complet: Buscar una cançó, filtrar i obrir-la', async ({ page }) =>
   // Posa aquí una part del títol d'una cançó que sàpigues que existeix.
   // Als logs anteriors veia que tenies una "Cançó de test".
   const searchTerm = 'test'
+  await page.goto(BASE_URL)
 
   // -----------------------------------------------------------
   // 2️⃣ ÚS DEL BUSCADOR

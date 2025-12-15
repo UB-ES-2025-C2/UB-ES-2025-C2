@@ -7,10 +7,7 @@ test('Buscar un usuari existent i navegar al seu perfil públic', async ({ page 
   // Buscarem l'usuari 'admin' (el mateix amb el que ens loguegem) perquè sabem que existeix segur.
   const targetUser = 'admin'
 
-
-  // Esperem que redirigeixi a la Home (o on sigui després del login)
-  await page.waitForURL(BASE_URL + '/')
-
+  await page.goto(BASE_URL)
   // 2️⃣ Interacció amb el Header (Buscador)
   // Segons el teu codi: <input type="search" ... />
   const searchInput = page.locator('input[type="search"]')

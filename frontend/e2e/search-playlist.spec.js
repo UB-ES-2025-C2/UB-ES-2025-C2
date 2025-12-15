@@ -7,6 +7,7 @@ test('Flux complet: Buscar una playlist, filtrar i obrir-la', async ({ page }) =
   // Posa aquí el nom d'una playlist que tinguis creada a la Base de Dades.
   // Si encara no tens playlists reals i uses les "mock" del codi Vue, busca "Playlist de prueba".
   const searchTerm = 'Test'
+  await page.goto(BASE_URL)
 
   // -----------------------------------------------------------
   //  CERCA

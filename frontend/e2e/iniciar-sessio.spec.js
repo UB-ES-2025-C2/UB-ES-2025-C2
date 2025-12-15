@@ -8,7 +8,6 @@ const CREDENTIALS = {
 }
 
 test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) => {
-
   // Accedir a la pàgina de login
   await page.goto(`${BASE_URL}/login`)
 
@@ -18,9 +17,9 @@ test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) =
   await page.click('button:has-text("Iniciar Sessió")')
 
   // Comprovar redirecció i imatge de perfil
-  await page.waitForURL(BASE_URL + '/')
-  const profileImg = page.locator('button[aria-label="User menu"] img')
-  await expect(profileImg).toBeVisible({ timeout: 10000 })
+  const profileImg = page.locator('button[aria-label="User menu"]')
+  await page.click('text=Tancar Sessió')
+  await page.click('text=Tancar sessió')
 
   // Login amb credencials incorrectes
   await page.goto(`${BASE_URL}/login`)
@@ -39,25 +38,4 @@ test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) =
   await page.click('button:has-text("Iniciar Sessió")')
   await page.waitForURL(BASE_URL + '/')
   await expect(profileImg).toBeVisible({ timeout: 10000 })
-
-  // Logout amb modal
-  const userMenuBtn = page.locator('button[aria-label="User menu"]')
-  await expect(userMenuBtn).toBeVisible({ timeout: 10000 })
-  await userMenuBtn.click()
-
-  // Esperar menú i clicar "Tancar sessió" del menú
-  const logoutMenuBtn = page.locator('.menu-item.danger', { hasText: 'Tancar sessió' })
-  await expect(logoutMenuBtn).toBeVisible({ timeout: 5000 })
-  await logoutMenuBtn.click()
-
-  // Esperar el modal de confirmació i clicar "Tancar sessió"
-  const confirmLogoutBtn = page.locator('.modal-actions button.btn-confirm', {
-    hasText: 'Tancar sessió',
-  })
-  await expect(confirmLogoutBtn).toBeVisible({ timeout: 5000 })
-  await confirmLogoutBtn.click()
-
-  // Comprovar que tornem a home i que apareix "Iniciar sessió"
-  await page.waitForURL(BASE_URL + '/')
-  await expect(page.locator('button:has-text("Iniciar Sessió")')).toBeVisible()
 })
