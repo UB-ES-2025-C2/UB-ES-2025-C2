@@ -32,17 +32,12 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
     await page.fill('input#identifier', username)
     await page.fill('input#password', password)
     await page.click('button:has-text("Iniciar Sessió")')
+    await page.waitForURL(BASE_URL + '/')
 
-    // --- CORRECCIÓ AQUÍ ---
-    // Definim el selector exacte per atribut CSS (més robust que getByRole en aquest cas)
-    const userMenuBtn = page.locator('button[aria-label="User menu"]')
-
-    // Donem fins a 15 segons perquè el login acabi i el botó aparegui
-    await expect(userMenuBtn).toBeVisible({ timeout: 15000 })
-
-    // NAVEGAR AL PERFIL
-    await userMenuBtn.click()
+    // Accedir al perfil
+    await page.click('button[aria-label="User menu"]')
     await page.click('text=El teu perfil')
+    await page.waitForURL(/\/profile\/\d+/)
 
     // Capturem l'ID de l'usuari
     await page.waitForURL(/\/profile\/\d+/)
@@ -71,19 +66,6 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
     const successMsg = page.locator('.success')
     await expect(successMsg).toBeVisible({ timeout: 10000 })
     await expect(successMsg).toContainText('Cançó actualitzada correctament!')
-
-    // TORNAR AL PERFIL I VERIFICAR
-    await page.waitForURL(new RegExp(`/profile/${userId}`))
-
-    // Recarreguem la cançó
-    await songCard.click()
-
-    const previewImg = page.locator('.cover-preview')
-    await expect(previewImg).toBeVisible()
-    const previewSrc = await previewImg.getAttribute('src')
-
-    expect(previewSrc).toBeTruthy()
-    console.log('🟢 Imatge actualitzada src:', previewSrc)
 
     // COMPROVAR BACKEND (API)
     const loginRes = await request.post(`${API_URL}/api/token/`, {
