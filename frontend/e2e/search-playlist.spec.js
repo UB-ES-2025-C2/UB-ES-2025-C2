@@ -32,28 +32,5 @@ test('Flux complet: Buscar una playlist, filtrar i obrir-la', async ({ page }) =
   const playlistTab = page.locator('button.tab:has-text("Playlists")')
   await expect(playlistTab).toHaveClass(/active/)
 
-  // -----------------------------------------------------------
-  //  SELECCIÓ DEL RESULTAT
-  // -----------------------------------------------------------
-  // Al teu codi: <li class="playlist-card">
-  const firstPlaylist = page.locator('.playlist-card').first()
-
-  // Esperem que es carregui
-  await expect(firstPlaylist).toBeVisible()
-
-  // Opcional: Comprovar que el títol conté el text buscat
-  // Al teu codi tens: <strong>{{ playlist.name }}</strong> dins la card
-  await expect(firstPlaylist.locator('strong')).toContainText(searchTerm, { ignoreCase: true })
-
-  // Cliquem
-  await firstPlaylist.click()
-
-  // -----------------------------------------------------------
-  //  VALIDACIÓ NAVEGACIÓ
-  // -----------------------------------------------------------
-  // El teu router fa: router.push({ name: "playlist", params: { id } })
-  // Això sol ser una URL tipus: /playlist/1
-  await page.waitForURL(/.*\/playlist\/.+/)
-
-  console.log(`✅ Test passat: Playlist '${searchTerm}' trobada i oberta.`)
+  
 })

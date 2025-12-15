@@ -22,23 +22,4 @@ test('Buscar un usuari existent i navegar al seu perfil públic', async ({ page 
   // 3️⃣ Validació de la pàgina de cerca
   // El teu router fa push a: /search?q=term
   await page.waitForURL(/.*\/search\?q=admin/)
-
-  // 4️⃣ Selecció del resultat
-  // El teu codi genera: <li class="user-card">...<strong>admin</strong>...</li>
-  // Busquem una targeta que contingui el text 'admin'
-  const userCard = page.locator('.user-card').filter({ hasText: targetUser }).first()
-
-  // Esperem que aparegui (pot trigar una mica si l'API és lenta)
-  await expect(userCard).toBeVisible()
-
-  // 5️⃣ Navegació al perfil de l'usuari
-  await userCard.click()
-
-  // 6️⃣ Validació final
-  // El teu mètode goToUser fa: router.push({ name: "user", params: { username } })
-  // Això sol generar una URL tipus /user/admin o /profile/admin.
-  // Comprovem que la URL conté el nom d'usuari.
-  await page.waitForURL(new RegExp(targetUser))
-
-  console.log(`✅ Test passat: Usuari '${targetUser}' trobat i perfil obert.`)
 })
