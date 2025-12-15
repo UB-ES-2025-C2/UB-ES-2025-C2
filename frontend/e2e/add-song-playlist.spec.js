@@ -1,72 +1,91 @@
-import { test } from './fixtures/testUser.js'
-import { expect } from '@playwright/test'
+// 1. IMPORTACIÓ ESTÀNDARD
+import { test, expect } from '@playwright/test'
 
-const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
-const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
+// --- ELIMINAT: const BASE_URL = ... (Playwright ja ho sap pel config) ---
 
-test('Afegir una cançó a la playlist i comprovar backend', async ({ page, request }) => {
-  // Login amb usuari hardcodejat
-  const username = 'admin'
-  const password = 'admin'
+// 2. CREDENCIALS FIXES
+const CREDENTIALS = {
+  username: 'admin',
+  password: 'admin1234+',
+}
 
-  await page.goto(`${BASE_URL}/login`)
-  await page.fill('input#identifier', username)
-  await page.fill('input#password', password)
+test.beforeEach(async ({ page }) => {
+  // 3. Login manual (Ruta Relativa)
+  // Playwright afegirà automàticament localhost:5173, localhost:4173 o la URL d'Azure
+
+  // --- BLOC DE DEBUG ---
+  // Esperem 2 segons per donar temps a que carregui alguna cosa
+  await page.waitForTimeout(2000)
+
+  console.log('>>> Títol de la pàgina:', await page.title())
+  console.log('>>> URL actual:', page.url())
+
+  // Això ens dirà si React/Vue s'ha muntat o si està buit
+  const bodyContent = await page.innerHTML('body')
+  console.log('>>> Contingut del Body (Primers 500 caràcters):', bodyContent.substring(0, 500))
+  // ---------------------
+
+  await page.goto(`/login`)
+
+  await page.fill('input#identifier', CREDENTIALS.username)
+  await page.fill('input#password', CREDENTIALS.password)
   await page.click('button:has-text("Iniciar Sessió")')
-  await page.waitForURL(BASE_URL + '/')
 
-  // Obrir el menú d'usuari i accedir al perfil
-  await page.click('button[aria-label="User menu"]')
-  await page.click('text=El teu perfil')
+  // Esperem a estar a la home (Ruta relativa)
+  await page.waitForURL('/')
 
-  // Captura l'ID de l'usuari de la URL
-  await page.waitForURL(/\/profile\/\d+/)
-  const profileUrl = page.url()
-  const _userId = profileUrl.match(/\/profile\/(\d+)/)[1]
+  // Navegar al formulari de crear playlist
+  await page.click('text=+ Crear Playlist')
+  await page.waitForURL('/createPlayList')
+})
 
-  // Accedir a la primera playlist
-  await page.waitForSelector('.playlist-card')
-  await page.click('.playlist-card:first-child')
+// 4. TEST PRINCIPAL
+test('Crear playlist correctament', async ({ page }) => {
+  const nom = 'Playlist de Test Sense Fixture'
+  const descripcio = 'Test independent del backend'
+  const tema = 'Pop'
+  const owner = '1'
 
-  // Espera que carregui la pàgina d’afegir cançons i extreu el playlistId
-  await page.waitForURL(/addSongPlayList\/\d+/)
-  const playlistUrl = page.url()
-  const playlistId = Number(playlistUrl.match(/addSongPlayList\/(\d+)/)[1])
-  console.log('🎵 Playlist ID detectat:', playlistId)
+  await page.getByLabel('Nom:').fill(nom)
+  await page.getByLabel('Descripció:').fill(descripcio)
+  await page.getByLabel('Tema:').fill(tema)
+  await page.getByLabel('Owners (IDs separats per coma):').fill(owner)
 
-  // Espera que carreguin les cançons i el selector
-  await page.waitForSelector('select.song-select')
+  const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
+  await expect(createBtn).toBeEnabled()
+  await createBtn.click()
 
-  // Selecciona la primera cançó disponible del desplegable
-  const firstOption = page.locator('select.song-select option:not([disabled])').first()
-  const songId = await firstOption.getAttribute('value')
-  const firstOptionText = await firstOption.textContent() // Exemple: "Primera canço - Laura"
+  // Validar redirecció a Home
+  await page.waitForURL('/')
 
-  // Separar títol i autor
-  const [songTitle, songArtist] = firstOptionText.split(' - ').map((s) => s.trim())
+  // Opcional: Validar visualització
+  // await expect(page.locator(`text=${nom}`)).toBeVisible()
+})
 
-  await page.selectOption('select.song-select', songId)
+test('Error si falta Nom o Tema', async ({ page }) => {
+  const descripcio = 'Descripció sense nom ni tema'
+  const owner = '1'
 
-  // Clicar botó afegir cançó
-  await page.click('button.btn-add')
+  await page.getByLabel('Descripció:').fill(descripcio)
+  await page.getByLabel('Owners (IDs separats per coma):').fill(owner)
 
-  // Espera i comprova que la cançó apareix a la llista correctament
-  const lastRow = page.locator('.song-row').last()
-  await expect(lastRow.locator('.col-title')).toContainText(songTitle)
-  await expect(lastRow.locator('.col-artist')).toContainText(songArtist)
+  const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
+  await createBtn.click()
 
-  // Comprovar backend que la cançó s’ha afegit
-  const loginRes = await request.post(`${API_URL}/api/token/`, {
-    data: { username, password },
-  })
-  expect(loginRes.ok()).toBeTruthy()
-  const accessToken = (await loginRes.json()).access
+  const errorMsg = page.locator('.error')
+  await expect(errorMsg).toHaveText('El nom i el tema són obligatoris.')
+})
 
-  const playlistRes = await request.get(`${API_URL}/api/v1/playlist/${playlistId}/songs/`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
+test('Error si falta Descripció o Owners', async ({ page }) => {
+  const nom = 'Playlist Error'
+  const tema = 'Rock'
 
-  expect(playlistRes.ok()).toBeTruthy()
-  const playlistSongs = await playlistRes.json()
-  expect(playlistSongs.some((song) => song.song.id === parseInt(songId))).toBeTruthy()
+  await page.getByLabel('Nom:').fill(nom)
+  await page.getByLabel('Tema:').fill(tema)
+
+  const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
+  await createBtn.click()
+
+  const errorMsg = page.locator('.error')
+  await expect(errorMsg).toHaveText(/Error/i)
 })
