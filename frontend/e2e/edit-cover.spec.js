@@ -26,7 +26,7 @@ test('Afegir portada de la cançó via UI i comprovar backend', async ({ page, r
   try {
     // LOGIN
     const username = 'admin'
-    const password = 'admin'
+    const password = 'admin1234+'
 
     await page.goto(`${BASE_URL}/login`)
     await page.fill('input#identifier', username)

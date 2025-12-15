@@ -6,7 +6,7 @@ const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 test('Modificar descripció del perfil via UI i comprovar backend', async ({ page, request }) => {
   // Login amb usuari hardcodejat
   const username = 'admin'
-  const password = 'admin'
+  const password = 'admin1234+'
 
   // 1️- Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)
