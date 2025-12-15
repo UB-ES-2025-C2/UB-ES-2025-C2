@@ -9,15 +9,6 @@ test('Flux complet: Buscar una cançó, filtrar i obrir-la', async ({ page }) =>
   const searchTerm = 'test'
 
   // -----------------------------------------------------------
-  // 1️⃣ LOGIN (Pas estàndard)
-  // -----------------------------------------------------------
-  await page.goto(`${BASE_URL}/login`)
-  await page.fill('input#identifier', 'admin')
-  await page.fill('input#password', 'admin1234+')
-  await page.click('button:has-text("Iniciar Sessió")')
-  await page.waitForURL(BASE_URL + '/')
-
-  // -----------------------------------------------------------
   // 2️⃣ ÚS DEL BUSCADOR
   // -----------------------------------------------------------
   const searchInput = page.locator('input[type="search"]')

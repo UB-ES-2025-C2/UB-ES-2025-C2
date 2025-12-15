@@ -4,7 +4,7 @@ const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
 test.describe('Registro de usuario', () => {
   const fakeUser = {
-    username: 'usuari_test',
+    username: 'usuari_1',
     password: 'password123Segur!',
   }
 

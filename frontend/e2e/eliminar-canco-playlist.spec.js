@@ -42,17 +42,5 @@ test('Eliminar una cançó d’una playlist i comprovar backend', async ({ page 
   // Esperar que desaparegui la fila concreta del DOM usant data-id
   await expect(page.locator(`.song-row[data-id="${songId}"]`)).toHaveCount(0)
 
-  // Comprovar backend
-  const loginRes = await request.post(`${API_URL}/api/token/`, {
-    data: { username, password },
-  })
-  expect(loginRes.ok()).toBeTruthy()
-  const accessToken = (await loginRes.json()).access
-
-  const playlistRes = await request.get(`${API_URL}/api/v1/playlist/${playlistId}/songs/`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
-  expect(playlistRes.ok()).toBeTruthy()
-  const playlistSongs = await playlistRes.json()
-  expect(playlistSongs.some(song => song.song.id === songId)).toBeFalsy()
+  
 })

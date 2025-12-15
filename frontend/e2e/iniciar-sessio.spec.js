@@ -8,7 +8,6 @@ const CREDENTIALS = {
 }
 
 test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) => {
-  const { username, password } = CREDENTIALS
 
   // Accedir a la pàgina de login
   await page.goto(`${BASE_URL}/login`)
@@ -35,8 +34,8 @@ test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) =
   await expect(page).toHaveURL(`${BASE_URL}/login`)
 
   // Tornar a login correcte abans de fer logout
-  await page.fill('input#identifier', username)
-  await page.fill('input#password', password)
+  await page.fill('input#identifier', CREDENTIALS.username)
+  await page.fill('input#password', CREDENTIALS.password)
   await page.click('button:has-text("Iniciar Sessió")')
   await page.waitForURL(BASE_URL + '/')
   await expect(profileImg).toBeVisible({ timeout: 10000 })
