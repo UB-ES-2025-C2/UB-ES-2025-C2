@@ -8,7 +8,7 @@ const CREDENTIALS = {
 }
 
 test('Iniciar sessió, validar credencials i tancar sessió', async ({ page }) => {
-  const { username, password } = testUser
+  const { username, password } = CREDENTIALS
 
   // Accedir a la pàgina de login
   await page.goto(`${BASE_URL}/login`)

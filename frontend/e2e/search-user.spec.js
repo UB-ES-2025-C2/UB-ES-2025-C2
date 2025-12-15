@@ -10,7 +10,7 @@ test('Buscar un usuari existent i navegar al seu perfil públic', async ({ page 
   // 1️⃣ Login (Pas estàndard)
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', 'admin')
-  await page.fill('input#password', 'admin')
+  await page.fill('input#password', 'admin1234+')
   await page.click('button:has-text("Iniciar Sessió")')
 
   // Esperem que redirigeixi a la Home (o on sigui després del login)
