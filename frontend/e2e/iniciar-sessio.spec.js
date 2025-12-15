@@ -3,9 +3,10 @@ import { test } from './fixtures/testUser.js'
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
-test('Iniciar sessió, validar credencials i tancar sessió', async ({ page, testUser }) => {
-  const { username, password } = testUser
-
+test('Iniciar sessió, validar credencials i tancar sessió', async ({ page, request }) => {
+  // Login amb usuari hardcodejat
+  const username = 'admin'
+  const password = 'admin'
   // Accedir a la pàgina de login
   await page.goto(`${BASE_URL}/login`)
 

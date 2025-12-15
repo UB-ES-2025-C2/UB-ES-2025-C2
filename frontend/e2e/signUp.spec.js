@@ -5,8 +5,8 @@ const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 test.describe('Registro de usuario', () => {
 
   const fakeUser = {
-    username: 'usuari_test',
-    password: 'password123Segur!'
+    username: 'admin',
+    password: 'admin'
   }
 
   test('Falla si no rellenas todos los campos', async ({ page }) => {

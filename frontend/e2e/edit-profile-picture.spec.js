@@ -10,15 +10,10 @@ const __dirname = path.dirname(__filename)
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
-test('Modificar imatge de perfil via UI i comprovar backend', async ({
-  page,
-  request,
-  testUser,
-}) => {
-  test.setTimeout(60000) // 60s por si la página tarda
-
-  const { username, password } = testUser
-
+test('Modificar imatge de perfil via UI i comprovar backend', async ({ page, request }) => {
+  // Login amb usuari hardcodejat
+  const username = 'admin'
+  const password = 'admin'
   // 1- Login
   await page.goto(`${BASE_URL}/login`)
   await page.fill('input#identifier', username)
