@@ -19,12 +19,13 @@ test.beforeEach(async ({ page }) => {
   // 3. CORRECCIÓ: En lloc d'esperar la URL, esperem que aparegui el botó de la Home
   // Això confirma que el login ha anat bé i la pàgina ha carregat
   // ✅ CORRECTE
-  const crearButton = page.getByRole('button', { name: 'Crear Playlist' })
+  const crearButton = page.getByText(/Crear Playlist/i).first()
+
+  // Esperem que sigui visible i cliquem
   await expect(crearButton).toBeVisible()
   await crearButton.click()
 
-  // 5. CORRECCIÓ: Esperem que el camp "Nom" del formulari sigui visible
-  // Així sabem segur que estem a la pantalla de crear
+  // 4. Confirmem que som al formulari esperant veure l'input del Nom
   await expect(page.getByLabel('Nom:')).toBeVisible()
 })
 
