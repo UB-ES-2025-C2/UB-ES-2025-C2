@@ -3,11 +3,18 @@ import { test, expect } from '@playwright/test'
 
 // --- ELIMINAT: const BASE_URL = ... (Playwright ja ho sap pel config) ---
 
+<<<<<<< HEAD
 // 2. CREDENCIALS FIXES
 const CREDENTIALS = {
   username: 'admin',
   password: 'admin1234+',
 }
+=======
+test('Afegir una cançó a la playlist i comprovar backend', async ({ page, request }) => {
+  // Login amb usuari hardcodejat
+  const username = 'admin'
+  const password = 'admin123'
+>>>>>>> b2f9ce350617fd4bdd9edaa07c09c6904d99d7c7
 
 test.beforeEach(async ({ page }) => {
   // 3. Login manual (Ruta Relativa)
