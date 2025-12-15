@@ -44,12 +44,10 @@ test('Crear playlist correctament', async ({ page }) => {
   const nom = 'Playlist de Test Sense Fixture'
   const descripcio = 'Test independent del backend'
   const tema = 'Pop'
-  const owner = '1'
 
   await page.getByLabel('Nom:').fill(nom)
   await page.getByLabel('Descripció:').fill(descripcio)
   await page.getByLabel('Tema:').fill(tema)
-  await page.getByLabel('Owners (IDs separats per coma):').fill(owner)
 
   const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
   await expect(createBtn).toBeEnabled()
@@ -64,28 +62,12 @@ test('Crear playlist correctament', async ({ page }) => {
 
 test('Error si falta Nom o Tema', async ({ page }) => {
   const descripcio = 'Descripció sense nom ni tema'
-  const owner = '1'
 
   await page.getByLabel('Descripció:').fill(descripcio)
-  await page.getByLabel('Owners (IDs separats per coma):').fill(owner)
 
   const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
   await createBtn.click()
 
   const errorMsg = page.locator('.error')
   await expect(errorMsg).toHaveText('El nom i el tema són obligatoris.')
-})
-
-test('Error si falta Descripció o Owners', async ({ page }) => {
-  const nom = 'Playlist Error'
-  const tema = 'Rock'
-
-  await page.getByLabel('Nom:').fill(nom)
-  await page.getByLabel('Tema:').fill(tema)
-
-  const createBtn = page.getByRole('button', { name: 'Crear Playlist', exact: true })
-  await createBtn.click()
-
-  const errorMsg = page.locator('.error')
-  await expect(errorMsg).toHaveText(/Error/i)
 })
