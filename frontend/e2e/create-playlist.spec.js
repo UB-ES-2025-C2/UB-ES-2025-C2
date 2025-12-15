@@ -5,14 +5,17 @@ import _path from 'path'
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const _API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
-test.beforeEach(async ({ page }) => {
-  const { username, password } = testUser
-  // Obre la pàgina de login
-  await page.goto(`${BASE_URL}/login`)
+const CREDENTIALS = {
+  username: 'admin',
+  password: 'admin1234+',
+}
 
-  // Escriu credencials i submit
-  await page.fill('input#identifier', username)
-  await page.fill('input#password', password)
+test.beforeEach(async ({ page }) => {
+  // Obre la pàgina de login
+  await page.goto(`/login`)
+
+  await page.fill('input#identifier', CREDENTIALS.username)
+  await page.fill('input#password', CREDENTIALS.password)
   await page.click('button:has-text("Iniciar Sessió")')
 
   // Espera que el login redirigeixi a Home
