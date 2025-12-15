@@ -1,5 +1,4 @@
-import { expect } from '@playwright/test'
-import { test } from './fixtures/testUser.js'
+import { expect, test } from '@playwright/test'
 import _fs from 'fs'
 import _path from 'path'
 
