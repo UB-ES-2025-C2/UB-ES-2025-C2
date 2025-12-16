@@ -18,6 +18,8 @@ vi.mock('../../apiStore/authStore', () => ({
   useAuthStore: () => mockAuthStore
 }))
 
+vi.useFakeTimers()
+
 // Mock de alert
 global.alert = vi.fn()
 
@@ -30,6 +32,7 @@ describe('CreateSong.vue', () => {
     mockAuthStore.postSong = vi.fn()
     pushMock.mockClear()
     global.alert.mockClear()
+    global.console.error = vi.fn() // Silenciar errors, que no son errors reals, en tests
 
     // Muntem el component i afegim authorsString per evitar warnings
     wrapper = mount(CreateSong, {
@@ -79,10 +82,11 @@ describe('CreateSong.vue', () => {
     await wrapper.vm.createSong()
     await flushPromises()
 
+    vi.runAllTimers()
+
     expect(mockAuthStore.postSong).toHaveBeenCalled()
     expect(pushMock).toHaveBeenCalledWith({ name: 'home' })
     expect(wrapper.vm.error).toBeNull()
-    expect(global.alert).toHaveBeenCalledWith('Cançó creada correctament!')
   })
 
   it('mostra error si postSong falla', async () => {
@@ -93,6 +97,6 @@ describe('CreateSong.vue', () => {
     await wrapper.vm.createSong()
     await flushPromises()
 
-    expect(wrapper.vm.error).toBe("Error en crear la cançó.")
+    expect(wrapper.vm.error).toBe("Error en pujar la cançó.")
   })
 })

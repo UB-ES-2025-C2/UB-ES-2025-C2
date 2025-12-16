@@ -4,6 +4,8 @@ import { createTestingPinia } from '@pinia/testing'
 import EditSong from '../../views/EditSong.vue'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
+console.warn = vi.fn() // Silenciar warnings en tests
+
 // Mock de router
 const router = createRouter({
   history: createMemoryHistory(),
