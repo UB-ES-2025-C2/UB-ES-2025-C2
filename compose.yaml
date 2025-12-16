@@ -189,7 +189,7 @@ services:
     build:
       args:
         APP: backend
-        PORT: 80
+        PORT: 8000
         UID: 988
       context: ./backend
       dockerfile: Dockerfile
@@ -198,7 +198,7 @@ services:
       - ./backend/e2e.env
     image: backend-e2e
     ports:
-      - 127.0.0.1:8000:80
+      - 127.0.0.1:8000:8000
 
   # Backend health-checking service.
   backend-health:
