@@ -1,7 +1,6 @@
 {
     "version": "2.0.0",
     "tasks": [
-        // Python development build.
         {
             "label": "UV:DEV",
             "command": "uv",
@@ -18,7 +17,6 @@
                 "close": true,
             },
         },
-        // Python clean production build.
         {
             "label": "UV:CLEAN-PROD",
             "command": "uv",
@@ -36,7 +34,6 @@
                 "close": true,
             },
         },
-        // Python dirty production build.
         {
             "label": "UV:DIRTY-PROD",
             "command": "uv",

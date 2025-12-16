@@ -1,0 +1,49 @@
+# Use the official Node image for the end-to-end stage.
+FROM node:25-bookworm-slim AS end-to-end
+ARG APP="frontend"
+ARG PORT="5173"
+ARG UID="988"
+
+# Create the app directory.
+RUN mkdir /${APP}
+
+# Set the working directory inside the container.
+WORKDIR /${APP}
+
+# Copy the package.json files to the container.
+COPY package.json package-lock.json ./
+
+# Install dependencies.
+RUN npm install --include dev
+
+# Install the web browsers.
+RUN npx playwright install --with-deps
+
+# Copy the source of the project.
+ADD ./src ./src
+
+# Copy the public files of the project.
+ADD ./public ./public
+
+# Copy the e2e tests.
+ADD ./e2e ./e2e
+
+# Copy the necessary files to execute the frontend.
+COPY index.html jsconfig.json vite.config.js ./
+
+# Copy the necessary files to execute the dev dependencies.
+COPY .oxlintrc.json .prettierrc.json eslint.config.js playwright.config.js vitest.config.js ./
+
+# Set environment variables.
+# Enable polling mode for Docker's hot-reloading.
+ENV CHOKIDAR_USEPOLLING=true
+# Set the port for Vite.
+ENV VITE_PORT=${PORT}
+# Set the CI mode for Playwright.
+ENV CI=true
+
+# Expose the Vite port.
+EXPOSE ${PORT}
+
+# Execute the e2e tests.
+CMD ["sh", "-c", "npm run build && (npx serve -s dist -l $VITE_PORT &) && sleep 5 && npm run test:e2e"]

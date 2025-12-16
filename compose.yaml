@@ -1,0 +1,589 @@
+services:
+  # Development services.
+  dev:
+    command:
+      ["echo", "Constructed and executing development services."]
+    container_name: dev
+    depends_on:
+      - backend-dev
+      - frontend-dev
+    image: alpine
+
+  # Staging services.
+  staging:
+    command:
+      ["echo", "Constructed and executing staging services."]
+    container_name: staging
+    depends_on:
+      - backend-staging
+      - frontend-staging
+    image: alpine
+
+  # Production services.
+  prod:
+    command:
+      ["echo", "Constructed and executing production services."]
+    container_name: prod
+    depends_on:
+      - backend-prod
+      - frontend-prod
+    image: alpine
+
+  # Test services.
+  test:
+    command: ["echo", "Constructed and executing test services."]
+    container_name: test
+    depends_on:
+      - backend-test
+      - backend-health
+      - frontend-test
+      - frontend-e2e
+    image: alpine
+
+  # Migration services.
+  migrate:
+    command:
+      ["echo", "Constructed and executing migration services."]
+    container_name: prod
+    depends_on:
+      - migrate-dev
+      - migrate-staging
+      - migrate-prod
+      - migrate-e2e
+    image: alpine
+
+  # Development backend service.
+  backend-dev:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    develop:
+      watch:
+        - path: ./backend/music_space
+          target: /backend/music_space
+          action: sync
+        - path: ./backend/pyproject.toml
+          target: /backend/pyproject.toml
+          action: sync+restart
+        - path: ./backend/manage.py
+          target: /backend/manage.py
+          action: sync
+    env_file:
+      - ./backend/dev.env
+    image: backend-dev
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend/db.sqlite3
+        target: /backend/db.sqlite3
+
+  # Staging backend service.
+  backend-staging:
+    build:
+      args:
+        APP: backend
+        PORT: 80
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-staging
+    env_file:
+      - ./backend/staging.env
+    image: backend-staging
+    ports:
+      - 127.0.0.1:8000:80
+
+  # Production backend service.
+  backend-prod:
+    build:
+      args:
+        APP: backend
+        PORT: 80
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    env_file:
+      - ./backend/prod.env
+    image: backend
+    ports:
+      - 127.0.0.1:8000:80
+
+  # Backend linting service.
+  backend-lint:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: ["/bin/uv", "run", "ruff", "check"]
+    container_name: backend-lint
+    develop:
+      watch:
+        - path: ./backend/music_space
+          target: /backend/music_space
+          action: sync
+        - path: ./backend/pyproject.toml
+          target: /backend/pyproject.toml
+          action: sync+restart
+        - path: ./backend/manage.py
+          target: /backend/manage.py
+          action: sync
+    env_file:
+      - ./backend/dev.env
+    image: backend-lint
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend/db.sqlite3
+        target: /backend/db.sqlite3
+
+  # Backend unit-testing service.
+  backend-test:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "sh",
+        "-c",
+        "yes yes | uv run --no-cache --dev --no-group prod pytest --cov=music_space",
+      ]
+    container_name: backend-test
+    develop:
+      watch:
+        - path: ./backend/music_space
+          target: /backend/music_space
+          action: sync
+        - path: ./backend/pyproject.toml
+          target: /backend/pyproject.toml
+          action: sync+restart
+        - path: ./backend/manage.py
+          target: /backend/manage.py
+          action: sync
+    env_file:
+      - ./backend/dev.env
+    image: backend-test
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend/db.sqlite3
+        target: /backend/db.sqlite3
+
+  # Backend e2e-testing service.
+  backend-e2e:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-e2e
+    env_file:
+      - ./backend/e2e.env
+    image: backend-e2e
+    ports:
+      - 127.0.0.1:8000:8000
+
+  # Backend health-checking service.
+  backend-health:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "/bin/uv",
+        "run",
+        "--no-cache",
+        "--dev",
+        "--no-group",
+        "prod",
+        "music-space",
+        "health_check",
+      ]
+    container_name: backend-health
+    develop:
+      watch:
+        - path: ./backend/music_space
+          target: /backend/music_space
+          action: sync
+        - path: ./backend/pyproject.toml
+          target: /backend/pyproject.toml
+          action: sync+restart
+        - path: ./backend/manage.py
+          target: /backend/manage.py
+          action: sync
+    env_file:
+      - ./backend/dev.env
+    image: backend-health
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend/db.sqlite3
+        target: /backend/db.sqlite3
+
+  # Backend dev-migration service.
+  migrate-dev:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "sh",
+        "-c",
+        "uv run --no-cache --dev --no-group prod music-space makemigrations admin api auth authtoken contenttypes db sessions && uv run --no-cache --dev --no-group prod music-space migrate",
+      ]
+    container_name: migrate-dev
+    develop:
+      watch:
+        - path: ./backend/music_space
+          target: /backend/music_space
+          action: sync
+        - path: ./backend/pyproject.toml
+          target: /backend/pyproject.toml
+          action: sync+restart
+        - path: ./backend/manage.py
+          target: /backend/manage.py
+          action: sync
+    env_file:
+      - ./backend/dev.env
+    image: migrate-dev
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend/db.sqlite3
+        target: /backend/db.sqlite3
+
+  # Backend staging-migration service.
+  migrate-staging:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "sh",
+        "-c",
+        "uv run --no-cache --dev --no-group prod music-space makemigrations admin api auth authtoken contenttypes db sessions && uv run --no-cache --dev --no-group prod music-space migrate",
+      ]
+    container_name: migrate-staging
+    env_file:
+      - ./backend/staging.env
+    image: migrate-staging
+    ports:
+      - 127.0.0.1:8000:8000
+
+  # Backend production-migration service.
+  migrate-prod:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "sh",
+        "-c",
+        "uv run --no-cache --dev --no-group prod music-space makemigrations admin api auth authtoken contenttypes db sessions && uv run --no-cache --dev --no-group prod music-space migrate",
+      ]
+    container_name: migrate-prod
+    env_file:
+      - ./backend/prod.env
+    image: migrate-prod
+    ports:
+      - 127.0.0.1:8000:8000
+
+  # Backend e2e-migration service.
+  migrate-e2e:
+    build:
+      args:
+        APP: backend
+        PORT: 8000
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command:
+      [
+        "sh",
+        "-c",
+        "uv run --no-cache --dev --no-group prod music-space makemigrations admin api auth authtoken contenttypes db sessions && uv run --no-cache --dev --no-group prod music-space migrate",
+      ]
+    container_name: migrate-e2e
+    env_file:
+      - ./backend/e2e.env
+    image: migrate-e2e
+    ports:
+      - 127.0.0.1:8000:8000
+
+  # Development frontend service.
+  frontend-dev:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-dev
+    ports:
+      - 127.0.0.1:5173:5173
+
+  # Staging frontend service.
+  frontend-staging:
+    build:
+      args:
+        APP: frontend
+        PORT: 80
+        UID: 988
+        VITE_API_URL: https://musicspace-preprod-be-bmcfa3bgdtd0f8ge.spaincentral-01.azurewebsites.net
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-staging
+    image: frontend-staging
+    ports:
+      - 127.0.0.1:5173:80
+
+  # Production frontend service.
+  frontend-prod:
+    build:
+      args:
+        APP: frontend
+        PORT: 80
+        UID: 988
+        VITE_API_URL: https://musicspace-be-hmbkdecufgdbbec3.spaincentral-01.azurewebsites.net
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    image: frontend
+    ports:
+      - 127.0.0.1:5173:80
+
+  # Frontend linting service.
+  frontend-lint:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: ["npm", "run", "lint"]
+    container_name: frontend-lint
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-lint
+    ports:
+      - 127.0.0.1:5173:5173
+
+  # Frontend es-linting service.
+  frontend-eslint:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: ["npm", "run", "lint:eslint"]
+    container_name: frontend-eslint
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-eslint
+    ports:
+      - 127.0.0.1:5173:5173
+
+  # Frontend ox-linting service.
+  frontend-oxlint:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: ["npm", "run", "lint:oxlint"]
+    container_name: frontend-oxlint
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-oxlint
+    ports:
+      - 127.0.0.1:5173:5173
+
+  # Frontend unit-testing service.
+  frontend-test:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: ["npm", "run", "test:unit"]
+    container_name: frontend-test
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-test
+    ports:
+      - 127.0.0.1:5173:5173
+
+  # Frontend e2e-testing service.
+  frontend-e2e:
+    build:
+      args:
+        APP: frontend
+        PORT: 5173
+        UID: 988
+      context: ./frontend
+      dockerfile: Dockerfile.e2e
+    container_name: frontend-e2e
+    depends_on:
+      - backend-e2e
+    develop:
+      watch:
+        - path: ./frontend/src
+          target: /frontend/src
+          action: sync
+        - path: ./frontend/e2e
+          target: /frontend/e2e
+          action: sync
+        - path: ./frontend/index.html
+          target: /frontend/index.html
+          action: sync+restart
+        - path: ./frontend/package.json
+          target: /frontend/package.json
+          action: sync+restart
+        - path: ./frontend/vite.config.js
+          target: /frontend/vite.config.js
+          action: sync+restart
+    env_file:
+      - ./frontend/dev.env
+    image: frontend-e2e
+    ports:
+      - 127.0.0.1:5173:5173
+
+networks:
+  default:
+    name: c2
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.1.0/24
+          gateway: 10.1.1.1

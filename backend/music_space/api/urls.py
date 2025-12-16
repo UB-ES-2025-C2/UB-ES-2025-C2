@@ -1,8 +1,10 @@
+"""urls.py"""
+
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
-from .views import *  # noqa: F403
+from .views import *
 
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
@@ -12,7 +14,7 @@ router.register(r'userprofile', UserProfileViewSet, basename='userprofile')
 router.register(r'songs', SongViewSet, basename='song')
 router.register(r'playlist', PlayListViewSet, basename='playlist')
 
-playlistRut = NestedSimpleRouter(router, r'playlist', lookup='playlist')
+playlistRut = NestedSimpleRouter(router, r'playlist', lookup='playlist')  # noqa: N816
 playlistRut.register(r'songs', PlaylistSongViewSet, basename='playlist-song')
 
 userprofilerute = NestedSimpleRouter(router, r'userprofile', lookup='userprofile')
@@ -20,6 +22,9 @@ userprofilerute.register(r'songs', SongViewSet, basename='userprofile-song')
 userprofilerute.register(r'playlist', PlayListViewSet, basename='playlist-user')
 userprofilerute.register(r'followers', FollowersViewSet, basename='followers-user')
 userprofilerute.register(r'following', FollowingViewSet, basename='following-user')
+
+SongRut = NestedSimpleRouter(router, r'songs', lookup='song')
+SongRut.register(r'comments', CommentViewSet, basename='comment-song')
 
 
 urlpatterns = [
@@ -31,6 +36,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("", include(playlistRut.urls)),
     path("", include(userprofilerute.urls)),
+    path("", include(SongRut.urls)),
     # Ruta personalizada para buscar el usuario por su nombre de usuario
     path(
         "userprofile/by-username/<str:username>/",

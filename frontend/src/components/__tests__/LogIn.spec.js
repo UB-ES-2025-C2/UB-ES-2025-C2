@@ -17,12 +17,12 @@ const mockAuthStore = {
 const mockPush = vi.fn()
 
 vi.mock('../../apiStore/authStore', () => ({
-  useAuthStore: () => mockAuthStore
+  useAuthStore: () => mockAuthStore,
 }))
 
 // Mock de vue-router
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush })
+  useRouter: () => ({ push: mockPush }),
 }))
 
 describe('LogIn.vue', () => {
@@ -33,8 +33,8 @@ describe('LogIn.vue', () => {
 
     wrapper = mount(LogIn, {
       global: {
-        plugins: [createPinia()]
-      }
+        plugins: [createPinia()],
+      },
     })
 
     // Reset de mocks antes de cada test
@@ -65,7 +65,7 @@ describe('LogIn.vue', () => {
   })
 
   it('redirects to SignUp when clicking SignUp button', async () => {
-    const signUpButton = wrapper.findAll('button').find(b => b.text() === 'Registra’t')
+    const signUpButton = wrapper.findAll('button').find((b) => b.text() === 'Registra’t')
     expect(signUpButton).toBeTruthy()
     await signUpButton.trigger('click')
     expect(mockPush).toHaveBeenCalledWith({ name: 'sign_up' })

@@ -10,12 +10,7 @@
       <header class="hero" :style="heroStyle">
         <div class="hero-bg" :style="bgStyle"></div>
 
-        <img
-          v-if="song.cover"
-          :src="song.cover"
-          alt="Caràtula"
-          class="cover"
-        />
+        <img v-if="song.cover" :src="song.cover" alt="Caràtula" class="cover" />
 
         <div class="hero-info">
           <div class="badge">Senzill</div>
@@ -33,7 +28,27 @@
               <span v-if="!(isCurrentSong && player.isPlaying)">▶</span>
               <span v-else>⏸</span>
             </button>
-            <button class="btn ghost" title="Afegir a playlist">＋</button>
+
+            <!-- Botón añadir a playlist -->
+            <div class="add-dropdown">
+              <button
+                class="btn ghost"
+                title="Afegir a playlist"
+                @click="showPlaylistDropdown = !showPlaylistDropdown"
+              >
+                ＋
+              </button>
+              <div v-if="showPlaylistDropdown" class="playlist-dropdown">
+                <select v-model="selectedPlaylistId">
+                  <option value="" disabled>Selecciona una playlist</option>
+                  <option v-for="pl in playlists" :key="pl.id" :value="pl.id">
+                    {{ pl.name }}
+                  </option>
+                </select>
+                <button @click="addSongToPlaylist" :disabled="!selectedPlaylistId">Afegir</button>
+              </div>
+            </div>
+
             <button class="btn ghost" title="Més opcions">⋯</button>
           </div>
         </div>
@@ -66,55 +81,95 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
-import api from "../services/api";
-import { usePlayerStore } from "@/piniaStore/playerStore";
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+//import api from "../services/api";
+import { usePlayerStore } from '@/piniaStore/playerStore'
+import { useAuthStore } from '@/apiStore/authStore.js'
+import { useApiStore } from '../apiStore/guestApi.js'
 
-const route = useRoute();
-const player = usePlayerStore();
+const route = useRoute()
+const player = usePlayerStore()
 
-const song = ref(null);
-const loading = ref(true);
-const error = ref("");
+const apiStore = useApiStore()
+const auth = useAuthStore()
 
-const heroStyle = computed(() => ({ background: "linear-gradient(#1f415b, #102735)" }));
+const song = ref(null)
+const loading = ref(true)
+const error = ref('')
+
+const showPlaylistDropdown = ref(false)
+const selectedPlaylistId = ref('')
+const playlists = ref([])
+
+// Hero styles
+const heroStyle = computed(() => ({ background: 'linear-gradient(#1f415b, #102735)' }))
 const bgStyle = computed(() =>
-  song.value?.cover ? { backgroundImage: `url('${song.value.cover}')` } : {}
-);
+  song.value?.cover ? { backgroundImage: `url('${song.value.cover}')` } : {},
+)
 
 // És la cançó que s’està reproduint?
 const isCurrentSong = computed(() => {
-  return !!(player.current && song.value && player.current.id === song.value.id);
-});
+  return !!(player.current && song.value && player.current.id === song.value.id)
+})
 
 function formatTime(sec) {
-  if (!Number.isFinite(sec) || sec <= 0) return "0:00";
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  if (!Number.isFinite(sec) || sec <= 0) return '0:00'
+  const m = Math.floor(sec / 60)
+  const s = Math.floor(sec % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
 // Play/Pausa delegats al reproductor global
 function togglePlay() {
-  if (!song.value) return;
+  if (!song.value) return
   if (isCurrentSong.value) {
-    player.toggle();
+    player.toggle()
   } else {
-    player.playSong(song.value);
+    player.playSong(song.value)
   }
 }
 
+// Afegir cançó a playlist
+function addSongToPlaylist() {
+  if (!selectedPlaylistId.value) return
+
+  const payload = { song_id: song.value.id }
+
+  auth
+    .postPlayListSong(selectedPlaylistId.value, payload)
+    .then((response) => {
+      if (response.status === 201 || response.status === 200) {
+        alert('Cançó afegida a la playlist!')
+        selectedPlaylistId.value = ''
+        showPlaylistDropdown.value = false
+      } else {
+        alert("No s'ha pogut afegir la cançó")
+      }
+    })
+    .catch((err) => {
+      console.error(err)
+      const msg = err?.response?.data?.[0] || ''
+      if (msg.includes('playlist')) {
+        alert('Aquesta cançó ja està a la playlist')
+      } else {
+        alert('Error afegint la cançó')
+      }
+    })
+}
+
+// Carrega de dades per cançó
 onMounted(async () => {
   try {
-    const { data } = await api.getSongById(route.params.id);
-    song.value = data;
+    song.value = await apiStore.getSongById(route.params.id)
+    const id = Number(auth.user_id)
+    playlists.value = await apiStore.getPlaylistFromUser(id)
   } catch (e) {
-    error.value = e?.response?.data?.detail || e?.message || "Error desconegut";
+    error.value = e?.response?.data?.detail || e?.message || 'Error desconegut'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 </script>
 
 <style scoped>
@@ -133,7 +188,7 @@ onMounted(async () => {
   gap: 24px;
   padding: 28px;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   margin: 16px;
 }
 .hero-bg {
@@ -151,7 +206,7 @@ onMounted(async () => {
   object-fit: cover;
   border-radius: 12px;
   z-index: 1;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 .hero-info {
   z-index: 1;
@@ -177,6 +232,40 @@ onMounted(async () => {
   align-items: center;
   gap: 12px;
 }
+.add-dropdown {
+  position: relative;
+}
+.playlist-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #121212;
+  border: 1px solid #444;
+  min-width: 280px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 9999;
+}
+.playlist-dropdown select {
+  padding: 6px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+.playlist-dropdown button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #ff2d8d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
 .btn {
   border: none;
   cursor: pointer;
@@ -195,12 +284,13 @@ onMounted(async () => {
   box-shadow: 0 6px 20px rgba(205, 68, 152, 0.35);
 }
 .btn.ghost {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
 /* LIST HEADER + ROW */
-.list-header, .track-row {
+.list-header,
+.track-row {
   display: grid;
   grid-template-columns: 48px 1fr 80px;
   align-items: center;
@@ -214,9 +304,11 @@ onMounted(async () => {
   margin-top: 8px;
   padding-top: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.list-header .clock { justify-self: end; }
+.list-header .clock {
+  justify-self: end;
+}
 
 .track-row {
   padding-top: 8px;
@@ -224,13 +316,31 @@ onMounted(async () => {
   border-radius: 10px;
   margin: 4px 16px;
 }
-.track-row:hover { background: rgba(255,255,255,0.06); }
-.idx { color: #cbd5e1; text-align: center; }
-.track-main .t-title { font-weight: 600; }
-.track-main .t-artist { color: #a3a3a3; font-size: 0.95rem; }
-.t-time { justify-self: end; color: #cbd5e1; }
+.track-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.idx {
+  color: #cbd5e1;
+  text-align: center;
+}
+.track-main .t-title {
+  font-weight: 600;
+}
+.track-main .t-artist {
+  color: #a3a3a3;
+  font-size: 0.95rem;
+}
+.t-time {
+  justify-self: end;
+  color: #cbd5e1;
+}
 
 /* FEEDBACK */
-.loading, .error { padding: 2rem; }
-.error { color: #fca5a5; }
+.loading,
+.error {
+  padding: 2rem;
+}
+.error {
+  color: #fca5a5;
+}
 </style>

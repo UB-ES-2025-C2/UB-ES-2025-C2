@@ -1,6 +1,10 @@
 import axios from 'axios'
 
 class AuthService {
+  constructor() {
+    this.axiosInstance = this.getAxiosInstance()
+  }
+
   async login(user) {
     return this.getAxiosInstance().post('/api/token/', {
       username: user.username,
@@ -9,37 +13,34 @@ class AuthService {
   }
 
   signUp(user) {
-    const accessToken = this.getAccessToken();
-    return this.getAxiosInstance().post("/api/v1/user/", {
+    const accessToken = this.getAccessToken()
+    return this.getAxiosInstance().post(
+      '/api/v1/user/',
+      {
         username: user.username,
         email: user.email,
-        password:user.password,
+        password: user.password,
         password_conf: user.password_conf,
-      }, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-      });
-  }
-  postSong(formData) {
-    const accessToken = this.getAccessToken();
-    return this.getAxiosInstance().post("/api/v1/songs/",
-      formData,
+      },
       {
-        headers:
-        {
+        headers: {
           Authorization: `Bearer ${accessToken}`,
-          ...formData.getHeaders()
-        }
-      });
+        },
+      },
+    )
+  }
+
+  postSong(formData) {
+    const accessToken = this.getAccessToken()
+    return this.getAxiosInstance().post('/api/v1/songs/', formData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
   }
 
   refresh(refreshToken) {
-    return Promise.resolve(
-      JSON.stringify({
-        access: 'mockAccessToken',
-      }),
-    )
+    return this.axiosInstance.post(`/api/token/refresh/`, { refresh: refreshToken })
   }
 
   logout() {
@@ -59,34 +60,41 @@ class AuthService {
     return !!localStorage.getItem('access')
   }
   postSong(song) {
-    const res = this.getAxiosInstance().post(
-        `/api/v1/songs/`,
-       song
-    );
-    return res;
+    const res = this.getAxiosInstance().post(`/api/v1/songs/`, song)
+    return res
   }
   getUserByToken() {
     // El header Authorization ja s'afegeix per getAxiosInstance()
     return this.getAxiosInstance().get(`/api/v1/userprofile/by-token/`)
   }
+
   changeProfilePicture(id, file) {
-    const formData = new FormData();
-    formData.append('profilePic', file);
-    return this.getAxiosInstance().patch(
-      `/api/v1/userprofile/${id}/`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-    );
+    const formData = new FormData()
+    formData.append('profilePic', file)
+    return this.getAxiosInstance().patch(`/api/v1/userprofile/${id}/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   }
+
+  async refreshToken() {
+    const refresh = this.getRefreshToken()
+    if (!refresh) throw new Error('No refresh token available')
+
+    const response = await this.axiosInstance.post(`/api/token/refresh/`, {
+      refresh,
+    })
+    localStorage.setItem('access', response.data.access)
+    return response.data.access
+  }
+
   async updateUserProfile(user_id, data) {
-    return this.getAxiosInstance().patch(
-      `/api/v1/userprofile/${user_id}/`,
-      data
-    );
+    return this.getAxiosInstance().patch(`/api/v1/userprofile/${user_id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   }
   async patchSong(userId, songId, formData) {
     return this.getAxiosInstance().patch(
@@ -94,10 +102,27 @@ class AuthService {
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-    );
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    )
+  }
+  async postPlaylist(playlistData) {
+    return this.getAxiosInstance().post('/api/v1/playlist/', playlistData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  }
+
+  async postPlayListSong(playlistId, song) {
+    return this.getAxiosInstance().post(`/api/v1/playlist/${playlistId}/songs/`, song, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  async deletePlayListSong(playlistId, songId) {
+    return this.getAxiosInstance().delete(`/api/v1/playlist/${playlistId}/songs/${songId}/`)
   }
 
   getAxiosInstanceGuest() {
@@ -108,6 +133,7 @@ class AuthService {
     })
     return instance
   }
+
   getAxiosInstance() {
     const apiUrl = import.meta.env.VITE_API_URL
     const accessToken = this.getAccessToken()
@@ -130,6 +156,7 @@ class AuthService {
             return axios.request(error.config)
           } catch (err) {
             this.logout()
+            console.log(err)
           }
         }
         return Promise.reject(error)

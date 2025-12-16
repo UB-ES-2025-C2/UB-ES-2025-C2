@@ -11,14 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-import dj_database_url
 
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
-load_dotenv()
 
-from storages.backends.s3boto3 import S3Boto3Storage
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="0"))
+DEBUG = bool(os.getenv("DJANGO_DEBUG", default="0"))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
 
 # Application definition
@@ -90,6 +87,7 @@ WSGI_APPLICATION = 'music_space.wsgi.application'
 
 # Configuración de almacenamiento en Supabase
 SUPABASE_BUCKET_NAME = os.getenv('SUPABASE_BUCKET_NAME')
+SUPABASE_BUCKET_REGION = os.getenv('SUPABASE_BUCKET_REGION')
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY_ID = os.getenv('SUPABASE_KEY_ID')
 SUPABASE_API_KEY = os.getenv('SUPABASE_API_KEY')
@@ -102,41 +100,39 @@ if SUPABASE_BUCKET_NAME and SUPABASE_URL and SUPABASE_KEY_ID and SUPABASE_API_KE
     AWS_SECRET_ACCESS_KEY = SUPABASE_API_KEY
     AWS_STORAGE_BUCKET_NAME = SUPABASE_BUCKET_NAME
     AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_URL}/storage/v1/s3'
-    AWS_S3_REGION_NAME = 'eu-north-1'
+    AWS_S3_REGION_NAME = SUPABASE_BUCKET_REGION
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_QUERYSTRING_AUTH = False
-    AWS_S3_CUSTOM_DOMAIN = f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}'
+    AWS_S3_CUSTOM_DOMAIN = (
+        f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}'
+    )
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
     }
 
     STORAGES = {
-
-    # Media file (image) management
-    "default": {
-        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-    },
-    # CSS and JS file management
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-    },
+        # Media file (image) management
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
     }
 else:
     MEDIA_URL = '/'
     MEDIA_ROOT = BASE_DIR
 
     STORAGES = {
-
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    # CSS and JS file management
-    "staticfiles": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
     }
-
-
 
 
 # Database
@@ -145,7 +141,9 @@ else:
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
+        "default": dj_database_url.parse(
+            DATABASE_URL, conn_max_age=600, ssl_require=False
+        )
     }
 else:
     DATABASES = {

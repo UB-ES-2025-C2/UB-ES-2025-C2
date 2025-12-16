@@ -47,31 +47,38 @@ function onFileSelected(event) {
   previewImage.value = URL.createObjectURL(file)
 }
 
-async function saveProfile() {
+function saveProfile() {
   loading.value = true
   error.value = null
+  successMessage.value = null
 
-  try {
-    if (selectedFile.value) {
-      await auth.changeProfilePicture(selectedFile.value)
-      auth.refreshUserInfo()
-    }
+  // Crear FormData
+  const formData = new FormData()
+  formData.append('nickname', username.value)
+  formData.append('description', description.value)
 
-    await auth.updateUserProfile({
-      nickname: username.value,
-      description: description.value,
-    })
-    successMessage.value = 'Canvis desats correctament!'
-    // Esperar 1.2 s abans de redirigir perquè es pugui veure el missatge
-    setTimeout(() => {
-      router.push({ name: 'profile', params: { id: user_id } })
-    }, 1200)
-  } catch (err) {
-    console.error(err)
-    error.value = 'Error al desar el perfil.'
-  } finally {
-    loading.value = false
+  if (selectedFile.value) {
+    const f = selectedFile.value
+    formData.append('profilePic', f)
   }
+
+  auth
+    .updateUserProfile(formData)
+    .then(() => {
+      auth.refreshUserInfo()
+      successMessage.value = 'Canvis desats correctament!'
+
+      setTimeout(() => {
+        router.push({ name: 'profile', params: { id: user_id } })
+      }, 1200)
+    })
+    .catch((err) => {
+      console.error(err)
+      error.value = 'Error al desar el perfil.'
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>
 <template>
