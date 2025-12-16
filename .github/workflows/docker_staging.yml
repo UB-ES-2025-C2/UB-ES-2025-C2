@@ -34,7 +34,9 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           build-args: |
+            APP=frontend
             PORT=80
+            UID=988
             VITE_API_URL=${{ secrets.STAGING_API_URL }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-fe-preprod:${{ steps.extract_branch.outputs.branch }}
@@ -48,7 +50,9 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           build-args: |
+            APP=backend
             PORT=80
+            UID=988
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:${{ steps.extract_branch.outputs.branch }}
             ${{ secrets.DOCKERHUB_USERNAME }}/ub-es-2025-c2-be-preprod:latest

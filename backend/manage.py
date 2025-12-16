@@ -6,7 +6,8 @@ import sys
 
 
 def main() -> None:
-    """Run administrative tasks.
+    """
+    Run administrative tasks.
 
     Raises
     ------
