@@ -1,34 +1,44 @@
 # Use the official Node image for the development stage.
 FROM node:25-alpine AS development
+ARG APP="frontend"
 ARG PORT="5173"
 ARG UID="988"
-ARG VITE_API_URL="https://localhost:8000"
 
 # Create the app directory.
-RUN mkdir /app
+RUN mkdir /${APP}
 
 # Set the working directory inside the container.
-WORKDIR /app
+WORKDIR /${APP}
 
 # Copy the package.json files to the container.
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Install dependencies.
-RUN npm install
+RUN npm install --include dev
 
-# Copy the rest of the project.
-COPY . .
+# Copy the source of the project.
+ADD ./src ./src
+
+# Copy the public files of the project.
+ADD ./public ./public
+
+# Copy the e2e tests.
+ADD ./e2e ./e2e
+
+# Copy the necessary files to execute the frontend.
+COPY index.html jsconfig.json vite.config.js ./
+
+# Copy the necessary files to execute the dev dependencies.
+COPY .oxlintrc.json .prettierrc.json eslint.config.js playwright.config.js vitest.config.js ./
 
 # Set environment variables.
-# Set the Vite API's URL.
-ENV VITE_API_URL=$VITE_API_URL
 # Enable polling mode for Docker's hot-reloading.
 ENV CHOKIDAR_USEPOLLING=true
 # Set the port for Vite.
 ENV VITE_PORT=${PORT}
 
-# Exponer el puerto (Vite usa 5173 por defecto)
-EXPOSE 5173
+# Expose the Vite port.
+EXPOSE ${PORT}
 
-# Comando por defecto: correr el servidor de desarrollo
-CMD ["sh", "-c", "npm run dev -- --port $VITE_PORT"]
+# Execute the Vue development server.
+CMD ["sh", "-c", "npm run dev -- --host 0.0.0.0 --port $VITE_PORT"]

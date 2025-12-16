@@ -29,8 +29,9 @@ function goToSongDetail(songId) {
 }
 
 function goToPlaylist(playlistId) {
-  router.push({ name: 'playlist', params: { id: playlistId } })
+  router.push({ name: 'playlist', params: { id: Number(playlistId) } })
 }
+
 
 /* Agrupamos las playlists por topic */
 const playlistsByTopic = computed(() => {
@@ -97,6 +98,7 @@ const headerUsername = computed(() => {
       </li>
     </ul>
   </div>
+
 </template>
 
 <style scoped>

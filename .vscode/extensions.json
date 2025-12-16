@@ -1,35 +1,37 @@
 {
-    "recommendations": [
-        // Editor configurations.
-        "EditorConfig.EditorConfig",
-        // Error visualization.
-        "usernamehw.errorlens",
-        // GitHub Actions.
-        "github.vscode-github-actions",
-        // Icons.
-        "vscode-icons-team.vscode-icons",
-        // Live Server.
-        "yandeu.five-server",
-        // Markdown.
-        "bierner.github-markdown-preview", // Task blocks and others.
-        "davidanson.vscode-markdownlint", // Linter.
-        "yzhang.markdown-all-in-one", // Overall QOL.
-        // Python.
-        "batisteo.vscode-django", // Django.
-        "charliermarsh.ruff", // Linter-Formatter.
-        "lextudio.restructuredtext", // Sphinx source.
-        "ms-python.debugpy", // Debugger.
-        "ms-python.vscode-python-envs", // Virtual Environments.
-        // TOML.
-        "tamasfe.even-better-toml", // Linter-Formatter.
-        // Web
-        "antfu.vite", // Vite.
-        "christian-kohler.npm-intellisense", // NPM.
-        "dbaeumer.vscode-eslint", // Linter.
-        "esbenp.prettier-vscode", // Formatter.
-        "ms-playwright.playwright", // Overall Tester.
-        "oxc.oxc-vscode", // Linter extension.
-        "vitest.explorer", // Vite Tester.
-        "vue.volar", // Vue.
-    ]
+  "recommendations": [
+    // Editor configurations.
+    "EditorConfig.EditorConfig",
+    // Error visualization.
+    "usernamehw.errorlens",
+    // GitHub Actions.
+    "github.vscode-github-actions",
+    // Icons.
+    "vscode-icons-team.vscode-icons",
+    // Live Server.
+    "yandeu.five-server",
+    // Markdown.
+    "bierner.github-markdown-preview", // Task blocks and others.
+    "davidanson.vscode-markdownlint", // Linter.
+    "yzhang.markdown-all-in-one", // Overall QOL.
+    // Python.
+    "batisteo.vscode-django", // Django.
+    "charliermarsh.ruff", // Linter-Formatter.
+    "lextudio.restructuredtext", // Sphinx source.
+    "ms-python.debugpy", // Debugger.
+    "ms-python.vscode-python-envs", // Virtual Environments.
+    // TOML.
+    "tamasfe.even-better-toml", // Linter-Formatter.
+    // Web
+    "antfu.vite", // Vite.
+    "christian-kohler.npm-intellisense", // NPM.
+    "dbaeumer.vscode-eslint", // Linter.
+    "esbenp.prettier-vscode", // Formatter.
+    "ms-playwright.playwright", // Overall Tester.
+    "oxc.oxc-vscode", // Linter extension.
+    "vitest.explorer", // Vite Tester.
+    "vue.volar", // Vue.
+    // YAML.
+    "redhat.vscode-yaml", // YAML.
+  ]
 }
