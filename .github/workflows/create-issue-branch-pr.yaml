@@ -1,0 +1,80 @@
+name: Create Issue Branch and Pull Request
+
+on:
+  # Only activate on just opened issues.
+  issues:
+    types: [opened]
+
+jobs:
+  create-branch-and-pr:
+    runs-on: ubuntu-latest
+    # Push contents, read issue's content, and create a pull request.
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+
+    steps:
+      - name: Retrieve the info necessary to make the branch from the issue.
+        env:
+          # The issue title used for generating the branch name.
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        id: branch_info
+        run: |
+          # Transform the issue's title into a branch name by setting it to
+          # lowercase, transliterating utf-8 characters to ascii and then
+          # changing any non alphanumeric symbols to - minus the trailing ones.
+          SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | iconv -f utf8 -t ascii//TRANSLIT | tr -cs 'a-z0-9' '-' | sed 's/-*$//')
+
+          # Set the safe title as branch name.
+          branch_name="${SAFE_TITLE}"
+
+          # Output the branch_info.
+          echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
+
+      - name: Clone repository's dev and create branch
+        env:
+          # The branch name from the generated branch info.
+          BRANCH_NAME: ${{ steps.branch_info.outputs.branch_name }}
+          # The GitHub repository and token to connect to GitHub.
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure git for the runner.
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Clone the dev branch.
+          git clone --branch dev https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} repo
+          cd repo
+
+          # Checkout the new branch and push it to origin.
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
+
+      - name: Create pull request to close issue.
+        env:
+          # The branch name from the generated branch info.
+          BRANCH_NAME: ${{ steps.branch_info.outputs.branch_name }}
+          # The issue information used for generating the pull request data.
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          # The GitHub token to connect to GitHub.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Login to GitHub.
+          gh auth login
+
+          # Clone the repository.
+          gh repo clone "${GITHUB_REPOSITORY}" repo
+
+          # Move to the repository.
+          cd repo
+
+          # Write the body file.
+          echo "Closes #$ISSUE_NUMBER\n\n$ISSUE_BODY" > body.tmp
+
+          # Create the PR.
+          gh pr create --assignee "$ISSUE_AUTHOR" --base "dev" --head "$BRANCH_NAME" --title "$ISSUE_TITLE" --body-file "body.tmp" --draft
