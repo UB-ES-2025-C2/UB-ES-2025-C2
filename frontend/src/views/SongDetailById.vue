@@ -136,36 +136,39 @@ function togglePlay() {
 }
 
 // Afegir cançó a playlist
-async function addSongToPlaylist() {
+function addSongToPlaylist() {
   if (!selectedPlaylistId.value) return;
 
-  try {
-    const response = await auth.postPlayListSong(selectedPlaylistId.value, song.value);
-    if (response.status === 201 || response.status === 200) {
-      alert("Cançó afegida a la playlist!");
-      selectedPlaylistId.value = "";
-      showPlaylistDropdown.value = false;
-    } else {
-      alert("No s'ha pogut afegir la cançó");
-    }
-  } catch (err) {
-    console.error(err);
-    //mirem si la cançó està a la playlist
-    const msg = err?.response?.data?.[0] || "";
-    if (msg.includes("playlist")) {
-      alert("Aquesta cançó ja està a la playlist");
-    } else {
-      alert("Error afegint la cançó");
-    }
-  }
+  const payload = { song_id: song.value.id };
+
+  auth.postPlayListSong(selectedPlaylistId.value, payload)
+    .then(response => {
+      if (response.status === 201 || response.status === 200) {
+        alert("Cançó afegida a la playlist!");
+        selectedPlaylistId.value = "";
+        showPlaylistDropdown.value = false;
+      } else {
+        alert("No s'ha pogut afegir la cançó");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      const msg = err?.response?.data?.[0] || "";
+      if (msg.includes("playlist")) {
+        alert("Aquesta cançó ja està a la playlist");
+      } else {
+        alert("Error afegint la cançó");
+      }
+    });
 }
+
 
 // Carrega de dades per cançó
 onMounted(async () => {
   try {
     song.value = await apiStore.getSongById(route.params.id);
-
-    playlists.value = await apiStore.getAllPlaylists();
+    const id = Number(auth.user_id);
+    playlists.value = await apiStore.getPlaylistFromUser(id);
 
   } catch (e) {
     error.value = e?.response?.data?.detail || e?.message || "Error desconegut";

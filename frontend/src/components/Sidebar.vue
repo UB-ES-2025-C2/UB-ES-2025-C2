@@ -22,7 +22,9 @@
         Pujar Cançó
       </button>
 
-      <button class="create-playlist-btn"
+
+      <!-- Botó només visible si l'usuari està autenticat -->
+      <button v-if="authStore.isAuthenticated" class="create-playlist-btn"
       @click="goCreatePlaylist"
       >
         + Crear Playlist

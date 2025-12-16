@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useApiStore } from '../apiStore/guestApi.js'
+import { useApiStore } from '@/apiStore/guestApi.js'
 import { useAuthStore } from '@/apiStore/authStore.js'
 import { Trash2, Plus, Music } from 'lucide-vue-next'
 import { usePlayerStore } from '@/piniaStore/playerStore'
@@ -30,26 +30,45 @@ async function loadPlaylist() {
   await api.fetchCatalog()
 }
 
-async function addSong() {
+function addSong() {
   if (!selectedSongId.value) return
+
   isAddingSong.value = true
   const payload = { song_id: selectedSongId.value }
-  const added = await auth.postPlayListSong(playlistId, payload)
-  if (added) {
-    songs.value = await api.getSongFromPlayList(playlistId)
-    selectedSongId.value = ''
-  }
-  isAddingSong.value = false
+
+  auth.postPlayListSong(playlistId, payload)
+    .then((added) => {
+      if (!added) throw new Error('No s’ha pogut afegir la cançó')
+      return api.getSongFromPlayList(playlistId)
+    })
+    .then((songsFromApi) => {
+      songs.value = songsFromApi
+      selectedSongId.value = ''
+    })
+    .catch((error) => {
+      console.error('Error afegint la cançó:', error)
+    })
+    .finally(() => {
+      isAddingSong.value = false
+    })
 }
 
-async function removeSong(songId) {
+function removeSong(songId) {
   if (!confirm('Estàs segur que vols eliminar aquesta cançó de la playlist?')) return
-
-  const deleted = await auth.deletePlayListSong(playlistId, songId)
-
-  if (deleted) {
-    songs.value = await api.getSongFromPlayList(playlistId)
-  }
+  auth.deletePlayListSong(playlistId, songId)
+    .then((deleted) => {
+      if (deleted) {
+        return api.getSongFromPlayList(playlistId)
+      } else {
+        throw new Error('No s’ha pogut eliminar la cançó')
+      }
+    })
+    .then((songsFromApi) => {
+      songs.value = songsFromApi
+    })
+    .catch((error) => {
+      console.error('Error eliminant la cançó:', error)
+    })
 }
 
 // Comprova si la cançó que es mostra és la que està reproduint el reproductor global

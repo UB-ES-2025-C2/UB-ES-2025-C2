@@ -4,12 +4,10 @@ import { test } from './fixtures/testUser.js'
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
-test('Modificar descripció del perfil via UI i comprovar backend', async ({
-  page,
-  request,
-  testUser,
-}) => {
-  const { username, password } = testUser
+test('Modificar descripció del perfil via UI i comprovar backend', async ({ page, request }) => {
+  // 1️⃣ Login amb usuari hardcodejat
+  const username = 'admin'
+  const password = 'admin'
 
   // 1️- Obre la pàgina de login
   await page.goto(`${BASE_URL}/login`)
@@ -51,7 +49,7 @@ test('Modificar descripció del perfil via UI i comprovar backend', async ({
   const descriptionLocator = page.locator('.user-info p').filter({ hasText: novaDescripcio })
   await expect(descriptionLocator).toHaveCount(1)
   await expect(descriptionLocator).toHaveText(novaDescripcio, { timeout: 10000 })
-  
+
   // 11- Comprova el backend: login del mateix usuari
   const loginRes = await request.post(`${API_URL}/api/token/`, {
     data: { username, password },

@@ -63,20 +63,20 @@ onMounted(async () => {
 })
 
 // Guardar canvis
-async function updateSong() {
+function updateSong() {
   loading.value = true
   error.value = null
 
-  const songData = {
-    name: name.value,
-    artist: artist.value,
-    topic: topic.value,
-    authors: authors.value,
-    fileAudio: fileAudio.value,
-    cover: cover.value,
-  }
+  const formData = new FormData()
+  formData.append("name", name.value)
+  formData.append("artist", artist.value)
+  formData.append("topic", topic.value)
+  authors.value.forEach(authorId => formData.append("authors", authorId))
+  if (fileAudio.value) formData.append("file_audio", fileAudio.value)
+  if (cover.value) formData.append("cover", cover.value)
+
   auth
-    .patchSong(songId, songData)
+    .patchSong(songId, formData)
     .then((response) => {
       if (response.status === 200) {
         success.value = 'Cançó actualitzada correctament!'
@@ -88,9 +88,9 @@ async function updateSong() {
         error.value = 'Error en actualitzar la cançó.'
       }
     })
-    .catch((error) => {
-      console.error('Error updating song:', error)
-      error.value = 'Error en actualitzar la cançó. '
+    .catch((err) => {
+      console.error('Error updating song:', err)
+      error.value = 'Error en actualitzar la cançó.'
     })
     .finally(() => {
       loading.value = false

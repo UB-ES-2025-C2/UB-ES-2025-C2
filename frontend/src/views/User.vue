@@ -43,9 +43,8 @@ onMounted(async () => {
   const foundUser = api.nUsersResult.find(u => u.username === username);
   /* Assignem cançons y playlists amb mock */
 
-  await runUserSongs(foundUser.id);
-
-  if (foundUser) {
+  if (foundUser && foundUser.id) {
+    await runUserSongs(foundUser.id);
     userData.value = {
       username: foundUser.username,
       followers: followers.value.length,
