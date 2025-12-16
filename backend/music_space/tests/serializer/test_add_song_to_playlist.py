@@ -1,11 +1,13 @@
 import pytest
+
 from django.test import TestCase
-from music_space.api.models import Song, PlayList, PlaylistSong
+
+from music_space.api.models import PlayList, PlaylistSong, Song
 from music_space.api.serializers import PlayListSongSerializer
+
 
 @pytest.mark.django_db
 class TestPlayListSongSerializer(TestCase):
-
     def setUp(self):
         self.playlist = PlayList.playListManager.create(name="My playlist")
         self.song = Song.objects.create(
@@ -13,7 +15,7 @@ class TestPlayListSongSerializer(TestCase):
             artist="artist",
             topic="pop",
             file_audio='songs_folder/himno_ES.mp3',
-            cover='covers/default.png'
+            cover='covers/default.png',
         )
         self.playlist_song = PlaylistSong.objects.create(
             playlist=self.playlist,

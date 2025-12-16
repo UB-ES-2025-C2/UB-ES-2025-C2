@@ -10,7 +10,7 @@ const mockRouter = { push: vi.fn(), replace: vi.fn() }
 
 vi.mock('vue-router', () => ({
   useRoute: () => mockRoute,
-  useRouter: () => mockRouter
+  useRouter: () => mockRouter,
 }))
 
 describe('Search.vue', () => {
@@ -34,8 +34,8 @@ describe('Search.vue', () => {
 
     wrapper = mount(Search, {
       global: {
-        plugins: [pinia]
-      }
+        plugins: [pinia],
+      },
     })
   })
 

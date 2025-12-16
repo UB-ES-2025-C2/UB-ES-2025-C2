@@ -85,7 +85,6 @@ const cancelLogout = () => {
 }
 </script>
 
-
 <template>
   <header class="header">
     <!-- Left block -->
@@ -104,7 +103,13 @@ const cancelLogout = () => {
       <!-- Search bar -->
       <form class="search-bar" @submit.prevent="onSubmit" role="search">
         <i class="fas fa-search search-icon" aria-hidden="true"></i>
-        <input v-model="q" type="search" placeholder="Què vols reproduir?" aria-label="Cercar" data-test="search-input" />
+        <input
+          v-model="q"
+          type="search"
+          placeholder="Què vols reproduir?"
+          aria-label="Cercar"
+          data-test="search-input"
+        />
       </form>
     </div>
 

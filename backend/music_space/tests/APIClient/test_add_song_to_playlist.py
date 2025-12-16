@@ -8,7 +8,9 @@ from music_space.api.models import PlayList, PlaylistSong, Song, UserProfile
 
 class PlaylistSongAPITestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.user = User.objects.create_user(
+            username='testuser', password='password123'
+        )
         self.profile = UserProfile.objects.get(user=self.user)
 
         # Crear playlist propietat per l'usuari
@@ -17,20 +19,18 @@ class PlaylistSongAPITestCase(APITestCase):
 
         # Crear cançons
         self.song1 = Song.objects.create(
-            name='Song One',
-            topic='Pop',
-            artist='Artist A'
+            name='Song One', topic='Pop', artist='Artist A'
         )
         self.song2 = Song.objects.create(
-            name='Song Two',
-            topic='Rock',
-            artist='Artist B'
+            name='Song Two', topic='Rock', artist='Artist B'
         )
 
         self.client.force_authenticate(user=self.user)
 
         # URL base amb playlist_pk
-        self.url = reverse('playlist-song-list', kwargs={'playlist_pk': self.playlist.id})
+        self.url = reverse(
+            'playlist-song-list', kwargs={'playlist_pk': self.playlist.id}
+        )
 
     def test_get_playlist_songs_unauthenticated(self):
         self.client.force_authenticate(user=None)
@@ -50,7 +50,9 @@ class PlaylistSongAPITestCase(APITestCase):
         response = self.client.post(self.url, data2, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        playlist_song = PlaylistSong.objects.get(playlist=self.playlist, song=self.song2)
+        playlist_song = PlaylistSong.objects.get(
+            playlist=self.playlist, song=self.song2
+        )
         self.assertEqual(playlist_song.position, 2)  # perform_create posa count() + 1
 
         self.assertNotIn('song_id', response.data)

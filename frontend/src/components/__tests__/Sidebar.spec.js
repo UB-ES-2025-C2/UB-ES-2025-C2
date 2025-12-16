@@ -7,8 +7,8 @@ import { useAuthStore } from '@/apiStore/authStore'
 // Mock correcto de router con default
 vi.mock('@/router', () => ({
   default: {
-    push: vi.fn()
-  }
+    push: vi.fn(),
+  },
 }))
 
 import router from '@/router'
@@ -19,13 +19,15 @@ describe('Sidebar.vue', () => {
   beforeEach(() => {
     wrapper = mount(Sidebar, {
       global: {
-        plugins: [createTestingPinia({
-          initialState: {
-            auth: { isAuthenticated: false }
-          },
-          stubActions: false
-        })]
-      }
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: false },
+            },
+            stubActions: false,
+          }),
+        ],
+      },
     })
 
     authStore = useAuthStore()

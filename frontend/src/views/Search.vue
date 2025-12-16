@@ -1,81 +1,116 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useApiStore } from "../apiStore/guestApi.js";
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useApiStore } from '../apiStore/guestApi.js'
 
-const route = useRoute();
-const router = useRouter();
-const api = useApiStore();
+const route = useRoute()
+const router = useRouter()
+const api = useApiStore()
 
-const activeTab = ref("all"); // pestanya seleccionada per defecte
+const activeTab = ref('all') // pestanya seleccionada per defecte
 
 /*mock data fins tenir backend*/
 const mockSongs = ref([
-  { id: 1, title: "Canción de prueba 1", artists: "Artista 1", image: "https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg" },
-  { id: 2, title: "Canción de prueba 2", artists: "Artista 2", image: "https://www.udiscovermusica.com/wp-content/uploads/sites/7/2022/09/Pink-Floyd-Dark-Side-Of-The-Moon-1536x1536-1-1024x1024.jpeg" },
-  { id: 3, title: "Canción de prueba 3", artists: "Artista 3", image: "https://marketplace.canva.com/EAGL6BH8Rhg/1/0/1600w/canva-portada-%C3%A1lbum-m%C3%BAsica-moderno-qMT-zlb07JY.jpg" },
-]);
+  {
+    id: 1,
+    title: 'Canción de prueba 1',
+    artists: 'Artista 1',
+    image:
+      'https://marketplace.canva.com/EAEl_zgUqNo/1/0/1600w/canva-portada-para-album-de-musica-tornasol-y-moderna-tptgzoFo0LQ.jpg',
+  },
+  {
+    id: 2,
+    title: 'Canción de prueba 2',
+    artists: 'Artista 2',
+    image:
+      'https://www.udiscovermusica.com/wp-content/uploads/sites/7/2022/09/Pink-Floyd-Dark-Side-Of-The-Moon-1536x1536-1-1024x1024.jpeg',
+  },
+  {
+    id: 3,
+    title: 'Canción de prueba 3',
+    artists: 'Artista 3',
+    image:
+      'https://marketplace.canva.com/EAGL6BH8Rhg/1/0/1600w/canva-portada-%C3%A1lbum-m%C3%BAsica-moderno-qMT-zlb07JY.jpg',
+  },
+])
 
 const mockPlaylists = ref([
-  { id: 1, name: "Playlist de prueba 1", user: "usuarideprova", image: "https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg" },
-  { id: 2, name: "Playlist de prueba 2", user: "usuarideprova", image: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg" },
-  { id: 3, name: "Playlist de prueba 3", user: "usuarideprova", image: "https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg" },
-]);
+  {
+    id: 1,
+    name: 'Playlist de prueba 1',
+    user: 'usuarideprova',
+    image:
+      'https://marketplace.canva.com/EAEkDXCwwcE/1/0/1600w/canva-playlist-cover-tipogr%C3%A1fico-de-m%C3%BAsica-pop-rosa-rosa-y-t%C3%ADtulo-grande-tonos-arcoiris-NvXdCHt3cJc.jpg',
+  },
+  {
+    id: 2,
+    name: 'Playlist de prueba 2',
+    user: 'usuarideprova',
+    image:
+      'https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg',
+  },
+  {
+    id: 3,
+    name: 'Playlist de prueba 3',
+    user: 'usuarideprova',
+    image:
+      'https://marketplace.canva.com/EAEgRCviBys/1/0/1600w/canva-morado-y-rojo-naranja-est%C3%A9tica-de-tumblr-relajante-ac%C3%BAstico-cl%C3%A1sico-lo-fi-portada-de-lista-de-reproducci%C3%B3n-jE51M26tg2g.jpg',
+  },
+])
 
-const userNames = ref({});
+const userNames = ref({})
 
 async function loadUserNames() {
-  if (!api.playlistResults) return;
+  if (!api.playlistResults) return
 
   for (const playlist of api.playlistResults) {
     for (const id of playlist.owner) {
       if (!userNames.value[id]) {
-        const user = await api.getUserById(id);
-        userNames.value[id] = user?.nickname || "Usuari desconegut";
+        const user = await api.getUserById(id)
+        userNames.value[id] = user?.nickname || 'Usuari desconegut'
       }
     }
   }
 }
 
 async function runSearch() {
-  const q = (route.query.q || "").toString().trim();
+  const q = (route.query.q || '').toString().trim()
   if (!q) {
-    api.nUsersResult = [];
-    api.songResults = [];
-    return;
+    api.nUsersResult = []
+    api.songResults = []
+    return
   }
-  if (activeTab.value === "users" || activeTab.value === "all") {
-    await api.searchNUsers(q);
+  if (activeTab.value === 'users' || activeTab.value === 'all') {
+    await api.searchNUsers(q)
   }
-  if (activeTab.value === "songs" || activeTab.value === "all") {
-    await api.searchsongByAnyThingh(q, "", "", "");
+  if (activeTab.value === 'songs' || activeTab.value === 'all') {
+    await api.searchsongByAnyThingh(q, '', '', '')
   }
-  if (activeTab.value === "playlists" || activeTab.value === "all") {
-    await api.getplayListByAnythingh(q, "", "");
-    await loadUserNames();
+  if (activeTab.value === 'playlists' || activeTab.value === 'all') {
+    await api.getplayListByAnythingh(q, '', '')
+    await loadUserNames()
   }
 }
 
-
 function setTab(tab) {
-  activeTab.value = tab;
-  router.replace({ path: "/search", query: { q: route.query.q, tab } });
-  runSearch();
+  activeTab.value = tab
+  router.replace({ path: '/search', query: { q: route.query.q, tab } })
+  runSearch()
 }
 
 function goToUser(username) {
-  router.push({ name: "user", params: { username } });
+  router.push({ name: 'user', params: { username } })
 }
 
 function goToPlaylist(id) {
-  router.push({ name: "playlist", params: { id } });
+  router.push({ name: 'playlist', params: { id } })
 }
 
-onMounted(runSearch);
-watch(() => route.query.q, runSearch);
+onMounted(runSearch)
+watch(() => route.query.q, runSearch)
 
 function goToSong(id) {
-  router.push({ name: "song-by-id", params: { id } });
+  router.push({ name: 'song-by-id', params: { id } })
 }
 </script>
 
@@ -83,25 +118,13 @@ function goToSong(id) {
   <!--<img :src="'http://127.0.0.1:8000/covers/default.png'" alt="" />-->
   <section class="search-page">
     <div class="tabs">
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'all' }"
-        @click="setTab('all')"
-      >
+      <button class="tab" :class="{ active: activeTab === 'all' }" @click="setTab('all')">
         Tot
       </button>
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'users' }"
-        @click="setTab('users')"
-      >
+      <button class="tab" :class="{ active: activeTab === 'users' }" @click="setTab('users')">
         Usuaris
       </button>
-      <button
-        class="tab"
-        :class="{ active: activeTab === 'songs' }"
-        @click="setTab('songs')"
-      >
+      <button class="tab" :class="{ active: activeTab === 'songs' }" @click="setTab('songs')">
         Cançons
       </button>
       <button
@@ -122,7 +145,6 @@ function goToSong(id) {
           data-test="sr-item"
           @click="goToUser(user.username)"
         >
-
           <div class="avatar">
             <img v-if="user.profilePic" :src="user.profilePic" alt="Profile Picture" />
           </div>
@@ -138,25 +160,25 @@ function goToSong(id) {
     <div v-if="activeTab === 'songs' || activeTab === 'all'">
       <ul v-if="api.songResults?.length" class="results-list">
         <li
-        v-for="song in api.songResults"
-        :key="song.id"
-        class="song-card"
-        data-test="sr-item"
-        @click="goToSong(song.id)"
-        role="button"
-        tabindex="0"
-      >
-        <div class="song-image"><img :src="song.cover" alt="" /></div>
-        <div class="song-info">
-          <strong>{{ song.name }}</strong>
-          <p>{{ song.artist }}</p>
-        </div>
-      </li>
+          v-for="song in api.songResults"
+          :key="song.id"
+          class="song-card"
+          data-test="sr-item"
+          @click="goToSong(song.id)"
+          role="button"
+          tabindex="0"
+        >
+          <div class="song-image"><img :src="song.cover" alt="" /></div>
+          <div class="song-info">
+            <strong>{{ song.name }}</strong>
+            <p>{{ song.artist }}</p>
+          </div>
+        </li>
       </ul>
       <p v-else></p>
     </div>
 
-    <div v-if="activeTab === 'playlists'|| activeTab === 'all'">
+    <div v-if="activeTab === 'playlists' || activeTab === 'all'">
       <ul v-if="api.playlistResults.length" class="results-list">
         <li
           v-for="playlist in api.playlistResults"
@@ -181,7 +203,6 @@ function goToSong(id) {
       </ul>
       <p v-else>No hi ha playlists.</p>
     </div>
-
   </section>
 </template>
 
@@ -219,7 +240,7 @@ function goToSong(id) {
 /* resultats */
 .results-list {
   list-style: none;
-  padding-left: 0;   /* <- el que treu el “salt” a l'esquerra */
+  padding-left: 0; /* <- el que treu el “salt” a l'esquerra */
   margin-left: 0;
   margin-top: 0;
   width: 100%;
@@ -301,6 +322,4 @@ function goToSong(id) {
   font-size: 0.9rem;
   margin: 0;
 }
-
-
 </style>

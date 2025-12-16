@@ -1,10 +1,12 @@
 import pytest
+
 from django.test import TestCase
-from music_space.api.models import PlayList, Song, PlaylistSong
+
+from music_space.api.models import PlayList, PlaylistSong, Song
+
 
 @pytest.mark.django_db
 class PlaylistSongTestCase(TestCase):
-
     def setUp(self):
         self.playlist = PlayList.playListManager.create(name="My playlist")
         self.song = Song.objects.create(
@@ -12,7 +14,7 @@ class PlaylistSongTestCase(TestCase):
             artist="artist",
             topic="pop",
             file_audio='songs_folder/himno_ES.mp3',
-            cover='covers/default.png'
+            cover='covers/default.png',
         )
 
     def test_create_playlist_song(self):

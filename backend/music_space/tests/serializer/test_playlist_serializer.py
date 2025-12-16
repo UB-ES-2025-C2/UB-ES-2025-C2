@@ -1,6 +1,5 @@
 """Tests for PlayList serializer."""
 
-
 import shutil
 import tempfile
 
@@ -45,9 +44,7 @@ class TestPlayListSerializer(TestCase):
         image.save(image_io, format='PNG')
         image_io.seek(0)
         cover_file = SimpleUploadedFile(
-            'test.png',
-            image_io.read(),
-            content_type='image/png'
+            'test.png', image_io.read(), content_type='image/png'
         )
 
         self.song = Song.objects.create(
@@ -68,9 +65,7 @@ class TestPlayListSerializer(TestCase):
         image.save(image_io, format='PNG')
         image_io.seek(0)
         cover_file = SimpleUploadedFile(
-            'playlist.png',
-            image_io.read(),
-            content_type='image/png'
+            'playlist.png', image_io.read(), content_type='image/png'
         )
 
         playlistmame = "MyPlaylist"

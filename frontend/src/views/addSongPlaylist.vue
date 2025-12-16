@@ -36,7 +36,8 @@ function addSong() {
   isAddingSong.value = true
   const payload = { song_id: selectedSongId.value }
 
-  auth.postPlayListSong(playlistId, payload)
+  auth
+    .postPlayListSong(playlistId, payload)
     .then((added) => {
       if (!added) throw new Error('No s’ha pogut afegir la cançó')
       return api.getSongFromPlayList(playlistId)
@@ -55,7 +56,8 @@ function addSong() {
 
 function removeSong(songId) {
   if (!confirm('Estàs segur que vols eliminar aquesta cançó de la playlist?')) return
-  auth.deletePlayListSong(playlistId, songId)
+  auth
+    .deletePlayListSong(playlistId, songId)
     .then((deleted) => {
       if (deleted) {
         return api.getSongFromPlayList(playlistId)
@@ -117,24 +119,13 @@ onMounted(async () => {
     <!-- Accions -->
     <div class="actions-bar">
       <div class="add-song-container">
-        <select
-          v-model="selectedSongId"
-          class="song-select"
-        >
+        <select v-model="selectedSongId" class="song-select">
           <option value="" disabled>Selecciona una cançó</option>
-          <option
-            v-for="song in availableSongs"
-            :key="song.id"
-            :value="song.id"
-          >
+          <option v-for="song in availableSongs" :key="song.id" :value="song.id">
             {{ song.name }} - {{ song.artist }}
           </option>
         </select>
-        <button
-          @click="addSong"
-          :disabled="isAddingSong || !selectedSongId"
-          class="btn-add"
-        >
+        <button @click="addSong" :disabled="isAddingSong || !selectedSongId" class="btn-add">
           <Plus :size="20" />
           <span>Afegir cançó</span>
         </button>
@@ -152,20 +143,11 @@ onMounted(async () => {
       </div>
 
       <div class="songs-list">
-        <div
-          v-for="(song, index) in songs"
-          :key="song.id"
-          class="song-row"
-        >
+        <div v-for="(song, index) in songs" :key="song.id" class="song-row">
           <span class="col-number">{{ index + 1 }}</span>
 
           <div class="col-title">
-            <img
-              v-if="song.song.cover"
-              :src="song.song.cover"
-              alt="Cover"
-              class="song-thumbnail"
-            />
+            <img v-if="song.song.cover" :src="song.song.cover" alt="Cover" class="song-thumbnail" />
             <div v-else class="song-thumbnail-placeholder">
               <Music :size="20" />
             </div>
@@ -182,11 +164,7 @@ onMounted(async () => {
           <span class="col-topic">{{ song.song.topic }}</span>
 
           <div class="col-actions">
-            <button
-              @click="removeSong(song.id)"
-              class="btn-delete"
-              title="Eliminar cançó"
-            >
+            <button @click="removeSong(song.id)" class="btn-delete" title="Eliminar cançó">
               <Trash2 :size="18" />
             </button>
           </div>

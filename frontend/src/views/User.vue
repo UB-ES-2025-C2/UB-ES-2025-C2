@@ -1,15 +1,15 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { useApiStore } from "../apiStore/guestApi";
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useApiStore } from '../apiStore/guestApi'
 
-const route = useRoute();
-const username = route.params.username;
-const api = useApiStore();
+const route = useRoute()
+const username = route.params.username
+const api = useApiStore()
 
 // Mockdata de seguidors y seguint
-const mockFollowers = 123;
-const mockFollowing = 45;
+const mockFollowers = 123
+const mockFollowing = 45
 /*
 // Mockdata de cançons
 const mockSongs = [
@@ -23,38 +23,36 @@ const mockPlaylists = [
   { id: 2, name: "Playlist 2", user: "usuarideprova", image: "https://marketplace.canva.com/EAGGPj4-B4c/1/0/1600w/canva-portada-para-playlist-deep-house-moderno-violeta-y-rojo-GcfjW55ejVs.jpg" }
 ];
 */
-const followers = ref([]);
-const following = ref([]);
+const followers = ref([])
+const following = ref([])
 
-const userData = ref(null);
-const userSongs = ref([]);
-const userPlaylists = ref([]);
+const userData = ref(null)
+const userSongs = ref([])
+const userPlaylists = ref([])
 
 async function runUserSongs(id_user) {
-  followers.value = await api.getFollowers(id_user);
-  following.value = await api.getFollowing(id_user);
-  userSongs.value = await api.getUserSongs(id_user);
-  userPlaylists.value = await api.getUserPlaylists(id_user);
-
+  followers.value = await api.getFollowers(id_user)
+  following.value = await api.getFollowing(id_user)
+  userSongs.value = await api.getUserSongs(id_user)
+  userPlaylists.value = await api.getUserPlaylists(id_user)
 }
 
 onMounted(async () => {
   /* Buscar usuari en la API/store per username */
-  const foundUser = api.nUsersResult.find(u => u.username === username);
+  const foundUser = api.nUsersResult.find((u) => u.username === username)
   /* Assignem cançons y playlists amb mock */
 
   if (foundUser && foundUser.id) {
-    await runUserSongs(foundUser.id);
+    await runUserSongs(foundUser.id)
     userData.value = {
       username: foundUser.username,
       followers: followers.value.length,
       following: following.value.length,
       id_user: foundUser.id,
-      profile_picture: foundUser.profilePic
-    };
-
+      profile_picture: foundUser.profilePic,
+    }
   }
-});
+})
 </script>
 
 <template>
@@ -62,7 +60,11 @@ onMounted(async () => {
     <!-- Foto i dades -->
     <div class="header">
       <div class="avatar">
-        <img v-if="userData.profile_picture" :src="userData.profile_picture" alt="Profile Picture" />
+        <img
+          v-if="userData.profile_picture"
+          :src="userData.profile_picture"
+          alt="Profile Picture"
+        />
       </div>
       <div class="user-info">
         <h1>{{ userData.username }}</h1>
@@ -167,7 +169,8 @@ onMounted(async () => {
   margin: 0;
 }
 
-.song-card, .playlist-card {
+.song-card,
+.playlist-card {
   display: flex;
   flex-direction: column;
   width: 150px;
@@ -178,17 +181,20 @@ onMounted(async () => {
   transition: transform 0.2s;
 }
 
-.song-card:hover, .playlist-card:hover {
+.song-card:hover,
+.playlist-card:hover {
   transform: scale(1.05);
 }
 
-.song-image img, .playlist-image img {
+.song-image img,
+.playlist-image img {
   width: 100%;
   height: 150px;
   object-fit: cover;
 }
 
-.song-info, .playlist-info {
+.song-info,
+.playlist-info {
   padding: 10px;
 }
 

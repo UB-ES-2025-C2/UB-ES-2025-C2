@@ -11,11 +11,11 @@ const mockAuthStore = {
 // Mock de useRouter
 const pushMock = vi.fn()
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: pushMock })
+  useRouter: () => ({ push: pushMock }),
 }))
 
 vi.mock('../../apiStore/authStore', () => ({
-  useAuthStore: () => mockAuthStore
+  useAuthStore: () => mockAuthStore,
 }))
 
 vi.useFakeTimers()
@@ -38,7 +38,7 @@ describe('CreateSong.vue', () => {
     wrapper = mount(CreateSong, {
       data() {
         return { authorsString: '' }
-      }
+      },
     })
 
     // Esperem a que onMounted async s'executi
@@ -97,6 +97,6 @@ describe('CreateSong.vue', () => {
     await wrapper.vm.createSong()
     await flushPromises()
 
-    expect(wrapper.vm.error).toBe("Error en pujar la cançó.")
+    expect(wrapper.vm.error).toBe('Error en pujar la cançó.')
   })
 })

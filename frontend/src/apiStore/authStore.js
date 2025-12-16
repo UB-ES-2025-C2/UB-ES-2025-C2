@@ -1,8 +1,7 @@
-import { defineStore } from "pinia";
-import AuthService from "../services/auth";
+import { defineStore } from 'pinia'
+import AuthService from '../services/auth'
 
-
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     username: null,
     accessToken: null,
@@ -15,88 +14,87 @@ export const useAuthStore = defineStore("auth", {
   }),
   actions: {
     initializeAuthStore() {
-      this.username = localStorage.getItem("username");
-      this.accessToken = localStorage.getItem("access");
-      this.refreshToken = localStorage.getItem("refresh");
-      this.user_id = localStorage.getItem("id");
-      this.avatarUrl = localStorage.getItem("avatarUrl");
-      this.isAuthenticated = !!this.accessToken;
+      this.username = localStorage.getItem('username')
+      this.accessToken = localStorage.getItem('access')
+      this.refreshToken = localStorage.getItem('refresh')
+      this.user_id = localStorage.getItem('id')
+      this.avatarUrl = localStorage.getItem('avatarUrl')
+      this.isAuthenticated = !!this.accessToken
     },
     login(user) {
-      this.loading = true;
-      this.error = null;
+      this.loading = true
+      this.error = null
 
       return AuthService.login(user)
         .then((response) => {
-          this.username = user.username;
-          this.accessToken = response.data.access;
-          this.refreshToken = response.data.refresh;
-          this.isAuthenticated = true;
-          localStorage.setItem("access", this.accessToken);
-          localStorage.setItem("refresh", this.refreshToken);
+          this.username = user.username
+          this.accessToken = response.data.access
+          this.refreshToken = response.data.refresh
+          this.isAuthenticated = true
+          localStorage.setItem('access', this.accessToken)
+          localStorage.setItem('refresh', this.refreshToken)
 
-          return this.refreshUserInfo();
+          return this.refreshUserInfo()
         })
         .catch((error) => {
-          console.log("error", error);
-          this.error =
-            error.response?.data?.detail || "Login failed. Try again.";
-          this.isAuthenticated = false;
+          console.log('error', error)
+          this.error = error.response?.data?.detail || 'Login failed. Try again.'
+          this.isAuthenticated = false
         })
         .finally(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
     },
 
     refreshUserInfo() {
       return AuthService.getUserByToken().then((res) => {
-        const user = res.data;
-        this.user_id = user.id;
-        this.username = user.nickname;
-        this.avatarUrl = user.profilePic;
-        localStorage.setItem("username", this.username);
-        localStorage.setItem("id", parseInt(user.id));
-        localStorage.setItem("avatarUrl", this.avatarUrl);
-      });
+        const user = res.data
+        this.user_id = user.id
+        this.username = user.nickname
+        this.avatarUrl = user.profilePic
+        localStorage.setItem('username', this.username)
+        localStorage.setItem('id', parseInt(user.id))
+        localStorage.setItem('avatarUrl', this.avatarUrl)
+      })
     },
 
     postSong(formData) {
-      return AuthService.postSong(formData);
+      return AuthService.postSong(formData)
     },
     logout() {
-      this.accessToken = null;
-      this.refreshToken = null;
-      this.isAuthenticated = false;
-      this.avatarUrl = null;
-      this.user_id = null;
-      this.username = null;
-      localStorage.removeItem("username");
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("id");
-      localStorage.removeItem("avatarUrl");
+      this.accessToken = null
+      this.refreshToken = null
+      this.isAuthenticated = false
+      this.avatarUrl = null
+      this.user_id = null
+      this.username = null
+      localStorage.removeItem('username')
+      localStorage.removeItem('access')
+      localStorage.removeItem('refresh')
+      localStorage.removeItem('id')
+      localStorage.removeItem('avatarUrl')
     },
-    async signUp(user){
+    async signUp(user) {
       // Create User:
-      await AuthService.signUp(user);
+      await AuthService.signUp(user)
     },
     async changeProfilePicture(file) {
-      return AuthService.changeProfilePicture(this.user_id, file);
+      return AuthService.changeProfilePicture(this.user_id, file)
     },
     async updateUserProfile(data) {
-      return AuthService.updateUserProfile(this.user_id, data);
+      return AuthService.updateUserProfile(this.user_id, data)
     },
     async patchSong(songId, formData) {
-      return AuthService.patchSong(this.user_id, songId, formData);
+      return AuthService.patchSong(this.user_id, songId, formData)
     },
     async postPlaylist(formData) {
-      return AuthService.postPlaylist(formData);
+      return AuthService.postPlaylist(formData)
     },
     async postPlayListSong(playlistId, song) {
-      return AuthService.postPlayListSong(playlistId, song);
+      return AuthService.postPlayListSong(playlistId, song)
     },
-    async deletePlayListSong(playlistId, songId){
+    async deletePlayListSong(playlistId, songId) {
       return AuthService.deletePlayListSong(playlistId, songId)
-    }
-  }
-});
+    },
+  },
+})

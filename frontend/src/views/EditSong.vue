@@ -68,12 +68,12 @@ function updateSong() {
   error.value = null
 
   const formData = new FormData()
-  formData.append("name", name.value)
-  formData.append("artist", artist.value)
-  formData.append("topic", topic.value)
-  authors.value.forEach(authorId => formData.append("authors", authorId))
-  if (fileAudio.value) formData.append("file_audio", fileAudio.value)
-  if (cover.value) formData.append("cover", cover.value)
+  formData.append('name', name.value)
+  formData.append('artist', artist.value)
+  formData.append('topic', topic.value)
+  authors.value.forEach((authorId) => formData.append('authors', authorId))
+  if (fileAudio.value) formData.append('file_audio', fileAudio.value)
+  if (cover.value) formData.append('cover', cover.value)
 
   auth
     .patchSong(songId, formData)

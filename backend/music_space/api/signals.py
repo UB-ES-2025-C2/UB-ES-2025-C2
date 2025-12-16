@@ -1,6 +1,5 @@
 """signals.py"""
 
-
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.db.models.signals import post_delete, post_save, pre_save
@@ -32,7 +31,7 @@ def delete_old_profile_pic(
     sender: type[UserProfile],  # noqa: ARG001
     instance: UserProfile,
     **kwargs: dict,  # noqa: ARG001
-    ) -> None:
+) -> None:
     """Elimina l'arxiu antic usant default_storage (funciona local/S3)."""
     if instance.pk:
         try:
@@ -40,8 +39,12 @@ def delete_old_profile_pic(
             old_file = old_instance.profilePic
             new_file = instance.profilePic
 
-            if (old_file and old_file != new_file and old_file.name != default_name
-                and old_file.name):  # Si té nom, existeix remotament
+            if (
+                old_file
+                and old_file != new_file
+                and old_file.name != default_name
+                and old_file.name
+            ):  # Si té nom, existeix remotament
                 default_storage.delete(old_file.name)  # Funciona sempre
         except UserProfile.DoesNotExist:
             pass
@@ -52,8 +55,11 @@ def delete_profile_pic_on_delete(
     sender: type[UserProfile],  # noqa: ARG001
     instance: UserProfile,
     **kwargs: dict,  # noqa: ARG001
-    ) -> None:
+) -> None:
     """Elimina l'arxiu en post_delete usant storage API."""
-    if (instance.profilePic and instance.profilePic.name != default_name
-        and instance.profilePic.name):
+    if (
+        instance.profilePic
+        and instance.profilePic.name != default_name
+        and instance.profilePic.name
+    ):
         default_storage.delete(instance.profilePic.name)

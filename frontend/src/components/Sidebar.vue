@@ -22,14 +22,14 @@
         Pujar Cançó
       </button>
 
-
       <!-- Botó només visible si l'usuari està autenticat -->
-      <button v-if="authStore.isAuthenticated" class="create-playlist-btn"
-      @click="goCreatePlaylist"
+      <button
+        v-if="authStore.isAuthenticated"
+        class="create-playlist-btn"
+        @click="goCreatePlaylist"
       >
         + Crear Playlist
       </button>
-
     </section>
 
     <!-- Peu amb enllaços -->
@@ -84,7 +84,6 @@ function goCreatePlaylist() {
 
   router.push({ name: 'createPlayList' })
 }
-
 </script>
 
 <style scoped>
@@ -306,7 +305,6 @@ function goCreatePlaylist() {
   height: 18px;
   color: #fff;
 }
-
 
 .create-playlist-btn {
   background-color: #1db954;
