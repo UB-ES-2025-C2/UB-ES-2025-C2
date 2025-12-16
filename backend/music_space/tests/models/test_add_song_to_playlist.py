@@ -1,3 +1,5 @@
+"""Test add song to playlist."""
+
 import pytest
 
 from django.test import TestCase
@@ -6,8 +8,8 @@ from music_space.api.models import PlayList, PlaylistSong, Song
 
 
 @pytest.mark.django_db
-class PlaylistSongTestCase(TestCase):
-    def setUp(self):
+class PlaylistSongTestCase(TestCase):  # noqa: D101
+    def setUp(self) -> None:  # noqa: D102
         self.playlist = PlayList.playListManager.create(name="My playlist")
         self.song = Song.objects.create(
             name="Song1",
@@ -17,17 +19,17 @@ class PlaylistSongTestCase(TestCase):
             cover='covers/default.png',
         )
 
-    def test_create_playlist_song(self):
+    def test_create_playlist_song(self) -> None:  # noqa: D102
         playlist_song = PlaylistSong.objects.create(
             playlist=self.playlist,
             song=self.song,
             position=0,
         )
-        self.assertEqual(playlist_song.playlist, self.playlist)
-        self.assertEqual(playlist_song.song, self.song)
-        self.assertEqual(playlist_song.position, 0)
+        assert playlist_song.playlist == self.playlist
+        assert playlist_song.song == self.song
+        assert playlist_song.position == 0
 
-        self.assertEqual(self.playlist.songs.count(), 1)
-        self.assertEqual(self.playlist.songs.first(), playlist_song)
-        self.assertEqual(self.song.playlist.count(), 1)
-        self.assertEqual(self.song.playlist.first(), playlist_song)
+        assert self.playlist.songs.count() == 1
+        assert self.playlist.songs.first() == playlist_song
+        assert self.song.playlist.count() == 1
+        assert self.song.playlist.first() == playlist_song
