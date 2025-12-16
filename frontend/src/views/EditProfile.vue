@@ -58,11 +58,12 @@ function saveProfile() {
   formData.append('description', description.value)
 
   if (selectedFile.value) {
-    const f = selectedFile.value;
+    const f = selectedFile.value
     formData.append('profilePic', f)
   }
 
-  auth.updateUserProfile(formData)
+  auth
+    .updateUserProfile(formData)
     .then(() => {
       auth.refreshUserInfo()
       successMessage.value = 'Canvis desats correctament!'
@@ -71,7 +72,7 @@ function saveProfile() {
         router.push({ name: 'profile', params: { id: user_id } })
       }, 1200)
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err)
       error.value = 'Error al desar el perfil.'
     })
@@ -79,7 +80,6 @@ function saveProfile() {
       loading.value = false
     })
 }
-
 </script>
 <template>
   <div class="edit-profile">

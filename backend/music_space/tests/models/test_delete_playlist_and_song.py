@@ -1,3 +1,5 @@
+"""Delete playlist test."""
+
 import pytest
 
 from django.contrib.auth.models import User

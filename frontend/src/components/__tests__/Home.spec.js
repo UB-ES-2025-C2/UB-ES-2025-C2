@@ -24,9 +24,7 @@ describe('Home.vue', () => {
     authStore.initializeAuthStore = vi.fn()
 
     apiStore = useApiStore()
-    apiStore.songs = [
-      { id: 1, name: 'Song 1', artist: 'Artist 1', cover: '', file_audio: '' }
-    ]
+    apiStore.songs = [{ id: 1, name: 'Song 1', artist: 'Artist 1', cover: '', file_audio: '' }]
     apiStore.playList = [{ topic: 'Topic 1', items: ['Playlist 1'] }]
     apiStore.fetchCatalog = vi.fn()
     apiStore.fetchPlaylists = vi.fn()
@@ -48,7 +46,6 @@ describe('Home.vue', () => {
     expect(authStore.username).toBe('TestUser')
     expect(authStore.initializeAuthStore).toHaveBeenCalledTimes(1) // se llama en onMounted
   })
-
 
   it('llama a fetchCatalog y fetchPlaylists al montar', () => {
     expect(apiStore.fetchCatalog).toHaveBeenCalled()

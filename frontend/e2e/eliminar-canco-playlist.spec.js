@@ -33,12 +33,11 @@ test('Eliminar una cançó d’una playlist i comprovar backend', async ({ page 
   const songId = Number(await songRow.getAttribute('data-id'))
 
   // Automatitzar confirm
-  page.on('dialog', dialog => dialog.accept())
+  page.on('dialog', (dialog) => dialog.accept())
 
   // Clicar el botó eliminar
   await songRow.locator('.btn-delete').click()
 
   // Esperar que desaparegui la fila concreta del DOM usant data-id
   await expect(page.locator(`.song-row[data-id="${songId}"]`)).toHaveCount(0)
-
 })

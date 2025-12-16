@@ -31,5 +31,4 @@ test('Flux complet: Buscar una playlist, filtrar i obrir-la', async ({ page }) =
   // Verifiquem visualment que la pestanya està activa
   const playlistTab = page.locator('button.tab:has-text("Playlists")')
   await expect(playlistTab).toHaveClass(/active/)
-
 })

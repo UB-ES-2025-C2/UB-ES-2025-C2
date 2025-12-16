@@ -10,21 +10,23 @@ describe('PlayerBar.vue', () => {
   beforeEach(async () => {
     wrapper = mount(PlayerBar, {
       global: {
-        plugins: [createTestingPinia({
-          initialState: {
-            player: {
-              current: null, // inicialmente null
-              queue: [],
-              index: 0,
-              isPlaying: false,
-              volume: 0.5,
-              time: 0,
-              duration: 180
-            }
-          },
-          stubActions: false
-        })]
-      }
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              player: {
+                current: null, // inicialmente null
+                queue: [],
+                index: 0,
+                isPlaying: false,
+                volume: 0.5,
+                time: 0,
+                duration: 180,
+              },
+            },
+            stubActions: false,
+          }),
+        ],
+      },
     })
 
     store = usePlayerStore()
@@ -33,13 +35,15 @@ describe('PlayerBar.vue', () => {
     store.current = { id: 1, name: 'Canción Test', artist: 'Artista Test', cover: 'cover.jpg' }
     store.queue = [
       { id: 1, name: 'Canción Test', artist: 'Artista Test' },
-      { id: 2, name: 'Otra Canción', artist: 'Artista 2' }
+      { id: 2, name: 'Otra Canción', artist: 'Artista 2' },
     ]
 
     await flushPromises()
 
     // Reemplazamos métodos por spies
-    store.toggle = vi.fn(() => { store.isPlaying = !store.isPlaying })
+    store.toggle = vi.fn(() => {
+      store.isPlaying = !store.isPlaying
+    })
     store.prev = vi.fn()
     store.next = vi.fn()
     store.seek = vi.fn()

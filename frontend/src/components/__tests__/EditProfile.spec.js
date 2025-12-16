@@ -18,11 +18,11 @@ const mockAuthStore = {
 const pushMock = vi.fn()
 
 vi.mock('../../apiStore/guestApi', () => ({
-  useApiStore: () => mockApiStore
+  useApiStore: () => mockApiStore,
 }))
 
 vi.mock('../../apiStore/authStore', () => ({
-  useAuthStore: () => mockAuthStore
+  useAuthStore: () => mockAuthStore,
 }))
 
 vi.mock('vue-router', () => ({
@@ -36,7 +36,7 @@ describe('EditProfile.vue', () => {
   const userMock = {
     nickname: 'admin',
     description: 'Test description',
-    profilePic: 'test.png'
+    profilePic: 'test.png',
   }
 
   beforeEach(async () => {
@@ -80,7 +80,7 @@ describe('EditProfile.vue', () => {
 
     expect(mockAuthStore.updateUserProfile).toHaveBeenCalledWith({
       nickname: userMock.nickname,
-      description: userMock.description
+      description: userMock.description,
     })
     expect(pushMock).toHaveBeenCalledWith({ name: 'profile', params: { id: '123' } })
 

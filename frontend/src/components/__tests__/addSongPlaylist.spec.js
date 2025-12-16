@@ -7,9 +7,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 // Mock router
 const router = createRouter({
   history: createMemoryHistory(),
-  routes: [
-    { path: '/playlist/:id', name: 'playlist', component: { template: '<div />' } }
-  ]
+  routes: [{ path: '/playlist/:id', name: 'playlist', component: { template: '<div />' } }],
 })
 
 // Spies
@@ -25,33 +23,43 @@ vi.mock('@/apiStore/guestApi', () => ({
         name: 'Test Playlist',
         cover: 'cover.jpg',
         description: 'Una playlist de test',
-        owner: 'Paula'
-      })
+        owner: 'Paula',
+      }),
     ),
     getSongFromPlayList: vi.fn(() =>
       Promise.resolve([
-        { id: 10, song: { id: 10, name: 'Canción A', artist: 'Joan', topic: 'Pop', file_audio: 'song.mp3', cover: '' } }
-      ])
+        {
+          id: 10,
+          song: {
+            id: 10,
+            name: 'Canción A',
+            artist: 'Joan',
+            topic: 'Pop',
+            file_audio: 'song.mp3',
+            cover: '',
+          },
+        },
+      ]),
     ),
     fetchCatalog: vi.fn(() =>
       Promise.resolve([
         { id: 6, name: 'Canción B', artist: 'Maria', topic: 'Rock' },
-        { id: 10, name: 'Canción A', artist: 'Joan', topic: 'Pop' }
-      ])
+        { id: 10, name: 'Canción A', artist: 'Joan', topic: 'Pop' },
+      ]),
     ),
     songs: [
       { id: 6, name: 'Canción B', artist: 'Maria', topic: 'Rock' },
-      { id: 10, name: 'Canción A', artist: 'Joan', topic: 'Pop' }
-    ]
-  })
+      { id: 10, name: 'Canción A', artist: 'Joan', topic: 'Pop' },
+    ],
+  }),
 }))
 
 // Mock authStore
 vi.mock('@/apiStore/authStore', () => ({
   useAuthStore: () => ({
     postPlayListSong: postPlayListSongSpy,
-    deletePlayListSong: deletePlayListSongSpy
-  })
+    deletePlayListSong: deletePlayListSongSpy,
+  }),
 }))
 
 // Mock useRoute para que playlistId no sea undefined
@@ -59,7 +67,7 @@ vi.mock('vue-router', async () => {
   const actual = await vi.importActual('vue-router')
   return {
     ...actual,
-    useRoute: () => ({ params: { id: 1 } })
+    useRoute: () => ({ params: { id: 1 } }),
   }
 })
 
@@ -73,8 +81,8 @@ describe('addSongPlaylist.vue', () => {
   it('carrega les dades inicials de la playlist', async () => {
     const wrapper = mount(AddSongPlaylist, {
       global: {
-        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })]
-      }
+        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })],
+      },
     })
 
     await flushPromises()
@@ -87,8 +95,8 @@ describe('addSongPlaylist.vue', () => {
   it('afegeix una cançó correctament', async () => {
     const wrapper = mount(AddSongPlaylist, {
       global: {
-        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })]
-      }
+        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })],
+      },
     })
 
     await flushPromises()
@@ -107,8 +115,8 @@ describe('addSongPlaylist.vue', () => {
   it('elimina una cançó quan es confirma', async () => {
     const wrapper = mount(AddSongPlaylist, {
       global: {
-        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })]
-      }
+        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })],
+      },
     })
 
     await flushPromises()
@@ -128,8 +136,8 @@ describe('addSongPlaylist.vue', () => {
   it('no elimina la cançó si es cancela confirm', async () => {
     const wrapper = mount(AddSongPlaylist, {
       global: {
-        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })]
-      }
+        plugins: [router, createTestingPinia({ createSpy: vi.fn, stubActions: false })],
+      },
     })
 
     await flushPromises()

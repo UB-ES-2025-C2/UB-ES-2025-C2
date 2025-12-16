@@ -67,16 +67,16 @@ async function createSong() {
   }
 
   const formData = new FormData()
-  formData.append("name", name.value);
-  formData.append("artist", artist.value);
-  formData.append("topic", topic.value);
-  authors.value.forEach(author => {
-    formData.append("authors", author);
-  });
-// Fitxers
-  formData.append("file_audio", fileAudio.value)
+  formData.append('name', name.value)
+  formData.append('artist', artist.value)
+  formData.append('topic', topic.value)
+  authors.value.forEach((author) => {
+    formData.append('authors', author)
+  })
+  // Fitxers
+  formData.append('file_audio', fileAudio.value)
   if (cover.value) {
-    formData.append("cover", cover.value)
+    formData.append('cover', cover.value)
   }
 
   auth
@@ -97,7 +97,6 @@ async function createSong() {
       loading.value = false
     })
 }
-
 </script>
 
 <template>

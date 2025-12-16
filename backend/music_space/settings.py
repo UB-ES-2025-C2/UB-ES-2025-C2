@@ -14,6 +14,7 @@ import os
 
 from datetime import timedelta
 from pathlib import Path
+
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -102,35 +103,35 @@ if SUPABASE_BUCKET_NAME and SUPABASE_URL and SUPABASE_KEY_ID and SUPABASE_API_KE
     AWS_S3_REGION_NAME = SUPABASE_BUCKET_REGION
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_QUERYSTRING_AUTH = False
-    AWS_S3_CUSTOM_DOMAIN = f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}'
+    AWS_S3_CUSTOM_DOMAIN = (
+        f'{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET_NAME}'
+    )
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
     }
 
     STORAGES = {
-
-    # Media file (image) management
-    "default": {
-        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-    },
-    # CSS and JS file management
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
-    },
+        # Media file (image) management
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
     }
 else:
     MEDIA_URL = '/'
     MEDIA_ROOT = BASE_DIR
 
     STORAGES = {
-
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    # CSS and JS file management
-    "staticfiles": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
     }
 
 
@@ -140,7 +141,9 @@ else:
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
+        "default": dj_database_url.parse(
+            DATABASE_URL, conn_max_age=600, ssl_require=False
+        )
     }
 else:
     DATABASES = {

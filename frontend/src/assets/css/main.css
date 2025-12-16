@@ -19,7 +19,9 @@
 }
 
 /* ocupa tota la finestra i treu marges/paddings per defecte */
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -28,29 +30,32 @@ html, body, #app {
 }
 
 /* hereta el box-sizing a tot arreu */
-*, *::before, *::after { box-sizing: inherit; }
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
 
 /* IMPORTANT: anul·la el "centrat" i els límits de la plantilla Vite */
 body {
-  display: block;           /* abans: flex (centrava el contingut) */
-  place-items: initial;     /* anul·la el centrat implícit */
-  min-width: 0;             /* evita desbordaments en mòbil */
-  min-height: 100dvh;       /* alçada de viewport dinàmica (mòbil) */
-  overflow-x: hidden;       /* evita scroll horitzontal quan algun 100vw es passa 1–2px */
+  display: block; /* abans: flex (centrava el contingut) */
+  place-items: initial; /* anul·la el centrat implícit */
+  min-width: 0; /* evita desbordaments en mòbil */
+  min-height: 100dvh; /* alçada de viewport dinàmica (mòbil) */
+  overflow-x: hidden; /* evita scroll horitzontal quan algun 100vw es passa 1–2px */
   background: var(--background, #242424);
-  color: var(--color, rgba(255,255,255,.87));
+  color: var(--color, rgba(255, 255, 255, 0.87));
 }
 
 /* treu el límit d’amplada i el padding del contenidor root */
 #app {
-  max-width: none;          /* abans: 1280px */
-  margin: 0;                /* abans: 0 auto */
-  padding: 0;               /* abans: 2rem */
-  text-align: initial;      /* no forçar centrat de text */
+  max-width: none; /* abans: 1280px */
+  margin: 0; /* abans: 0 auto */
+  padding: 0; /* abans: 2rem */
+  text-align: initial; /* no forçar centrat de text */
   min-height: 100%;
   width: 100%;
 }
-
 
 /*
 @import './base.css';

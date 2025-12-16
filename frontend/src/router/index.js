@@ -64,33 +64,33 @@ const routes = [
     name: 'editprofile',
     component: EditProfile,
     meta: { requiresAuth: true },
-    props: true
+    props: true,
   },
   {
     path: '/createSong',
     name: 'createSong',
     component: CreateSong,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/editSong/:id',
     name: 'editSong',
     component: editarSong,
     meta: { requiresAuth: true },
-    props: true
+    props: true,
   },
   {
     path: '/createPlayList',
     name: 'createPlayList',
     component: CreatePlayList,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/addSongPlayList/:id',
     name: 'addSongPlayList',
     component: addSongPlayList,
-    meta: { requiresAuth: true }
-  }
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
