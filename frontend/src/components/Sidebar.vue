@@ -307,20 +307,6 @@ function goCreatePlaylist() {
 
 
 .create-playlist-btn {
-  background-color: #1db954;
-  color: #fff;
-  border: none;
-  border-radius: 30px;
-  padding: 6px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.create-playlist-btn:hover {
-  background-color: #1ed760;
-}
-
-.create-playlist-btn {
   background-color: #ff3896;
   color: #fff;
   border: none;

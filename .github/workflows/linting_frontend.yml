@@ -1,10 +1,10 @@
-name: Frontend unit tests
+name: Frontend linting
 
 on:
   push:
-    branches: [ "staging", "prod" ]
+    branches: ["staging", "prod"]
   pull_request:
-    branches: [ "staging", "prod" ]
+    branches: ["staging", "prod"]
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Install frontend dependencies
         working-directory: frontend
