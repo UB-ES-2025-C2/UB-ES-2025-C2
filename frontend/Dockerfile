@@ -36,7 +36,10 @@ ARG APP="frontend"
 ARG PORT="80"
 ARG UID="988"
 
-# Copy the build application
+# Copy the nginx configuration.
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the build application.
 COPY --from=builder /${APP}/dist /usr/share/nginx/html
 
 # Expose the Vue port.

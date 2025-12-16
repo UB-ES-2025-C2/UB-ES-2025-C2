@@ -17,3 +17,8 @@ max_line_length = 80
 [*.{json,js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl,yml,yaml}]
 indent_size = 2
 max_line_length = 100
+
+# Specific configurations for Nginx.
+[nginx.conf]
+indent_size = 2
+max_line_length = 100
