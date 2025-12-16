@@ -37,8 +37,6 @@ async function loadUserNames() {
   }
 }
 
-
-
 async function runSearch() {
   const q = (route.query.q || "").toString().trim();
   if (!q) {
@@ -121,6 +119,7 @@ function goToSong(id) {
           v-for="user in api.nUsersResult"
           :key="user.id || user.username"
           class="user-card"
+          data-test="sr-item"
           @click="goToUser(user.username)"
         >
 
@@ -142,6 +141,7 @@ function goToSong(id) {
         v-for="song in api.songResults"
         :key="song.id"
         class="song-card"
+        data-test="sr-item"
         @click="goToSong(song.id)"
         role="button"
         tabindex="0"
@@ -162,6 +162,7 @@ function goToSong(id) {
           v-for="playlist in api.playlistResults"
           :key="playlist.id"
           class="playlist-card"
+          data-test="sr-item"
           @click="goToPlaylist(playlist.id)"
           role="button"
           tabindex="0"

@@ -17,18 +17,17 @@
       </div>
 
       <!-- Botó només visible si l'usuari està autenticat -->
-      <button
-        v-if="authStore.isAuthenticated"
-        class="create-song"
-        @click="openCreateSongModal">
+      <button v-if="authStore.isAuthenticated" class="create-song" @click="openCreateSongModal">
         <span class="globe" v-html="icons.globe"></span>
         Pujar Cançó
       </button>
+
       <button class="create-playlist-btn" 
       @click="goCreatePlaylist"
       >
         + Crear Playlist
       </button>
+
     </section>
 
     <!-- Peu amb enllaços -->
@@ -80,12 +79,11 @@ function goCreatePlaylist() {
     router.push({ name: 'logIn' })
     return
   }
+
   router.push({ name: 'createPlayList' }) 
 }
 
-
 </script>
-
 
 <style scoped>
 :root {
@@ -307,6 +305,7 @@ function goCreatePlaylist() {
   color: #fff;
 }
 
+
 .create-playlist-btn {
   background-color: #1db954;
   color: #fff;
@@ -323,3 +322,17 @@ function goCreatePlaylist() {
 
 </style>
 
+.create-playlist-btn {
+  background-color: #ff3896;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.create-playlist-btn:hover {
+  background-color: #f76cad;
+}
+</style>
