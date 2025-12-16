@@ -13,11 +13,13 @@ export default defineConfig([
     files: ['**/*.{js,mjs,jsx,vue}'],
   },
 
+  /*
   {
     rules: {
       'no-undef': 'off',
     },
   },
+  */
 
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
 

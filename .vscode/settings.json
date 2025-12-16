@@ -159,6 +159,8 @@
     "__init__.py": "*.py, py.typed", // All Python files from a module are part of it, and also the `py.typed` file.
     ".gitignore": ".gitattributes", // The gitattributes file is part of the git configuration, which should always have a gitignore file.
     "App.vue": "main.js, main.ts, style.css", // All Vue apps related files should go under it.
+    "compose.y*": ".dockerignore, Dockerfile*", // The compose file should have the dockerignore and Dockerfiles nested.
+    "docker-compose.y*": ".dockerignore, Dockerfile*", // The compose file should have the dockerignore and Dockerfiles nested.
     "index.html": "*.html", // All HTML files should go under the index file.
     "index.js": "*.js", // All JavaScript files should go under the index file.
     "index.ts": "*.ts", // All JavaScript files should go under the index file.
@@ -183,8 +185,8 @@
   // 3.3. Exclusions.
   "files.exclude": {
     "**/__pycache__": true, // Python's compilation cache files, cache folders should always be excluded.
+    "**/.dockerignore": true, // Dockerignore, shouldn't change often.
     "**/.editorconfig": true, // Editor configurations, shouldn't change often.
-    "**/*.env": true, // Environment variables, should only be set once at clone time, or changed sparingly.
     "**/.gitattributes": true, // Gitattributes, shouldn't change often.
     "**/.github": true, // GitHub workflows, shouldn't change often.
     "**/.gitignore": true, // Gitignore, shouldn't change often.
@@ -198,10 +200,11 @@
     "**/.venv": true, // The virtual environment, shouldn't be manually modified.
     "**/.vite": true, // Vite scaffolding folder, compilation folders should always be read only.
     "**/.vscode": true, // VSCode folder, shouldn't change often.
+    "**/*.env": true, // Environment variables, should only be set once at clone time, or changed sparingly.
+    "**/*.sqlite3": true, // SQLite database file, should only be modified through Django.
     "**/*ruff.toml": true, // Python formatting configurations, shouldn't change often.
     "**/*taplo.toml": true, // TOML formatting configurations, shouldn't change often.
     "**/api/migrations": true, // The Django API migrations files, shouldn't be manually modified.
-    "**/*.sqlite3": true, // SQLite database file, should only be modified through Django.
     "**/desktop.ini": true, // Desktop configurations for Windows, should always be excluded.
     "**/dist": true, // Compilation folder, cache folders should always be excluded.
     "**/docker-compose.yml": true, // Docker Compose file, shouldn't need further modifications.

@@ -1,5 +1,5 @@
-# Use the official Node image for the development stage.
-FROM node:25-bookworm AS end-to-end
+# Use the official Node image for the end-to-end stage.
+FROM node:25-bookworm-slim AS end-to-end
 ARG APP="frontend"
 ARG PORT="5173"
 ARG UID="988"
@@ -39,9 +39,11 @@ COPY .oxlintrc.json .prettierrc.json eslint.config.js playwright.config.js vites
 ENV CHOKIDAR_USEPOLLING=true
 # Set the port for Vite.
 ENV VITE_PORT=${PORT}
+# Set the CI mode for Playwright.
+ENV CI=true
 
 # Expose the Vite port.
 EXPOSE ${PORT}
 
 # Execute the e2e tests.
-CMD ["sh", "-c", "npm run build && npm run test:e2e"]
+CMD ["sh", "-c", "npm run build && (npx serve -s dist -l $VITE_PORT &) && sleep 5 && npm run test:e2e"]

@@ -1,18 +1,42 @@
+name: music-space
+
 services:
+  # SERVICE GROUPS
+  # --------------
+
   # Development services.
   dev:
     command:
-      ["echo", "Constructed and executing development services."]
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s development services.",
+      ]
     container_name: dev
     depends_on:
       - backend-dev
       - frontend-dev
     image: alpine
 
+  # Optimized services.
+  opt:
+    command:
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s optimized services.",
+      ]
+    container_name: opt
+    depends_on:
+      - backend-opt
+      # - frontend-opt
+    image: alpine
+
   # Staging services.
   staging:
     command:
-      ["echo", "Constructed and executing staging services."]
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s staging services.",
+      ]
     container_name: staging
     depends_on:
       - backend-staging
@@ -22,7 +46,10 @@ services:
   # Production services.
   prod:
     command:
-      ["echo", "Constructed and executing production services."]
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s production services.",
+      ]
     container_name: prod
     depends_on:
       - backend-prod
@@ -31,7 +58,11 @@ services:
 
   # Test services.
   test:
-    command: ["echo", "Constructed and executing test services."]
+    command:
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s test services.",
+      ]
     container_name: test
     depends_on:
       - backend-test
@@ -43,14 +74,34 @@ services:
   # Migration services.
   migrate:
     command:
-      ["echo", "Constructed and executing migration services."]
-    container_name: prod
+      [
+        "echo",
+        "Constructed and executing ${COMPOSE_PROJECT_NAME}'s migration services.",
+      ]
+    container_name: migrate
     depends_on:
       - migrate-dev
       - migrate-staging
       - migrate-prod
       - migrate-e2e
     image: alpine
+
+  # EXTENSION FIELDS
+  # ----------------
+
+  # INDIVIDUAL SERVICES
+  # -------------------
+
+  # UTIL SERVICES
+  # -------------
+  check-comments:
+    build:
+      dockerfile: Dockerfile.comments
+    container_name: check-comments
+    image: check-comments
+
+  # BACKEND SERVICES
+  # ----------------
 
   # Development backend service.
   backend-dev:
@@ -83,6 +134,22 @@ services:
         source: ./backend/db.sqlite3
         target: /backend/db.sqlite3
 
+  # Optimized backend service.
+  backend-opt:
+    build:
+      args:
+        APP: backend
+        PORT: 80
+        UID: 988
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-staging
+    env_file:
+      - ./backend/dev.env
+    image: backend-opt
+    ports:
+      - 127.0.0.1:8000:80
+
   # Staging backend service.
   backend-staging:
     build:
@@ -95,7 +162,7 @@ services:
     container_name: backend-staging
     env_file:
       - ./backend/staging.env
-    image: backend-staging
+    image: backend-opt
     ports:
       - 127.0.0.1:8000:80
 
@@ -581,7 +648,7 @@ services:
 
 networks:
   default:
-    name: c2
+    name: music-space-network
     ipam:
       driver: default
       config:

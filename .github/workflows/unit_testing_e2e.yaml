@@ -2,9 +2,9 @@ name: E2E tests
 
 on:
   push:
-    branches: [ "staging", "prod" ]
+    branches: [ "dev", "staging", "prod" ]
   pull_request:
-    branches: [ "staging", "prod" ]
+    branches: [ "dev", "staging", "prod" ]
   workflow_dispatch:
 
 jobs:
@@ -81,7 +81,7 @@ jobs:
          uv run python manage.py migrate --noinput
          # Apply migrations api is ready for tests
          uv run python manage.py migrate api --noinput
-         uv run python manage.py createsuperuser --noinput
+         # uv run python manage.py createsuperuser --noinput
          # Start the Django server in background
          nohup uv run python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
          # Wait for server to accept connections (max ~30s)

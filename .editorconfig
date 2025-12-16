@@ -1,6 +1,6 @@
-# EditorConfig is awesome: https://editorconfig.org
+# EditorConfig is awesome: https://editorconfig.org.
 
-# top-most EditorConfig file
+# top-most EditorConfig file.
 root = true
 
 # Unix-style newlines with a newline ending every file.

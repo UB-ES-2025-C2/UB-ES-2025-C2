@@ -1,11 +1,7 @@
-name: Backend linting
+name: Backend formatting
 
 on:
-  push:
-    branches: [ "staging", "prod" ]
   pull_request:
-    branches: [ "staging", "prod" ]
-  workflow_dispatch:
 
 jobs:
   test:
@@ -34,9 +30,22 @@ jobs:
         run: uv sync --frozen
 
       # Run Ruff checks using uv run (virtualenv managed by uv)
-      - name: Run Ruff check
+      - name: Run Ruff format
         working-directory: backend
         env:
           DJANGO_SETTINGS_MODULE: music_space.settings
           SECRET_KEY: "dummy-key-for-ci-only"
-        run: uv run ruff check
+        run: uv run ruff format
+      - name: Commitear cambios
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ steps.issue_info.outputs.branch_name }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone --branch dev https://x-access-token:${TOKEN}@github.com/${{ github.repository }} repo
+          cd repo
+
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"

@@ -49,9 +49,9 @@ ignore = [
     # This is a Notebook focused project.
     "F405",
     "F403",
-    # In django for models and views we use import *
+    # In Django for models and views we use `import *`.
     "RUF012",
-    # Not using ClassVar
+    # Not using ClassVar.
 ]
 preview = true
 # Custom: Linting preview is allowed.
@@ -69,7 +69,7 @@ select = ["ALL"]
 "**/test*.py" = ["S101"]
 # Removes the false positive as main.py imports the main function.
 "main.py" = ["PLW0406"]
-# Ignore asserts on tests
+# Ignore asserts on tests.
 "*/tests/*" = ["S101"]
 
 
@@ -182,7 +182,7 @@ lines-after-imports = -1
 lines-between-types = 1
 # Custom: One line between `import` and `from _ import`.
 no-lines-before = []
-# Default: All sections should be separated
+# Default: All sections should be separated.
 no-sections = false
 # Default: There should be import sectioning.
 order-by-type = true

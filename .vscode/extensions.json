@@ -22,7 +22,7 @@
     "ms-python.vscode-python-envs", // Virtual Environments.
     // TOML.
     "tamasfe.even-better-toml", // Linter-Formatter.
-    // Web
+    // Web.
     "antfu.vite", // Vite.
     "christian-kohler.npm-intellisense", // NPM.
     "dbaeumer.vscode-eslint", // Linter.

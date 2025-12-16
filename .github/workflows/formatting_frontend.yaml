@@ -1,11 +1,7 @@
-name: Frontend linting
+name: Frontend formatting
 
 on:
-  push:
-    branches: [ "staging", "prod" ]
   pull_request:
-    branches: [ "staging", "prod" ]
-  workflow_dispatch:
 
 jobs:
   test:
@@ -24,8 +20,8 @@ jobs:
         working-directory: frontend
         run: npm install
 
-      - name: Run linting
+      - name: Run formatting
         working-directory: frontend
         env:
           VITE_API_URL: http://127.0.0.1:8000
-        run: npm run lint
+        run: npm run format

@@ -2,9 +2,9 @@ name: Backend unit tests
 
 on:
   push:
-    branches: [ "staging", "prod" ]
+    branches: [ "dev", "staging", "prod" ]
   pull_request:
-    branches: [ "staging", "prod" ]
+    branches: [ "dev", "staging", "prod" ]
   workflow_dispatch:
 
 jobs:
