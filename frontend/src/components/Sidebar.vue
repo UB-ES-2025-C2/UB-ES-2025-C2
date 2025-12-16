@@ -22,7 +22,7 @@
         Pujar Cançó
       </button>
 
-      <button class="create-playlist-btn" 
+      <button class="create-playlist-btn"
       @click="goCreatePlaylist"
       >
         + Crear Playlist
@@ -80,7 +80,7 @@ function goCreatePlaylist() {
     return
   }
 
-  router.push({ name: 'createPlayList' }) 
+  router.push({ name: 'createPlayList' })
 }
 
 </script>
@@ -319,8 +319,6 @@ function goCreatePlaylist() {
 .create-playlist-btn:hover {
   background-color: #1ed760;
 }
-
-</style>
 
 .create-playlist-btn {
   background-color: #ff3896;
