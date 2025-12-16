@@ -17,7 +17,6 @@ const isAddingSong = ref(false)
 
 const availableSongs = computed(() => {
   if (!api.songs || songs.value.length === 0) return api.songs || []
-  
   const playlistSongIds = songs.value.map(s => s.song.id)
   return api.songs.filter(song => !playlistSongIds.includes(song.id))
 })
@@ -42,8 +41,8 @@ async function addSong() {
 
 async function removeSong(songId) {
   if (!confirm('Estàs segur que vols eliminar aquesta cançó de la playlist?')) return
-  
   const deleted = await auth.deletePlayListSong(playlistId, songId)
+
   if (deleted) {
     songs.value = await api.getSongFromPlayList(playlistId)
   }
@@ -80,21 +79,21 @@ onMounted(async () => {
     <!-- Barra d'accions -->
     <div class="actions-bar">
       <div class="add-song-container">
-        <select 
-          v-model="selectedSongId" 
+        <select
+          v-model="selectedSongId"
           class="song-select"
         >
           <option value="" disabled>Selecciona una cançó</option>
-          <option 
-            v-for="song in availableSongs" 
-            :key="song.id" 
+          <option
+            v-for="song in availableSongs"
+            :key="song.id"
             :value="song.id"
           >
             {{ song.name }} - {{ song.artist }}
           </option>
         </select>
-        <button 
-          @click="addSong" 
+        <button
+          @click="addSong"
           :disabled="isAddingSong || !selectedSongId"
           class="btn-add"
         >
@@ -115,15 +114,15 @@ onMounted(async () => {
       </div>
 
       <div class="songs-list">
-        <div 
-          v-for="(song, index) in songs" 
-          :key="song.id" 
+        <div
+          v-for="(song, index) in songs"
+          :key="song.id"
           class="song-row"
         >
           <span class="col-number">{{ index + 1 }}</span>
-          
+
           <div class="col-title">
-            <img 
+            <img
               v-if="song.song.cover"
               :src="song.song.cover"
               alt="Cover"
@@ -140,10 +139,10 @@ onMounted(async () => {
 
           <span class="col-artist">{{ song.song.artist }}</span>
           <span class="col-topic">{{ song.song.topic }}</span>
-          
+
           <div class="col-actions">
-            <button 
-              @click="removeSong(song.id)" 
+            <button
+              @click="removeSong(song.id)"
               class="btn-delete"
               title="Eliminar cançó"
             >
@@ -154,7 +153,7 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  
+
   <div v-else class="loading-state">
     <div class="spinner"></div>
     <p>Carregant playlist...</p>
@@ -163,6 +162,7 @@ onMounted(async () => {
 
 <style scoped>
 .playlist-view {
+  padding: 20px 40px;
   background-color: #121212;
   color: white;
   min-height: 100vh;

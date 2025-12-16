@@ -118,6 +118,7 @@ export const useAuthStore = defineStore("auth", {
       owners.forEach(id => {
         formData.append("owner", id); 
       });
+
       if (playlist.cover) {
         formData.append("cover", playlist.cover);
       } // cover
