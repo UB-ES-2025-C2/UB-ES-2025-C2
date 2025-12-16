@@ -34,7 +34,7 @@ vi.mock('vue-router', () => ({
 describe('EditProfile.vue', () => {
   let wrapper
   const userMock = {
-    nickname: 'testuser',
+    nickname: 'admin',
     description: 'Test description',
     profilePic: 'test.png'
   }
