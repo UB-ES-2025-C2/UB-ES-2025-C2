@@ -12,7 +12,7 @@ import CreateSong from '../views/CreateSong.vue'
 import editarSong from '../views/EditSong.vue'
 
 import CreatePlayList from '../views/CreatePlaylist.vue'
-import addSongPlayList from '../views/addSongPlayList.vue'
+import addSongPlayList from '../views/addSongPlaylist.vue'
 
 import { useAuthStore } from '../apiStore/authStore'
 
