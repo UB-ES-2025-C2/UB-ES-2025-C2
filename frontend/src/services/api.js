@@ -101,7 +101,4 @@ export default {
       }
     );
   },
-  getAllPlaylists() {
-    return axiosInstance.get("/api/v1/playlist/");
-  },
 };
