@@ -12,7 +12,7 @@ def main() -> None:
     Raises
     ------
     ImportError
-        If Django is not installed or cannot be imported.
+        If `execute_from_command_line` couldn't be imported from `django.core.management`.
     """
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'music_space.settings')
     try:
