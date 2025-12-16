@@ -27,7 +27,7 @@ const showQueue = ref(false)
 <template>
   <div class="playerbar" v-if="p.current">
     <div class="left">
-      <img v-if="p.current.cover" :src="p.current.cover" alt="" class="cover" />
+      <img v-if="p.current.cover" :src="p.current.cover" alt="" class="cover" data-test="player-cover" />
       <div class="meta">
         <div class="title">{{ p.current.name }}</div>
         <div class="artist">{{ p.current.artist }}</div>
@@ -38,7 +38,7 @@ const showQueue = ref(false)
       <div class="controls">
         <!-- 🔀 ELIMINAT -->
         <button class="btn" @click="p.prev" title="Anterior">⏮</button>
-        <button class="btn play" @click="p.toggle" :title="p.isPlaying ? 'Pausa' : 'Reprodueix'">
+        <button class="btn play" data-test="player-play" @click="p.toggle" :title="p.isPlaying ? 'Pausa' : 'Reprodueix'">
           <span v-if="!p.isPlaying">▶</span><span v-else>⏸</span>
         </button>
         <button class="btn" @click="p.next" title="Següent">⏭</button>
@@ -46,9 +46,9 @@ const showQueue = ref(false)
       </div>
 
       <div class="timeline">
-        <span class="t">{{ p.formatTime(p.time) }}</span>
-        <input type="range" min="0" :max="max" step="0.01" v-model.number="progress" />
-        <span class="t">{{ p.formatTime(p.duration) }}</span>
+        <span class="t" data-test="player-current-time">{{ p.formatTime(p.time) }}</span>
+        <input type="range" min="0" :max="max" step="0.01" data-test="player-progress" v-model.number="progress" />
+        <span class="t" data-test="player-duration">{{ p.formatTime(p.duration) }}</span>
       </div>
     </div>
 
