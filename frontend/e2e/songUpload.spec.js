@@ -8,8 +8,10 @@ const API_URL = process.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 customTest(
   'Flux complet: pujada de cançó amb usuari aleatori (via API)',
-  async ({ page, request, testUser }) => {
-    const { username, password } = testUser
+  async ({ page, request }) => {
+    // 1️⃣ Login amb usuari hardcodejat
+    const username = 'admin'
+    const password = 'admin'
 
     console.log('🟢 Token i usuari preparats:', username)
 
@@ -23,8 +25,12 @@ customTest(
 
     // 2️⃣ Preparar fitxers
 
-    const audioPath = path.resolve('./e2e/files/sample.mp3')
-    const coverPath = path.resolve('./e2e/files/cover.png')
+    const audioPath = path.resolve(
+      'C:/Users/Lenovo/OneDrive/Documentos/Info/3r/GiVD/p3-globe-gl-vis-b02/UB-ES-2025-C2/UB-ES-2025-C2/frontend/e2e/files/sample.mp3',
+    )
+    const coverPath = path.resolve(
+      'C:/Users/Lenovo/OneDrive/Documentos/Info/3r/GiVD/p3-globe-gl-vis-b02/UB-ES-2025-C2/UB-ES-2025-C2/frontend/e2e/files/default.png',
+    )
 
     // 3️⃣ Enviar petició POST amb multipart/form-data
     const songRes = await request.post(`${API_URL}/api/v1/songs/`, {
@@ -41,7 +47,7 @@ customTest(
           buffer: fs.readFileSync(audioPath),
         },
         file_cover: {
-          name: 'cover.png',
+          name: 'default.png',
           mimeType: 'image/png',
           buffer: fs.readFileSync(coverPath),
         },
