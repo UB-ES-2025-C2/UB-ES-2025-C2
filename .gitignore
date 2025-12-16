@@ -136,8 +136,8 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+*.sqlite3
+*.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -284,11 +284,26 @@ private
 # Django migrations
 api/migrations
 
-# Uploads folder
-uploads
-profile_pics
+# Images folder
+images
+
+# Binary files folder
 covers
+profile_pics
+songs_folder
+uploads
+
+# Binary images
+*.bmp
+*.gif
+*.jpeg
+*.jpg
+*.png
+*.webp
+
+# Binary audio
+*.mp3
+*.ogg
+*.wav
 
 # End of project specific ignores
-
-images
