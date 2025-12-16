@@ -1,26 +1,56 @@
-import { mount } from "@vue/test-utils"
-import { createPinia, setActivePinia } from "pinia"
-import { vi } from "vitest"
-import Playlists from "../../views/Playlists.vue"
-import { useApiStore } from '../../apiStore/guestApi.js'
+import { mount, flushPromises } from '@vue/test-utils'
+import { setActivePinia, createPinia, defineStore } from 'pinia'
+import { vi, describe, it, beforeAll, beforeEach, expect } from 'vitest'
+import Playlists from '../../views/Playlists.vue'
 
 // Mock de Vue Router
-vi.mock("vue-router", () => ({
-  useRoute: () => ({ params: { id: "1" } })
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ params: { id: '1' } }),
 }))
 
-describe("Playlists.vue", () => {
-  let pinia
-  let apiStore
-  let wrapper
+// Mock API store
+vi.mock('../../apiStore/guestApi.js', () => ({
+  useApiStore: () => ({
+    getPlaylistById: vi.fn(() =>
+      Promise.resolve({
+        id: 1,
+        name: 'Playlist1',
+        description: 'playlist d’èxits mundials',
+        owner: 'Owner1',
+        cover: 'cover_playlist.jpg',
+      }),
+    ),
+    getSongFromPlayList: vi.fn(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          song: { id: 1, name: 'Song1', artist: 'Artist1', cover: 'cover1.jpg', topic: 'Pop' },
+        },
+        {
+          id: 2,
+          song: { id: 2, name: 'Song2', artist: 'Artist2', cover: 'cover2.jpg', topic: 'Rock' },
+        },
+      ]),
+    ),
+  }),
+}))
 
-  beforeEach(async () => {
-    pinia = createPinia()
-    setActivePinia(pinia)
+describe('Playlists.vue', () => {
+  let playerStore, playSongSpy, toggleSpy, setQueueSpy
 
-    apiStore = useApiStore()
+  beforeAll(() => {
+    // Mock HTMLMediaElement
+    if (!globalThis.HTMLMediaElement) {
+      globalThis.HTMLMediaElement = class {
+        play() {}
+        pause() {}
+        load() {}
+      }
+    }
+  })
 
-    apiStore.getPlaylistById = vi.fn().mockResolvedValue({
+  /*
+  apiStore.getPlaylistById = vi.fn().mockResolvedValue({
       id: 1,
       name: "Playlist1",
       description: "playlist d’èxits mundials",
@@ -44,22 +74,96 @@ describe("Playlists.vue", () => {
     await new Promise(r => setTimeout(r, 0))
     await wrapper.vm.$nextTick()
   })
-
-  it("renderiza la playlist con información correcta", () => {
+  */
+  it('renderiza la playlist con información correcta', () => {
     const text = wrapper.text()
 
-    expect(text).toContain("Playlist1")
-    expect(text).toContain("playlist d’èxits mundials")
-    expect(text).toContain("Owner1")
-    expect(text).toContain("Guardada 123 veces")
-    expect(text).toContain("canciones")
+    expect(text).toContain('Playlist1')
+    expect(text).toContain('playlist d’èxits mundials')
+    expect(text).toContain('Owner1')
+    expect(text).toContain('Guardada 123 veces')
+    expect(text).toContain('canciones')
   })
 
-
-  it("renderiza las canciones con sus covers", () => {
-    const songImages = wrapper.findAll(".song-card img")
+  it('renderiza las canciones con sus covers', () => {
+    const songImages = wrapper.findAll('.song-card img')
     expect(songImages.length).toBe(apiStore.songsFromPlaylist.length)
-    expect(songImages[0].attributes("src")).toBe("cover1.jpg")
-    expect(songImages[1].attributes("src")).toBe("cover2.jpg")
+    expect(songImages[0].attributes('src')).toBe('cover1.jpg')
+    expect(songImages[1].attributes('src')).toBe('cover2.jpg')
+  })
+  beforeEach(() => {
+    playSongSpy = vi.fn()
+    toggleSpy = vi.fn()
+    setQueueSpy = vi.fn()
+
+    const usePlayerStore = defineStore('player', {
+      state: () => ({
+        current: null,
+        isPlaying: false,
+      }),
+      actions: {
+        playSong: (song) => playSongSpy(song),
+        toggle: () => toggleSpy(),
+        setQueue: (queue) => setQueueSpy(queue),
+      },
+    })
+
+    setActivePinia(createPinia())
+    playerStore = usePlayerStore()
+  })
+
+  it('carrega correctament la playlist i les cançons', async () => {
+    const wrapper = mount(Playlists, { global: { provide: { player: playerStore } } })
+
+    // Cridem directament el mètode de càrrega
+    await wrapper.vm.loadPlaylist()
+    await flushPromises()
+
+    expect(wrapper.vm.playlist.name).toBe('Playlist1')
+    expect(wrapper.vm.playlist.description).toBe('playlist d’èxits mundials')
+    expect(wrapper.vm.playlist.owner).toBe('Owner1')
+    expect(wrapper.vm.songs).toHaveLength(2)
+    expect(wrapper.vm.loading).toBe(false)
+  })
+
+  it('togglePlay crida playSong o toggle segons la cançó', async () => {
+    const wrapper = mount(Playlists, { global: { provide: { player: playerStore } } })
+    await wrapper.vm.loadPlaylist()
+    await flushPromises()
+
+    // Primer toggle → playSong
+    wrapper.vm.togglePlay({
+      id: 1,
+      name: 'Song1',
+      artist: 'Artist1',
+      cover: 'cover1.jpg',
+      topic: 'Pop',
+    })
+    expect(playSongSpy).toHaveBeenCalled()
+
+    // Marquem la cançó actual per cridar toggle
+    playerStore.current = { id: 1 }
+    playerStore.isPlaying = true
+
+    wrapper.vm.togglePlay({ id: 1 })
+    expect(toggleSpy).toHaveBeenCalled()
+  })
+
+  it('playPlaylist crida setQueue i playSong', async () => {
+    const wrapper = mount(Playlists, { global: { provide: { player: playerStore } } })
+    await wrapper.vm.loadPlaylist()
+    await flushPromises()
+
+    wrapper.vm.songs = [
+      { id: 1, song: { id: 1, name: 'Song1' } },
+      { id: 2, song: { id: 2, name: 'Song2' } },
+    ]
+
+    wrapper.vm.playPlaylist()
+    expect(setQueueSpy).toHaveBeenCalledWith([
+      { id: 1, name: 'Song1' },
+      { id: 2, name: 'Song2' },
+    ])
+    expect(playSongSpy).toHaveBeenCalledWith({ id: 1, name: 'Song1' })
   })
 })

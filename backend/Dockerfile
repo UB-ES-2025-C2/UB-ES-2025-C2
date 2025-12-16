@@ -1,22 +1,19 @@
 # Use the official Python image for the builder stage.
 FROM python:3.14-alpine AS builder
-ARG PORT="8000"
-ARG SECRET_KEY="django-insecure-abcdef123456"
-ARG UID="988"
-ARG HOST="0.0.0.0"
+ARG APP="backend"
 
 # Copy UV from the UV image.
 COPY --from=ghcr.io/astral-sh/uv:latest --chown=backend:backend /uv /uvx /bin/
 
 # Create the app directory.
-RUN mkdir /app
+RUN mkdir /${APP}
 
 # Set the working directory inside the container.
-WORKDIR /app
+WORKDIR /${APP}
 
 # Copy the Django project to the container.
-ADD ./music_space /app/music_space
-COPY ./pyproject.toml ./manage.py ./README.md /app/
+ADD ./music_space ./music_space
+COPY pyproject.toml manage.py README.md ./
 
 # Set environment variables.
 # Prevents Python from buffering stdout and stderr.
@@ -27,40 +24,35 @@ RUN ["/bin/uv", "sync", "--no-dev", "--group", "prod"]
 
 # Use the official Python image for the production stage.
 FROM python:3.14-alpine AS production
-ARG PORT
-ARG SECRET_KEY
-ARG UID
-ARG HOST
+ARG APP="backend"
+ARG PORT="80"
+ARG UID="988"
 
 # Set environment variables.
 # Prevents Python from buffering stdout and stderr.
 ENV PYTHONUNBUFFERED=1
-# Secret key for the Django database.
-ENV SECRET_KEY=${SECRET_KEY:-"django-insecure-abcdef123456"}
 # Deactivate debug mode for Django.
 ENV DJANGO_DEBUG="0"
-# Allowed hosts for Django.
-ENV DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1,backend${HOST:-"0.0.0.0"}"
 # Port for Django
-ENV DJANGO_PORT=${PORT:-"8000"}
+ENV DJANGO_PORT=${PORT}
 
 # Copy the built app from the builder stage
-COPY --from=builder /app /app
+COPY --from=builder /${APP} /${APP}
 
 # Set the working directory inside the container.
-WORKDIR /app
+WORKDIR /${APP}
+
+# Activate the virtual environment.
+RUN source ./.venv/bin/activate
 
 # Expose the Django port.
 EXPOSE ${PORT}
 
-# Change the user.
-# USER backend:backend -> Failed canonicalization of Python.
-
 # Change the stop singal.
 STOPSIGNAL SIGQUIT
 
-# Activate the virtual environment.
-RUN source ./.venv/bin/activate
+# Change the user.
+# USER backend:backend -> Failed canonicalization of Python.
 
 # Start the application using Gunicorn.
 CMD ["sh", "-c", "./.venv/bin/gunicorn --bind 0.0.0.0:$DJANGO_PORT --workers 3 music_space.wsgi:application"]
