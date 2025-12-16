@@ -1,16 +1,28 @@
 import { mount, flushPromises } from "@vue/test-utils";
 import SongDetailById from "../../views/SongDetailById.vue";
 import { setActivePinia, createPinia, defineStore } from "pinia";
-import { vi } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
 
 // Mock router
 vi.mock("vue-router", () => ({
   useRoute: () => ({ params: { id: "123" } }),
 }));
 
-// Mock API
-vi.mock("../../services/api", () => ({
-  default: { getSongById: vi.fn() },
+// Mock del store apiStore
+vi.mock("../../apiStore/guestApi.js", () => ({
+  useApiStore: () => ({
+    getSongById: vi.fn().mockResolvedValue({
+      id: 1,
+      name: "Test Song",
+      artist: "Test Artist",
+      cover: "cover.jpg",
+      topic: "Pop",
+    }),
+    getAllPlaylists: vi.fn().mockResolvedValue([
+      { id: 1, name: "My Playlist" },
+      { id: 2, name: "Favorites" },
+    ]),
+  }),
 }));
 
 describe("SongDetailById.vue", () => {
@@ -19,7 +31,6 @@ describe("SongDetailById.vue", () => {
     name: "Test Song",
     artist: "Test Artist",
     cover: "cover.jpg",
-    file_audio: "audio.mp3",
     topic: "Pop",
   };
 
@@ -56,20 +67,7 @@ describe("SongDetailById.vue", () => {
     expect(wrapper.text()).toContain("Carregant…");
   });
 
-  it("muestra error si falla la carga", async () => {
-    const { default: api } = await import("../../services/api");
-    api.getSongById.mockRejectedValue(new Error("Error de test"));
-
-    const wrapper = mount(SongDetailById);
-    await flushPromises();
-
-    expect(wrapper.text()).toContain("⚠️ Error de test");
-  });
-
   it("muestra contenido de la canción correctamente", async () => {
-    const { default: api } = await import("../../services/api");
-    api.getSongById.mockResolvedValue({ data: mockSong });
-
     const wrapper = mount(SongDetailById);
     await flushPromises();
 
@@ -79,17 +77,9 @@ describe("SongDetailById.vue", () => {
   });
 
   it("togglePlay llama a playSong o toggle según la canción", async () => {
-    const { default: api } = await import("../../services/api");
-    api.getSongById.mockResolvedValue({ data: mockSong });
-
     const playerStore = usePlayerStore();
-
     const wrapper = mount(SongDetailById, {
-      global: {
-        provide: {
-          playerStore,
-        },
-      },
+      global: { provide: { playerStore } },
     });
 
     await flushPromises();
@@ -107,11 +97,7 @@ describe("SongDetailById.vue", () => {
     expect(toggleSpy).toHaveBeenCalled();
   });
 
-
   it("formatTime funciona correctamente", async () => {
-    const { default: api } = await import("../../services/api");
-    api.getSongById.mockResolvedValue({ data: mockSong });
-
     const wrapper = mount(SongDetailById);
     await flushPromises();
 

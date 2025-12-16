@@ -5,6 +5,12 @@ import { useAuthStore } from '../../apiStore/authStore.js'
 import { useApiStore } from '../../apiStore/guestApi.js'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
+// Mock de Vue Router para tests
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  useRoute: () => ({ path: '/', meta: {} }),
+}))
+
 describe('Home.vue', () => {
   let authStore, apiStore, wrapper
   let pinia
